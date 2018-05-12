@@ -1,14 +1,14 @@
 -- Tome of Teleportation by Remeen.
 
 -- TODO:
--- More Legion spells/items
--- Improve Undercurrent
+-- More Battle for Azeroth items
 
 local AddonName = "TomeOfTeleportation"
 local AddonTitle = "Tome of Teleportation"
 -- Special case strings start with number to force them to be sorted first.
 local HearthString = "0 Hearth"
 local RecallString = "1 Astral Recall"
+local FlightString = "2 Flight Master"
 
 local ldb = LibStub:GetLibrary("LibDataBroker-1.1")
 local icon = LibStub("LibDBIcon-1.0")
@@ -55,20 +55,21 @@ local InvTypeToSlot =
 	["INVTYPE_TABARD"] = 19
 }
 
-local MapIDAlteracValley = 401
-local MapIDIsleOfThunder = 928
-local MapIDThroneOfThunder = 930
-local MapIDDalaran = 504
-local MapIDTanaanJungle = 945
-local MapIDAzsuna = 1015
+local MapIDAlteracValley = 91
+local MapIDIsleOfThunder = 504
+local MapIDDalaran = 125
+local MapIDTanaanJungle = 534
+local MapIDAzsuna = 627
 local MapIDDalaranLegion = 1014
-local MapIDAntoranWastes = 1171
+local MapIDAntoranWastes = 885
 
-local ContinentIdOutland = 3
-local ContinentIdPandaria = 6
-local ContinentIdDraenor = 7
-local ContinentIdBrokenIsles = 8
-local ContinentIdArgus = 9
+local ContinentIdOutland = 101
+local ContinentIdPandaria = 424
+local ContinentIdDraenor = 946
+local ContinentIdBrokenIsles = 619
+local ContinentIdArgus = 905
+local ContinentIdZandalar = 875
+local ContinentIdKulTiras = 876
 
 local ST_Item = 1
 local ST_Spell = 2
@@ -145,26 +146,25 @@ local Themes =
 	["Flat"] = FlatTheme	
 }
 
-local function AtContinent(requiredContinent)
+local function AtZone(requiredZone)
 	return function()
-		local oldMapID = GetCurrentMapAreaID()
-		SetMapToCurrentZone()
-		local continentID = GetCurrentMapContinent()
-		SetMapByID(oldMapID)
-		
-		return continentID == requiredContinent
+		local mapID = C_Map.GetBestMapForUnit("player")
+		while mapID ~= 0 do
+			if mapID == requiredZone then
+				return true
+			end
+			mapID = C_Map.GetMapInfo(mapID).parentMapID
+		end
+		return false
 	end
 end
 
-local function AtZone(requiredZone, altZone)
-	return function()
-		local oldMapID = GetCurrentMapAreaID()
-		SetMapToCurrentZone()
-		local zoneID = GetCurrentMapAreaID()
-		SetMapByID(oldMapID)
-		
-		return zoneID == requiredZone or zoneID == altZone
-	end
+local function AtContinent(requiredContinent)
+	return AtZone(requiredContinent)
+end
+
+function AllowWhistle()
+	return AtContinent(ContinentIdBrokenIsles)() or AtContinent(ContinentIdArgus)() or AtContinent(ContinentIdKulTiras)() or AtContinent(ContinentIdZandalar)()
 end
 
 local function IsClass(requiredClass)
@@ -219,6 +219,8 @@ local TeleporterSpells =
 	
 	{ 556, ST_Spell, RecallString },		-- Astral Recall
 	
+	{ 141605, ST_Item, FlightString, AllowWhistle }, -- Flight Master's Whistle	
+	
 	-- Alterac Valley
 	{ 17690, ST_Item, "Alterac Valley", AtZone(MapIDAlteracValley) },	-- Frostwolf Insignia Rank 1
 	{ 17905, ST_Item, "Alterac Valley", AtZone(MapIDAlteracValley) },	-- Frostwolf Insignia Rank 2
@@ -236,8 +238,6 @@ local TeleporterSpells =
 	{ 153226, ST_Item, "Antoran Wastes", AtZone(MapIDAntoranWastes) },	-- Observer's Locus Resonator
 	
 	{ 151652, ST_Item, "Argus" },										-- Wormhole Generator: Argus
-	-- There should be a check for this, but I don't know how to determine if the whistle will work.
-	{ 141605, ST_Item, "Argus", AtContinent(ContinentIdArgus) }, 		-- Flight Master's Whistle	
 	
 	{ 116413, ST_Item, "Ashran", nil, true },	-- Scroll of Town Portal
 	{ 119183, ST_Item, "Ashran", nil, true },	-- Scroll of Risky Recall
@@ -271,8 +271,7 @@ local TeleporterSpells =
 	{ 118908, ST_Item, "Brawl'gar Arena" },-- Pit Fighter's Punching Ring
 	{ 144392, ST_Item, "Brawl'gar Arena" },	-- Pugilist's Powerful Punching Ring
 	
-	{ 132523, ST_Item, "Broken Isles", nil, true }, -- Reaves Battery (can't always teleport, don't currently check).		
-	{ 141605, ST_Item, "Broken Isles", AtContinent(ContinentIdBrokenIsles) }, -- Flight Master's Whistle	
+	{ 132523, ST_Item, "Broken Isles", nil, true }, -- Reaves Battery (can't always teleport, don't currently check).	
 	{ 144341, ST_Item, "Broken Isles" }, -- Rechargeable Reaves Battery
 	
 	{ 224871, ST_Spell, "Dalaran (Legion)" },		-- Portal: Dalaran - Broken Isles (UNTESTED)
@@ -353,8 +352,8 @@ local TeleporterSpells =
 	{ 3562, ST_Spell, "Ironforge" },		-- Teleport: Ironforge
 	{ 11416, ST_Spell, "Ironforge" },		-- Portal: Ironforge
 	
-	{ 95567, ST_Item, "Isle of Thunder", AtZone(MapIDIsleOfThunder, MapIDThroneOfThunder) },	-- Kirin Tor Beacon
-	{ 95568, ST_Item, "Isle of Thunder", AtZone(MapIDIsleOfThunder, MapIDThroneOfThunder) },	-- Sunreaver Beacon
+	{ 95567, ST_Item, "Isle of Thunder", AtZone(MapIDIsleOfThunder ) },	-- Kirin Tor Beacon
+	{ 95568, ST_Item, "Isle of Thunder", AtZone(MapIDIsleOfThunder ) },	-- Sunreaver Beacon
 
 	{ 118663, ST_Item, "Karabor" },		-- Relic of Karabor
 	
@@ -1073,6 +1072,10 @@ function TeleporterOpenFrame()
 				--else
 				--	destination = "Astral Recall (Earthshrine)"
 				--end
+			end
+			
+			if destination == RecallString then
+				bindLocation = "Flight Master"
 			end
 
 			if isItem then
