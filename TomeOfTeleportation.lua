@@ -31,6 +31,10 @@ local OpenTime = 0
 local ShouldNotBeEquiped = {}
 local ShouldBeEquiped = {}
 local EquipTime = 0
+local CustomizeSpells = false
+local ShowIconOffset = 0
+local SortUpIconOffset = 0
+local SortDownIconOffset = 0
 
 _G["BINDING_HEADER_TOMEOFTELEPORTATION"] = "Tome of Teleportation"
 
@@ -115,7 +119,13 @@ local DefaultOptions =
 	["unequipedColourB"] = 0,
 	["cooldownColourR"] = 1,
 	["cooldownColourG"] = 0.7,
-	["cooldownColourB"] = 0
+	["cooldownColourB"] = 0,
+	["disabledColourR"] = 0.5,
+	["disabledColourG"] = 0.5,
+	["disabledColourB"] = 0.5,
+	["sortUpIcon"] = "Interface/Icons/misc_arrowlup",
+	["sortDownIcon"] = "Interface/Icons/misc_arrowdown",
+	["showIcon"] = "Interface/Icons/inv_darkmoon_eye"	-- I need to find a better icon!
 }
 
 -- Themes. For now there aren't many of these. Message me on curse.com
@@ -615,9 +625,8 @@ local function OnHideConsumable(info)
 	Refresh()
 end
 
-local function OnSortbyType(info)
-	TomeOfTele_SortByType = not TomeOfTele_SortByType
-	info.checked = TomeOfTele_SortByType
+local function TomeOfTele_SetSort(value)
+	SetOption("sort", value)
 	
 	Refresh()
 end
@@ -669,11 +678,12 @@ local function InitTeleporterMenu(frame, level, menuList)
 		info.checked = TomeOfTele_HideConsumable
 		UIDropDownMenu_AddButton(info, 1)	
 		
-		info.text = "Sort by Type"
+		info.text = "Sort"
+		info.hasArrow = true
+		info.menuList = "Sort"
 		info.value = 5
-		info.func = function(info) OnSortbyType(info) end
-		info.owner = TeleporterMenu
-		info.checked = TomeOfTele_SortByType
+		info.func = nil
+		info.checked = nil
 		UIDropDownMenu_AddButton(info, 1)	
 		
 		info.text = "Scale"
@@ -689,6 +699,16 @@ local function InitTeleporterMenu(frame, level, menuList)
 		info.value = 7
 		info.checked = nil
 		UIDropDownMenu_AddButton(info, 1)
+		
+		info.text = "Customize Spells"
+		info.value = 8
+		info.hasArrow = false
+		info.menuList = nil
+		info.func = function(info) CustomizeSpells = not CustomizeSpells; Refresh(); end
+		info.owner = TeleporterMenu
+		info.checked = CustomizeSpells
+		UIDropDownMenu_AddButton(info, 1)	
+		
 	elseif menuList == "Scale" then
 		local scales = { 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200 }
 		for i,s in ipairs(scales) do
@@ -713,6 +733,28 @@ local function InitTeleporterMenu(frame, level, menuList)
 			
 			index = index + 1
 		end
+	elseif menuList== "Sort" then
+		local info = UIDropDownMenu_CreateInfo()
+		info.text = "Destination"
+		info.value = 1
+		info.func = function(info) TomeOfTele_SetSort(1) end
+		info.owner = TeleporterMenu
+		info.checked = function(info) sortMode = GetOption("sort"); return sortMode == nil or sortMode == 1; end
+		UIDropDownMenu_AddButton(info, level)
+		
+		info.text = "Type"
+		info.value = 2
+		info.func = function(info) TomeOfTele_SetSort(2) end
+		info.owner = TeleporterMenu
+		info.checked = function(info) return GetOption("sort") == 2; end
+		UIDropDownMenu_AddButton(info, level)
+		
+		info.text = "Custom"
+		info.value = 3
+		info.func = function(info) TomeOfTele_SetSort(3) end
+		info.owner = TeleporterMenu
+		info.checked = function(info) return GetOption("sort") == 3; end
+		UIDropDownMenu_AddButton(info, level)
 	end
 end
 
@@ -795,7 +837,10 @@ function TeleporterUpdateButton(button)
 			countString:SetText(GetItemCount(itemId))
 		end
 
-		if isItem and TeleporterItemMustBeEquipped( item ) then 
+		if CustomizeSpells then
+			button:SetBackdropColor(GetOption("disabledColourR"), GetOption("disabledColourG"), GetOption("disabledColourB"), 1)
+			button:SetAttribute("macrotext1", nil)
+		elseif isItem and TeleporterItemMustBeEquipped( item ) then 
 			button:SetBackdropColor(GetOption("unequipedColourR"), GetOption("unequipedColourG"), GetOption("unequipedColourB"), 1)
 
 			button:SetAttribute(
@@ -867,6 +912,29 @@ local function OnClickFrame(frame, button)
 	end
 end
 
+local function AddCustomizationIcon(existingIcon, buttonFrame, xOffset, yOffset, width, height, optionName)
+	local icon = existingIcon
+	if not existingIcon then
+		icon = buttonFrame:CreateTexture(frameName)
+	end
+	
+	if icon then
+		icon:SetPoint("TOPRIGHT",buttonFrame,"TOPRIGHT", xOffset, yOffset)
+		icon:SetTexture(GetOption(optionName))
+		
+		icon:SetWidth(width)
+		icon:SetHeight(height)
+	end
+	
+	if CustomizeSpells then
+		icon:Show()
+	else
+		icon:Hide()
+	end
+	
+	return icon
+end
+
 local function SortSpells(spell1, spell2)
 	local spellId1 = spell1[1]
 	local spellId2 = spell2[1]
@@ -876,11 +944,14 @@ local function SortSpells(spell1, spell2)
 	local spellType2 = spell2[2]
 	local zone1 = spell1[3]
 	local zone2 = spell2[3]
+	local sortType = GetOption("sort")
 	
-	if TomeOfTele_SortByType then
+	if sortType == 2 then
 		if spellType1 ~= spellType2 then
 			return spellType1 < spellType2
 		end
+	elseif sortType == 3 then
+		-- TODO: Custom sort
 	end
 	
 	if zone1 ~= zone2 then
@@ -1251,7 +1322,11 @@ function TeleporterOpenFrame()
 				nameString:SetJustifyV("CENTER")
 				nameString:SetPoint("TOP",cooldownString,"TOPRIGHT",0,0)
 				nameString:SetPoint("LEFT", buttonFrame, "TOPLEFT", iconOffsetX + iconW + 2, iconOffsetY - 1)
-				nameString:SetPoint("BOTTOMRIGHT",cooldownString,"BOTTOMLEFT",0,0)
+				if CustomizeSpells then
+					nameString:SetPoint("BOTTOMRIGHT",cooldownString,"BOTTOMLEFT",-iconW * 3,0)
+				else
+					nameString:SetPoint("BOTTOMRIGHT",cooldownString,"BOTTOMLEFT",0,0)
+				end
 				nameString:SetText( displaySpellName )
 				
 				-- Count label
@@ -1268,8 +1343,19 @@ function TeleporterOpenFrame()
 				if -yoffset > maxyoffset then
 					maxyoffset = -yoffset
 				end
-			
-				ButtonSettings[buttonFrame] = { isItem, spellName, cooldownbar, cooldownString, spellId, countString, toySpell }
+				
+				ShowIconOffset = -iconOffsetX - iconW * 2
+				SortUpIconOffset = -iconOffsetX - iconW
+				SortDownIconOffset = -iconOffsetX
+				
+				buttonFrame.ShowIcon = AddCustomizationIcon(buttonFrame.ShowIcon, buttonFrame, ShowIconOffset, iconOffsetY, iconW, iconH, "showIcon")				
+				buttonFrame.SortUpIcon = AddCustomizationIcon(buttonFrame.SortUpIcon, buttonFrame, SortUpIconOffset, iconOffsetY, iconW, iconH, "sortUpIcon")
+				buttonFrame.SortDownIcon = AddCustomizationIcon(buttonFrame.SortDownIcon, buttonFrame, SortDownIconOffset, iconOffsetY, iconW, iconH, "sortDownIcon")
+				
+				
+				buttonFrame:SetScript("OnMouseUp", function() if CustomizeSpells then print("TODO: Customisation") end end)				
+				
+				ButtonSettings[buttonFrame] = { isItem, spellName, cooldownbar, cooldownString, spellId, countString, toySpell }	
 			end	
 		end
 		
