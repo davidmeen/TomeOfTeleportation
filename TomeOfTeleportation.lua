@@ -3,6 +3,9 @@
 -- TODO:
 -- More Legion spells/items
 -- Improve Undercurrent
+-- Refactor settings
+-- Refactor dialogs
+-- Favourites
 
 local AddonName = "TomeOfTeleportation"
 local AddonTitle = "Tome of Teleportation"
@@ -78,6 +81,9 @@ local ST_Item = 1
 local ST_Spell = 2
 local ST_Challenge = 3
 
+local SpellIdIndex = 1
+local SpellTypeIndex = 2
+local SpellZoneIndex = 3
 local SpellNameIndex = 6
 
 local TitleFrameBG
@@ -504,6 +510,7 @@ local function GetOption(option)
 	end
 end
 
+
 local function GetScale()
 	return GetOption("scale") * UIParent:GetEffectiveScale()
 end
@@ -775,6 +782,20 @@ function TeleporterItemMustBeEquipped(item)
 	end
 end
 
+local function GetOptionId(spell)
+	return spell[SpellIdIndex] .. "." .. spell[SpellZoneIndex]
+end
+
+
+local function IsSpellVisible(spell)
+	local visible = TomeOfTele_OptionsGlobal.ShowSpells[GetOptionId(spell)]
+	if visible ~= nil then
+		return visible
+	else
+		return true
+	end
+end
+
 function TeleporterUpdateButton(button)
 
 	if UnitAffectingCombat("player") then
@@ -790,6 +811,7 @@ function TeleporterUpdateButton(button)
 	local itemId = settings[5]
 	local countString = settings[6]
 	local toySpell = settings[7]
+	local spell = settings[8]
 	local onCooldown = false
 	local buttonInset = GetScaledOption("buttonInset")
 
@@ -838,7 +860,11 @@ function TeleporterUpdateButton(button)
 		end
 
 		if CustomizeSpells then
-			button:SetBackdropColor(GetOption("disabledColourR"), GetOption("disabledColourG"), GetOption("disabledColourB"), 1)
+			local alpha = 1
+			if not IsSpellVisible(spell) then
+				alpha = 0.5
+			end
+			button:SetBackdropColor(GetOption("disabledColourR"), GetOption("disabledColourG"), GetOption("disabledColourB"), alpha)
 			button:SetAttribute("macrotext1", nil)
 		elseif isItem and TeleporterItemMustBeEquipped( item ) then 
 			button:SetBackdropColor(GetOption("unequipedColourR"), GetOption("unequipedColourG"), GetOption("unequipedColourB"), 1)
@@ -912,30 +938,7 @@ local function OnClickFrame(frame, button)
 	end
 end
 
-local function AddCustomizationIcon(existingIcon, buttonFrame, xOffset, yOffset, width, height, optionName)
-	local icon = existingIcon
-	if not existingIcon then
-		icon = buttonFrame:CreateTexture(frameName)
-	end
-	
-	if icon then
-		icon:SetPoint("TOPRIGHT",buttonFrame,"TOPRIGHT", xOffset, yOffset)
-		icon:SetTexture(GetOption(optionName))
-		
-		icon:SetWidth(width)
-		icon:SetHeight(height)
-	end
-	
-	if CustomizeSpells then
-		icon:Show()
-	else
-		icon:Hide()
-	end
-	
-	return icon
-end
-
-local function SortSpells(spell1, spell2)
+local function SortSpells(spell1, spell2, sortType)
 	local spellId1 = spell1[1]
 	local spellId2 = spell2[1]
 	local spellName1 = spell1[SpellNameIndex]
@@ -944,14 +947,25 @@ local function SortSpells(spell1, spell2)
 	local spellType2 = spell2[2]
 	local zone1 = spell1[3]
 	local zone2 = spell2[3]
-	local sortType = GetOption("sort")
 	
-	if sortType == 2 then
+	local so = TomeOfTele_OptionsGlobal.SortOrder
+	
+	-- TODO: No magic numbers
+	if sortType == 3 then
+		local optId1 = GetOptionId(spell1)
+		local optId2 = GetOptionId(spell2)
+		-- New spells always sort last - not ideal, but makes it easier to have a deterministic sort.
+		if so[optId1] and so[optId2] then
+			return so[optId1] < so[optId2]			
+		elseif so[optId1] then
+			return true
+		elseif so[optId2] then
+			return false
+		end
+	elseif sortType == 2 then
 		if spellType1 ~= spellType2 then
 			return spellType1 < spellType2
 		end
-	elseif sortType == 3 then
-		-- TODO: Custom sort
 	end
 	
 	if zone1 ~= zone2 then
@@ -960,6 +974,7 @@ local function SortSpells(spell1, spell2)
 	
 	return spellName1 < spellName2
 end
+
 
 local function SetupSpells()
 	for index, spell in ipairs(TeleporterSpells) do		
@@ -975,12 +990,206 @@ local function SetupSpells()
 	end
 end
 
+local function ApplyResort()
+	local newSo = {}
+	
+	for index, spell in ipairs(TeleporterSpells) do		
+		local optId = GetOptionId(spell)
+		newSo[optId] = index
+	end
+		
+	TomeOfTele_OptionsGlobal.SortOrder = newSo
+end
+
+local function RebuildCustomSort()
+	SetupSpells()
+	local oldSo = TomeOfTele_OptionsGlobal.SortOrder
+	
+	table.sort(TeleporterSpells, function(a, b) return SortSpells(a, b, 3) end)
+	
+	ApplyResort()
+end
+
+local function OnClickShow(spell)
+	TomeOfTele_OptionsGlobal.ShowSpells[GetOptionId(spell)] = not IsSpellVisible(spell)
+end
+
+
+
+local function CanUseSpell(spell)
+	local spellId = spell[1]
+	local spellType = spell[2]
+	local isItem = (spellType == ST_Item)
+	local destination = spell[3]
+	local condition = spell[4]
+	local consumable = spell[5]
+	local spellName = spell[SpellNameIndex]
+	local displaySpellName = spellName
+	local isValidSpell = true
+	local itemTexture = nil
+	
+	local haveSpell = false
+	local haveToy = false
+	local toySpell = nil
+	if isValidSpell then
+		if isItem then
+			haveToy = PlayerHasToy(spellId) and C_ToyBox.IsToyUsable(spellId)
+			haveSpell = GetItemCount( spellId ) > 0 or haveToy
+			if haveToy then
+				toySpell = GetItemSpell(spellId)
+			end
+		else
+			haveSpell = IsSpellKnown( spellId )					
+			if haveSpell and SpellBuffs[spellId] then
+				local targetSpell = SpellBuffs[spellId][1]
+				local targetBuff = SpellBuffs[spellId][2]
+				local buffIndex = 1
+				local buffName, _, _, _, _, _, _, _, _, _, buffID = UnitBuff("player", buffIndex)
+				while buffName do
+					if  buffID == targetBuff  then
+						spellId = targetSpell
+						displaySpellName = GetSpellInfo(spellId)
+						buffName = nil
+					else
+						buffIndex = buffIndex + 1
+						buffName, _, _, _, _, _, _, _, _, _, buffID = UnitBuff("player", buffIndex)							
+					end
+				end
+			end
+		end
+	end
+	
+	if condition and not CustomizeSpells then
+		if not condition() then
+			haveSpell = false
+		end
+	end
+	
+	-- Uncomment this to test all items.
+	--haveSpell = true
+	
+	if TomeOfTele_HideItems and spellType == ST_Item then
+		haveSpell = false
+	end
+	
+	if TomeOfTele_HideConsumable and consumable then
+		haveSpell = false
+	end
+	
+	if TomeOfTele_HideSpells and spellType == ST_Spell then
+		haveSpell = false
+	end
+	
+	if TomeOfTele_HideChallenge and spellType == ST_Challenge then
+		haveSpell = false
+	end
+	
+	if not CustomizeSpells and not IsSpellVisible(spell) then
+		haveSpell = false
+	end
+	
+	return haveSpell
+end
+
+
+local function OnClickSortUp(spell)
+	RebuildCustomSort()
+	
+	local so = TomeOfTele_OptionsGlobal.SortOrder
+	local id = GetOptionId(spell)	
+	if so[id] and so[id] > 1 then
+		local potentialPos = so[id] - 1
+		while potentialPos > 0 do
+			local spellToSwap = TeleporterSpells[potentialPos]
+			TeleporterSpells[potentialPos] = spell
+			TeleporterSpells[potentialPos+1] = spellToSwap
+			if CanUseSpell(spellToSwap) then
+				break
+			end
+			potentialPos = potentialPos - 1
+		end
+	end
+	
+	ApplyResort()
+	
+	Refresh()
+end
+
+local function OnClickSortDown(spell)
+	RebuildCustomSort()
+	
+	local so = TomeOfTele_OptionsGlobal.SortOrder
+	local id = GetOptionId(spell)	
+	if so[id] and so[id] < #TeleporterSpells then
+		local potentialPos = so[id] + 1
+		while potentialPos <= #TeleporterSpells do
+			local spellToSwap = TeleporterSpells[potentialPos]
+			TeleporterSpells[potentialPos] = spell
+			TeleporterSpells[potentialPos-1] = spellToSwap
+			if CanUseSpell(spellToSwap) then
+				break
+			end
+			potentialPos = potentialPos + 1
+		end
+	end
+	
+	ApplyResort()
+	
+	Refresh()
+end
+
+local function AddCustomizationIcon(existingIcon, buttonFrame, xOffset, yOffset, width, height, optionName, onClick)
+	local iconObject = existingIcon
+	if not iconObject then		
+		iconObject = {}
+		iconObject.icon = buttonFrame:CreateTexture(frameName)
+		-- Invisible frame use for button notifications
+		iconObject.frame = TeleporterCreateReusableFrame("Frame","TeleporterIconFrame",buttonFrame)	
+	end
+	
+	if iconObject.icon then
+		iconObject.icon:SetPoint("TOPRIGHT",buttonFrame,"TOPRIGHT", xOffset, yOffset)
+		iconObject.icon:SetTexture(GetOption(optionName))
+		
+		iconObject.icon:SetWidth(width)
+		iconObject.icon:SetHeight(height)
+		
+		iconObject.frame:SetPoint("TOPRIGHT",buttonFrame,"TOPRIGHT", xOffset, yOffset)
+		iconObject.frame:SetWidth(width)
+		iconObject.frame:SetHeight(height)
+		
+		if CustomizeSpells then
+			iconObject.icon:Show()
+			iconObject.frame:Show()
+		else
+			iconObject.icon:Hide()
+			iconObject.frame:Hide()
+		end
+		
+		iconObject.frame:SetScript("OnMouseUp", onClick)	
+	end
+	
+	return iconObject
+end
+
+
+local function InitalizeOptions()
+	if not TomeOfTele_OptionsGlobal then
+		TomeOfTele_OptionsGlobal = {}
+		TomeOfTele_OptionsGlobal.ShowSpells = {}
+		TomeOfTele_OptionsGlobal.SortOrder = {}
+	end	
+end
+
+-- TODO: Refactor!
 function TeleporterOpenFrame()
 
 	if UnitAffectingCombat("player") then
 		print( "Cannot use " .. AddonTitle .. " while in combat." )
 		return
 	end
+	
+	InitalizeOptions()
 	
 	if not IsVisible then		
 		local buttonHeight = GetScaledOption("buttonHeight")
@@ -1100,7 +1309,11 @@ function TeleporterOpenFrame()
 		ButtonSettings = {}
 		
 		SetupSpells()
-		table.sort(TeleporterSpells, SortSpells)
+		local SortType = GetOption("sort")
+		if CustomizeSpells then
+			SortType = 3
+		end
+		table.sort(TeleporterSpells, function(a,b) return SortSpells(a, b, SortType) end)
 
 		for index, spell in ipairs(TeleporterSpells) do		
 			local spellId = spell[1]
@@ -1158,62 +1371,8 @@ function TeleporterOpenFrame()
 				end
 			end
 			
-						
-			local haveSpell = false
-			local haveToy = false
-			local toySpell = nil
-			if isValidSpell then
-				if isItem then
-					haveToy = PlayerHasToy(spellId) and C_ToyBox.IsToyUsable(spellId)
-					haveSpell = GetItemCount( spellId ) > 0 or haveToy
-					if haveToy then
-						toySpell = GetItemSpell(spellId)
-					end
-				else
-					haveSpell = IsSpellKnown( spellId )					
-					if haveSpell and SpellBuffs[spellId] then
-						local targetSpell = SpellBuffs[spellId][1]
-						local targetBuff = SpellBuffs[spellId][2]
-						local buffIndex = 1
-						local buffName, _, _, _, _, _, _, _, _, _, buffID = UnitBuff("player", buffIndex)
-						while buffName do
-							if  buffID == targetBuff  then
-								spellId = targetSpell
-								displaySpellName = GetSpellInfo(spellId)
-								buffName = nil
-							else
-								buffIndex = buffIndex + 1
-								buffName, _, _, _, _, _, _, _, _, _, buffID = UnitBuff("player", buffIndex)							
-							end
-						end
-					end
-				end
-			end
+			local haveSpell = CanUseSpell(spell)			
 			
-			if condition then
-				if not condition() then
-					haveSpell = false
-				end
-			end
-			
-			-- Uncomment this to test all items.
-			--haveSpell = true
-			
-			if TomeOfTele_HideItems and spellType == ST_Item then
-				haveSpell = false
-			end
-			
-			if TomeOfTele_HideConsumable and consumable then
-				haveSpell = false
-			end
-			
-			if TomeOfTele_HideSpells and spellType == ST_Spell then
-				haveSpell = false
-			end
-			
-			if TomeOfTele_HideChallenge and spellType == ST_Challenge then
-				haveSpell = false
-			end
 			
 			if haveSpell then
 				-- Add extra column if needed
@@ -1348,14 +1507,14 @@ function TeleporterOpenFrame()
 				SortUpIconOffset = -iconOffsetX - iconW
 				SortDownIconOffset = -iconOffsetX
 				
-				buttonFrame.ShowIcon = AddCustomizationIcon(buttonFrame.ShowIcon, buttonFrame, ShowIconOffset, iconOffsetY, iconW, iconH, "showIcon")				
-				buttonFrame.SortUpIcon = AddCustomizationIcon(buttonFrame.SortUpIcon, buttonFrame, SortUpIconOffset, iconOffsetY, iconW, iconH, "sortUpIcon")
-				buttonFrame.SortDownIcon = AddCustomizationIcon(buttonFrame.SortDownIcon, buttonFrame, SortDownIconOffset, iconOffsetY, iconW, iconH, "sortDownIcon")
+				buttonFrame.ShowIcon = AddCustomizationIcon(buttonFrame.ShowIcon, buttonFrame, ShowIconOffset, iconOffsetY, iconW, iconH, "showIcon", function() OnClickShow(spell) end)				
+				buttonFrame.SortUpIcon = AddCustomizationIcon(buttonFrame.SortUpIcon, buttonFrame, SortUpIconOffset, iconOffsetY, iconW, iconH, "sortUpIcon", function() OnClickSortUp(spell) end)
+				buttonFrame.SortDownIcon = AddCustomizationIcon(buttonFrame.SortDownIcon, buttonFrame, SortDownIconOffset, iconOffsetY, iconW, iconH, "sortDownIcon", function() OnClickSortDown(spell) end)
+			
 				
+				--buttonFrame:SetScript("OnMouseUp", OnClickButton)				
 				
-				buttonFrame:SetScript("OnMouseUp", function() if CustomizeSpells then print("TODO: Customisation") end end)				
-				
-				ButtonSettings[buttonFrame] = { isItem, spellName, cooldownbar, cooldownString, spellId, countString, toySpell }	
+				ButtonSettings[buttonFrame] = { isItem, spellName, cooldownbar, cooldownString, spellId, countString, toySpell, spell }	
 			end	
 		end
 		

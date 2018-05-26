@@ -3,7 +3,7 @@
 ## Notes: An interface for managing teleportation spells and items.
 ## Author: Remeen
 ## SavedVariablesPerCharacter: TomeOfTele_Points, TomeOfTele_Icon, TomeOfTele_HideItems, TomeOfTele_HideSpells, TomeOfTele_HideConsumable, TomeOfTele_HideChallenge, TomeOfTele_Options
-##SavedVariables: TomeOfTele_SortOrder
+## SavedVariables: TomeOfTele_OptionsGlobal
 
 
 libs\LibStub\LibStub.lua
