@@ -492,13 +492,22 @@ local SpellBuffs =
 local function GetTheme()
 	if TomeOfTele_Options == nil or TomeOfTele_Options["theme"] == nil then
 		return DefaultOptions["theme"]
+	elseif TomeOfTele_ShareOptions then
+		return TomeOfTele_OptionsGlobal["theme"]
 	else
 		return TomeOfTele_Options["theme"]
 	end
 end
 
 local function GetOption(option)
-	if TomeOfTele_Options == nil or TomeOfTele_Options[option] == nil then
+	local value
+	if TomeOfTele_ShareOptions then
+		value = TomeOfTele_OptionsGlobal[option]
+	else
+		value = TomeOfTele_Options[option]
+	end
+	
+	if TomeOfTele_Options == nil or value == nil then
 		local theme = Themes[GetTheme()]
 		if theme and theme[option] then
 			return theme[option][1]
@@ -506,7 +515,7 @@ local function GetOption(option)
 			return DefaultOptions[option]
 		end
 	else
-		return TomeOfTele_Options[option]
+		return value
 	end
 end
 
@@ -523,7 +532,11 @@ local function SetOption(option, value)
 	if TomeOfTele_Options == nil then
 		TomeOfTele_Options = {}
 	end
-	TomeOfTele_Options[option] = value
+	if TomeOfTele_ShareOptions then
+		TomeOfTele_OptionsGlobal[option] = value
+	else
+		TomeOfTele_Options[option] = value
+	end
 end
 
 function Teleporter_OnEvent(self, event, ...)
@@ -588,10 +601,11 @@ function Teleporter_OnLoad()
 end 
 
 local function SavePosition()
-	TomeOfTele_Points = {}
+	local points = {}
 	for i = 1,TeleporterParentFrame:GetNumPoints(),1 do
-		tinsert(TomeOfTele_Points,{TeleporterParentFrame:GetPoint(i)})
+		tinsert(points,{TeleporterParentFrame:GetPoint(i)})
 	end
+	SetOption("points", points)
 end
 
 
@@ -604,30 +618,10 @@ end
 
 local TeleporterMenu = nil
 
-local function OnHideItems(info)
-	TomeOfTele_HideItems = not TomeOfTele_HideItems
-	info.checked = TomeOfTele_HideItems
-	
-	Refresh()
-end
-
-local function OnHideSpells(info)
-	TomeOfTele_HideSpells = not TomeOfTele_HideSpells
-	info.checked = TomeOfTele_HideSpells
-	
-	Refresh()
-end
-
-local function OnHideChallenges(info)
-	TomeOfTele_HideChallenge = not TomeOfTele_HideChallenge
-	info.checked = TomeOfTele_HideChallenge
-	
-	Refresh()
-end
-
-local function OnHideConsumable(info)
-	TomeOfTele_HideConsumable = not TomeOfTele_HideConsumable
-	info.checked = TomeOfTele_HideConsumable
+local function OnHideOption(info, option)
+	local hide = not GetOption(option)
+	info.checked = hide
+	SetOption(option, hide)
 	
 	Refresh()
 end
@@ -654,37 +648,25 @@ local function TomeOfTele_SetTheme(scale)
 	end	
 end
 
+local function AddHideOptionMenu(index, text, option, owner)
+	local info = UIDropDownMenu_CreateInfo()
+	info.text = text
+	info.value = index
+	info.func = function(info) OnHideOption(info, option) end
+	info.owner = owner
+	info.checked = GetOption(option)
+	UIDropDownMenu_AddButton(info, 1)
+end
+
 local function InitTeleporterMenu(frame, level, menuList)
-	if level == 1 then 
+	if level == 1 then 		
 		local info = UIDropDownMenu_CreateInfo()
-		info.text = "Hide Items"
-		info.value = 1
-		info.func = function(info) OnHideItems(info) end
-		info.owner = TeleporterMenu
-		info.checked = TomeOfTele_HideItems
-		UIDropDownMenu_AddButton(info, 1)		
 		
-		info.text = "Hide Class Spells"
-		info.value = 2
-		info.func = function(info) OnHideSpells(info) end
-		info.owner = TeleporterMenu
-		info.checked = TomeOfTele_HideSpells
-		UIDropDownMenu_AddButton(info, 1)	
-		
-		info.text = "Hide Challenge Mode Spells"
-		info.value = 3
-		info.func = function(info) OnHideChallenges(info) end
-		info.owner = TeleporterMenu
-		info.checked = TomeOfTele_HideChallenge
-		UIDropDownMenu_AddButton(info, 1)	
-		
-		info.text = "Hide Consumables"
-		info.value = 4
-		info.func = function(info) OnHideConsumable(info) end
-		info.owner = TeleporterMenu
-		info.checked = TomeOfTele_HideConsumable
-		UIDropDownMenu_AddButton(info, 1)	
-		
+		AddHideOptionMenu(1, "Hide Items", "hideItems", TeleporterMenu)
+		AddHideOptionMenu(2, "Hide Challenge Mode Spells", "hideChallenge", TeleporterMenu)
+		AddHideOptionMenu(3, "Hide Spells", "hideSpells", TeleporterMenu)
+		AddHideOptionMenu(4, "Hide Consumables", "hideConsumable", TeleporterMenu)
+				
 		info.text = "Sort"
 		info.hasArrow = true
 		info.menuList = "Sort"
@@ -707,8 +689,17 @@ local function InitTeleporterMenu(frame, level, menuList)
 		info.checked = nil
 		UIDropDownMenu_AddButton(info, 1)
 		
-		info.text = "Customize Spells"
+		info.text = "Use Shared Settings"
 		info.value = 8
+		info.hasArrow = false
+		info.menuList = nil
+		info.func = function(info) TomeOfTele_ShareOptions = not TomeOfTele_ShareOptions; Refresh(); end
+		info.owner = TeleporterMenu
+		info.checked = TomeOfTele_ShareOptions
+		UIDropDownMenu_AddButton(info, 1)
+		
+		info.text = "Customize Spells"
+		info.value = 9
 		info.hasArrow = false
 		info.menuList = nil
 		info.func = function(info) CustomizeSpells = not CustomizeSpells; Refresh(); end
@@ -788,7 +779,8 @@ end
 
 
 local function IsSpellVisible(spell)
-	local visible = TomeOfTele_OptionsGlobal.ShowSpells[GetOptionId(spell)]
+	local showSpells = GetOption("showSpells")
+	local visible = showSpells[GetOptionId(spell)]
 	if visible ~= nil then
 		return visible
 	else
@@ -948,7 +940,7 @@ local function SortSpells(spell1, spell2, sortType)
 	local zone1 = spell1[3]
 	local zone2 = spell2[3]
 	
-	local so = TomeOfTele_OptionsGlobal.SortOrder
+	local so = GetOption("sortOrder")
 	
 	-- TODO: No magic numbers
 	if sortType == 3 then
@@ -998,12 +990,12 @@ local function ApplyResort()
 		newSo[optId] = index
 	end
 		
-	TomeOfTele_OptionsGlobal.SortOrder = newSo
+	SetOption("sortOrder", newSo)
 end
 
 local function RebuildCustomSort()
 	SetupSpells()
-	local oldSo = TomeOfTele_OptionsGlobal.SortOrder
+	local oldSo = GetOption("sortOrder")
 	
 	table.sort(TeleporterSpells, function(a, b) return SortSpells(a, b, 3) end)
 	
@@ -1011,7 +1003,8 @@ local function RebuildCustomSort()
 end
 
 local function OnClickShow(spell)
-	TomeOfTele_OptionsGlobal.ShowSpells[GetOptionId(spell)] = not IsSpellVisible(spell)
+	local showSpells = GetOption("showSpells")
+	showSpells[GetOptionId(spell)] = not IsSpellVisible(spell)
 end
 
 
@@ -1068,19 +1061,19 @@ local function CanUseSpell(spell)
 	-- Uncomment this to test all items.
 	--haveSpell = true
 	
-	if TomeOfTele_HideItems and spellType == ST_Item then
+	if GetOption("hideItems") and spellType == ST_Item then
 		haveSpell = false
 	end
 	
-	if TomeOfTele_HideConsumable and consumable then
+	if GetOption("hideConsumable") and consumable then
 		haveSpell = false
 	end
 	
-	if TomeOfTele_HideSpells and spellType == ST_Spell then
+	if GetOption("hideSpells") and spellType == ST_Spell then
 		haveSpell = false
 	end
 	
-	if TomeOfTele_HideChallenge and spellType == ST_Challenge then
+	if GetOption("hideChallenge") and spellType == ST_Challenge then
 		haveSpell = false
 	end
 	
@@ -1095,7 +1088,7 @@ end
 local function OnClickSortUp(spell)
 	RebuildCustomSort()
 	
-	local so = TomeOfTele_OptionsGlobal.SortOrder
+	local so = GetOption("sortOrder")
 	local id = GetOptionId(spell)	
 	if so[id] and so[id] > 1 then
 		local potentialPos = so[id] - 1
@@ -1118,7 +1111,7 @@ end
 local function OnClickSortDown(spell)
 	RebuildCustomSort()
 	
-	local so = TomeOfTele_OptionsGlobal.SortOrder
+	local so = GetOption("sortOrder")
 	local id = GetOptionId(spell)	
 	if so[id] and so[id] < #TeleporterSpells then
 		local potentialPos = so[id] + 1
@@ -1174,11 +1167,12 @@ end
 
 
 local function InitalizeOptions()
-	if not TomeOfTele_OptionsGlobal then
-		TomeOfTele_OptionsGlobal = {}
-		TomeOfTele_OptionsGlobal.ShowSpells = {}
-		TomeOfTele_OptionsGlobal.SortOrder = {}
-	end	
+	if not TomeOfTele_OptionsGlobal then TomeOfTele_OptionsGlobal = {} end
+	if not TomeOfTele_OptionsGlobal["showSpells"] then TomeOfTele_OptionsGlobal["showSpells"] = {} end
+	if not TomeOfTele_OptionsGlobal["sortOrder"] then TomeOfTele_OptionsGlobal["sortOrder"] = {} end
+	if not TomeOfTele_Options then TomeOfTele_Options = {} end
+	if not TomeOfTele_Options["showSpells"] then TomeOfTele_Options["showSpells"] = {} end
+	if not TomeOfTele_Options["sortOrder"] then TomeOfTele_Options["sortOrder"] = {} end
 end
 
 -- TODO: Refactor!
@@ -1215,8 +1209,9 @@ function TeleporterOpenFrame()
 			TeleporterParentFrame:SetFrameStrata("BACKGROUND")		
 			
 			TeleporterParentFrame:ClearAllPoints()
-			if TomeOfTele_Points then
-				for i,pt in ipairs(TomeOfTele_Points) do
+			local points = GetOption("points")
+			if points then
+				for i,pt in ipairs(points) do
 					TeleporterParentFrame:SetPoint(pt[1], pt[2], pt[3], pt[4], pt[5])
 				end
 			else
@@ -1597,7 +1592,7 @@ function TeleporterSlashCmdFunction(args)
 			SavePoints()
 		end
 	elseif splitArgs[1] == "reset" then
-		TomeOfTele_Points = nil
+		SetOption("points", nil)
 		if TeleporterParentFrame then
 			TeleporterParentFrame:ClearAllPoints()
 			TeleporterParentFrame:SetPoint("CENTER", "UIParent", "CENTER", 0, 0)

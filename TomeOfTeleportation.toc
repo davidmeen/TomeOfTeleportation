@@ -2,7 +2,7 @@
 ## Title : Tome of Teleportation
 ## Notes: An interface for managing teleportation spells and items.
 ## Author: Remeen
-## SavedVariablesPerCharacter: TomeOfTele_Points, TomeOfTele_Icon, TomeOfTele_HideItems, TomeOfTele_HideSpells, TomeOfTele_HideConsumable, TomeOfTele_HideChallenge, TomeOfTele_Options
+## SavedVariablesPerCharacter: TomeOfTele_Icon, TomeOfTele_Options, TomeOfTele_ShareOptions
 ## SavedVariables: TomeOfTele_OptionsGlobal
 
 
