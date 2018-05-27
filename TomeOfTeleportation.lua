@@ -774,6 +774,24 @@ end
 local function InitTeleporterMenu(frame, level, menuList)
 	if level == 1 then
 		local info = UIDropDownMenu_CreateInfo()
+		
+		for spellId, isItem in pairs(GetOption("favourites")) do
+			info.owner = frame			
+			info.hasArrow = false
+			info.menuList = "Options"
+			info.checked = nil
+			
+			if isItem then
+				info.text = GetItemInfo(spellId)
+				info.func = function() print("Item"); TeleporterUseItemSlashCmdFunction(spellId) end
+			else
+				info.text = GetSpellInfo(spellId)
+				info.func = function() print("Spell"); TeleporterCastSpellSlashCmdFunction(spellId) end
+			end
+			
+			UIDropDownMenu_AddButton(info, level)
+		end
+		
 		info.owner = frame
 		info.text = "Options"
 		info.hasArrow = true
@@ -798,10 +816,8 @@ local function ShowOptionsMenu()
 end
 
 local function ShowMenu()
-	if not TeleporterMenu then
-		TeleporterMenu = CreateFrame("Frame", "TomeOfTeleMenu", UIParent, "UIDropDownMenuTemplate")
-		UIDropDownMenu_Initialize(TeleporterMenu, InitTeleporterMenu, "MENU")
-	end
+	TeleporterMenu = CreateFrame("Frame", "TomeOfTeleMenu", UIParent, "UIDropDownMenuTemplate")
+	UIDropDownMenu_Initialize(TeleporterMenu, InitTeleporterMenu, "MENU")
 	
 	ToggleDropDownMenu(1, nil, TeleporterMenu, "cursor", 3, -3)
 end
@@ -826,6 +842,64 @@ local function IsSpellVisible(spell)
 		return visible
 	else
 		return true
+	end
+end
+
+local function InitTeleporterMenu(frame, level, menuList)
+	local info = UIDropDownMenu_CreateInfo()
+	info.owner = frame
+	info.text = "Options"
+	info.hasArrow = true
+	info.menuList = "Options"
+	info.value = 0
+	info.checked = nil
+	UIDropDownMenu_AddButton(info, level)
+end
+
+local function OnClickTeleButton(frame,button)
+	if button == "RightButton" then
+		local menu = CreateFrame("Frame", "TomeOfTeleButtonMenu", UIParent, "UIDropDownMenuTemplate")
+		local info = UIDropDownMenu_CreateInfo()
+		
+		local spellId = ButtonSettings[frame][5]
+		local isItem = ButtonSettings[frame][1]
+		
+		local favourites = GetOption("favourites")
+				
+		if not favourites then
+			favourites = {}
+			SetOption("favourites", favourites)
+		end
+		
+		local isFavourite = favourites[spellId] ~= nil
+		
+		info.owner = frame		
+		info.hasArrow = false
+		info.value = 1
+		info.checked = nil
+		
+		if isItem and IsEquippableItem( spellId ) then 
+			info.text = "Cannot set this item as a favourite"
+			info.func = function() end
+		elseif isFavourite then
+			info.text = "Remove favourite"
+			info.func = function()
+				favourites[spellId] = nil
+			end
+		else
+			info.text = "Add favourite"
+			info.func = function()
+				favourites[spellId] = isItem
+			end
+		end
+	
+		UIDropDownMenu_Initialize(menu, 
+			function(frame, level, menuList)
+				UIDropDownMenu_AddButton(info, level)
+			end, 
+			"MENU")
+			
+		ToggleDropDownMenu(1, nil, menu, "cursor", 3, -3)
 	end
 end
 
@@ -1059,35 +1133,32 @@ local function CanUseSpell(spell)
 	local consumable = spell[5]
 	local spellName = spell[SpellNameIndex]
 	local displaySpellName = spellName
-	local isValidSpell = true
 	local itemTexture = nil
 	
 	local haveSpell = false
 	local haveToy = false
 	local toySpell = nil
-	if isValidSpell then
-		if isItem then
-			haveToy = PlayerHasToy(spellId) and C_ToyBox.IsToyUsable(spellId)
-			haveSpell = GetItemCount( spellId ) > 0 or haveToy
-			if haveToy then
-				toySpell = GetItemSpell(spellId)
-			end
-		else
-			haveSpell = IsSpellKnown( spellId )					
-			if haveSpell and SpellBuffs[spellId] then
-				local targetSpell = SpellBuffs[spellId][1]
-				local targetBuff = SpellBuffs[spellId][2]
-				local buffIndex = 1
-				local buffName, _, _, _, _, _, _, _, _, _, buffID = UnitBuff("player", buffIndex)
-				while buffName do
-					if  buffID == targetBuff  then
-						spellId = targetSpell
-						displaySpellName = GetSpellInfo(spellId)
-						buffName = nil
-					else
-						buffIndex = buffIndex + 1
-						buffName, _, _, _, _, _, _, _, _, _, buffID = UnitBuff("player", buffIndex)							
-					end
+	if isItem then
+		haveToy = PlayerHasToy(spellId) and C_ToyBox.IsToyUsable(spellId)
+		haveSpell = GetItemCount( spellId ) > 0 or haveToy
+		if haveToy then
+			toySpell = GetItemSpell(spellId)
+		end
+	else
+		haveSpell = IsSpellKnown( spellId )					
+		if haveSpell and SpellBuffs[spellId] then
+			local targetSpell = SpellBuffs[spellId][1]
+			local targetBuff = SpellBuffs[spellId][2]
+			local buffIndex = 1
+			local buffName, _, _, _, _, _, _, _, _, _, buffID = UnitBuff("player", buffIndex)
+			while buffName do
+				if  buffID == targetBuff  then
+					spellId = targetSpell
+					displaySpellName = GetSpellInfo(spellId)
+					buffName = nil
+				else
+					buffIndex = buffIndex + 1
+					buffName, _, _, _, _, _, _, _, _, _, buffID = UnitBuff("player", buffIndex)							
 				end
 			end
 		end
@@ -1407,7 +1478,7 @@ function TeleporterOpenFrame()
 				end
 			end
 			
-			local haveSpell = CanUseSpell(spell)			
+			local haveSpell = isValidSpell and CanUseSpell(spell)			
 			
 			
 			if haveSpell then
@@ -1546,8 +1617,10 @@ function TeleporterOpenFrame()
 				buttonFrame.ShowIcon = AddCustomizationIcon(buttonFrame.ShowIcon, buttonFrame, ShowIconOffset, iconOffsetY, iconW, iconH, "showIcon", function() OnClickShow(spell) end)				
 				buttonFrame.SortUpIcon = AddCustomizationIcon(buttonFrame.SortUpIcon, buttonFrame, SortUpIconOffset, iconOffsetY, iconW, iconH, "sortUpIcon", function() OnClickSortUp(spell) end)
 				buttonFrame.SortDownIcon = AddCustomizationIcon(buttonFrame.SortDownIcon, buttonFrame, SortDownIconOffset, iconOffsetY, iconW, iconH, "sortDownIcon", function() OnClickSortDown(spell) end)
-			
-				ButtonSettings[buttonFrame] = { isItem, spellName, cooldownbar, cooldownString, spellId, countString, toySpell, spell }	
+				
+				buttonFrame:SetScript("OnMouseUp", OnClickTeleButton)
+				
+				ButtonSettings[buttonFrame] = { isItem, spellName, cooldownbar, cooldownString, spellId, countString, toySpell, spell, spellType }	
 			end	
 		end
 		
