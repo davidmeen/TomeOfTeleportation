@@ -2,11 +2,9 @@
 ## Title : Tome of Teleportation
 ## Notes: An interface for managing teleportation spells and items.
 ## Author: Remeen
-## SavedVariablesPerCharacter: TomeOfTele_Points, TomeOfTele_Icon, TomeOfTele_SortByType, TomeOfTele_HideItems, TomeOfTele_HideSpells, TomeOfTele_HideConsumable, TomeOfTele_HideChallenge, TomeOfTele_Options
-## X-Curse-Packaged-Version: 2.0
-## X-Curse-Project-Name: Tome of Teleportation
-## X-Curse-Project-ID: tome-teleportation
-## X-Curse-Repository-ID: wow/tome-teleportation/mainline
+## SavedVariablesPerCharacter: TomeOfTele_Points, TomeOfTele_Icon, TomeOfTele_HideItems, TomeOfTele_HideSpells, TomeOfTele_HideConsumable, TomeOfTele_HideChallenge, TomeOfTele_Options
+## SavedVariables: TomeOfTele_OptionsGlobal
+
 
 libs\LibStub\LibStub.lua
 libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
