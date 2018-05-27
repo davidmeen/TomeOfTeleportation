@@ -2,10 +2,12 @@
 
 -- TODO:
 -- More Legion spells/items
--- Improve Undercurrent
--- Refactor settings
--- Refactor dialogs
+-- Refactor buttons
 -- Favourites
+-- Custom items
+
+-- Low priority:
+-- Proper options dialog
 
 local AddonName = "TomeOfTeleportation"
 local AddonTitle = "Tome of Teleportation"
@@ -490,24 +492,34 @@ local SpellBuffs =
 }
 
 local function GetTheme()
-	if TomeOfTele_Options == nil or TomeOfTele_Options["theme"] == nil then
-		return DefaultOptions["theme"]
-	elseif TomeOfTele_ShareOptions then
-		return TomeOfTele_OptionsGlobal["theme"]
+	if TomeOfTele_ShareOptions then
+		if TomeOfTele_OptionsGlobal == nil or TomeOfTele_OptionsGlobal["theme"] == nil then
+			return DefaultOptions["theme"]
+		else
+			return TomeOfTele_OptionsGlobal["theme"]
+		end
 	else
-		return TomeOfTele_Options["theme"]
+		if TomeOfTele_Options == nil or TomeOfTele_Options["theme"] == nil then
+			return DefaultOptions["theme"]
+		else
+			return TomeOfTele_Options["theme"]
+		end
 	end
 end
 
 local function GetOption(option)
-	local value
+	local value = nil
 	if TomeOfTele_ShareOptions then
-		value = TomeOfTele_OptionsGlobal[option]
+		if TomeOfTele_OptionsGlobal then
+			value = TomeOfTele_OptionsGlobal[option]
+		end
 	else
-		value = TomeOfTele_Options[option]
+		if TomeOfTele_Options then
+			value = TomeOfTele_Options[option]
+		end
 	end
 	
-	if TomeOfTele_Options == nil or value == nil then
+	if value == nil then
 		local theme = Themes[GetTheme()]
 		if theme and theme[option] then
 			return theme[option][1]
@@ -617,6 +629,7 @@ local function Refresh()
 end
 
 local TeleporterMenu = nil
+local TeleporterOptionsMenu = nil
 
 local function OnHideOption(info, option)
 	local hide = not GetOption(option)
@@ -648,24 +661,25 @@ local function TomeOfTele_SetTheme(scale)
 	end	
 end
 
-local function AddHideOptionMenu(index, text, option, owner)
+local function AddHideOptionMenu(index, text, option, owner, level)
 	local info = UIDropDownMenu_CreateInfo()
 	info.text = text
 	info.value = index
 	info.func = function(info) OnHideOption(info, option) end
 	info.owner = owner
 	info.checked = GetOption(option)
-	UIDropDownMenu_AddButton(info, 1)
+	UIDropDownMenu_AddButton(info, level)
 end
 
-local function InitTeleporterMenu(frame, level, menuList)
-	if level == 1 then 		
+local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
+	if level == 1 or topLevel then 		
 		local info = UIDropDownMenu_CreateInfo()
+		info.owner = frame
 		
-		AddHideOptionMenu(1, "Hide Items", "hideItems", TeleporterMenu)
-		AddHideOptionMenu(2, "Hide Challenge Mode Spells", "hideChallenge", TeleporterMenu)
-		AddHideOptionMenu(3, "Hide Spells", "hideSpells", TeleporterMenu)
-		AddHideOptionMenu(4, "Hide Consumables", "hideConsumable", TeleporterMenu)
+		AddHideOptionMenu(1, "Hide Items", "hideItems", frame, level)
+		AddHideOptionMenu(2, "Hide Challenge Mode Spells", "hideChallenge", frame, level)
+		AddHideOptionMenu(3, "Hide Spells", "hideSpells", frame, level)
+		AddHideOptionMenu(4, "Hide Consumables", "hideConsumable", frame, level)
 				
 		info.text = "Sort"
 		info.hasArrow = true
@@ -673,39 +687,39 @@ local function InitTeleporterMenu(frame, level, menuList)
 		info.value = 5
 		info.func = nil
 		info.checked = nil
-		UIDropDownMenu_AddButton(info, 1)	
+		UIDropDownMenu_AddButton(info, level)	
 		
 		info.text = "Scale"
 		info.hasArrow = true
 		info.menuList = "Scale"
 		info.value = 6
 		info.checked =nil
-		UIDropDownMenu_AddButton(info, 1)	
+		UIDropDownMenu_AddButton(info, level)	
 		
 		info.text = "Theme"
 		info.hasArrow = true
 		info.menuList = "Theme"
 		info.value = 7
 		info.checked = nil
-		UIDropDownMenu_AddButton(info, 1)
+		UIDropDownMenu_AddButton(info, level)
 		
 		info.text = "Use Shared Settings"
 		info.value = 8
 		info.hasArrow = false
 		info.menuList = nil
 		info.func = function(info) TomeOfTele_ShareOptions = not TomeOfTele_ShareOptions; Refresh(); end
-		info.owner = TeleporterMenu
+		info.owner = frame
 		info.checked = TomeOfTele_ShareOptions
-		UIDropDownMenu_AddButton(info, 1)
+		UIDropDownMenu_AddButton(info, level)
 		
 		info.text = "Customize Spells"
 		info.value = 9
 		info.hasArrow = false
 		info.menuList = nil
 		info.func = function(info) CustomizeSpells = not CustomizeSpells; Refresh(); end
-		info.owner = TeleporterMenu
+		info.owner = frame
 		info.checked = CustomizeSpells
-		UIDropDownMenu_AddButton(info, 1)	
+		UIDropDownMenu_AddButton(info, level)	
 		
 	elseif menuList == "Scale" then
 		local scales = { 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200 }
@@ -714,7 +728,7 @@ local function InitTeleporterMenu(frame, level, menuList)
 			info.text = s
 			info.value = s / 10 + 20
 			info.func = function(info) TomeOfTele_SetScale(s / 100) end
-			info.owner = TeleporterMenu
+			info.owner = frame
 			info.checked = function(info) return GetOption("scale") == s / 100 end
 			UIDropDownMenu_AddButton(info, level)	
 		end
@@ -725,7 +739,7 @@ local function InitTeleporterMenu(frame, level, menuList)
 			info.text = themeName
 			info.value = index
 			info.func = function(info) TomeOfTele_SetTheme(themeName) end
-			info.owner = TeleporterMenu
+			info.owner = frame
 			info.checked = function(info) return GetOption("theme") == themeName end
 			UIDropDownMenu_AddButton(info, level)	
 			
@@ -736,29 +750,56 @@ local function InitTeleporterMenu(frame, level, menuList)
 		info.text = "Destination"
 		info.value = 1
 		info.func = function(info) TomeOfTele_SetSort(1) end
-		info.owner = TeleporterMenu
+		info.owner = frame
 		info.checked = function(info) sortMode = GetOption("sort"); return sortMode == nil or sortMode == 1; end
 		UIDropDownMenu_AddButton(info, level)
 		
 		info.text = "Type"
 		info.value = 2
 		info.func = function(info) TomeOfTele_SetSort(2) end
-		info.owner = TeleporterMenu
+		info.owner = frame
 		info.checked = function(info) return GetOption("sort") == 2; end
 		UIDropDownMenu_AddButton(info, level)
 		
 		info.text = "Custom"
 		info.value = 3
 		info.func = function(info) TomeOfTele_SetSort(3) end
-		info.owner = TeleporterMenu
+		info.owner = frame
 		info.checked = function(info) return GetOption("sort") == 3; end
 		UIDropDownMenu_AddButton(info, level)
 	end
 end
 
+
+local function InitTeleporterMenu(frame, level, menuList)
+	if level == 1 then
+		local info = UIDropDownMenu_CreateInfo()
+		info.owner = frame
+		info.text = "Options"
+		info.hasArrow = true
+		info.menuList = "Options"
+		info.value = 0
+		info.checked = nil
+		UIDropDownMenu_AddButton(info, level)
+	elseif level == 2 then
+		InitTeleporterOptionsMenu(frame, level, menuList, true)
+	else
+		InitTeleporterOptionsMenu(frame, level, menuList, false)
+	end
+end
+
+local function ShowOptionsMenu()
+	if not TeleporterOptionsMenu then
+		TeleporterOptionsMenu = CreateFrame("Frame", "TomeOfTeleOptionsMenu", UIParent, "UIDropDownMenuTemplate")
+		UIDropDownMenu_Initialize(TeleporterOptionsMenu, InitTeleporterOptionsMenu, "MENU")
+	end
+	
+	ToggleDropDownMenu(1, nil, TeleporterOptionsMenu, "cursor", 3, -3)
+end
+
 local function ShowMenu()
 	if not TeleporterMenu then
-		TeleporterMenu = CreateFrame("Frame", "TomeOFTeleMenu", UIParent, "UIDropDownMenuTemplate")
+		TeleporterMenu = CreateFrame("Frame", "TomeOfTeleMenu", UIParent, "UIDropDownMenuTemplate")
 		UIDropDownMenu_Initialize(TeleporterMenu, InitTeleporterMenu, "MENU")
 	end
 	
@@ -926,7 +967,7 @@ end
 
 local function OnClickFrame(frame, button)
 	if button == "RightButton" then
-		ShowMenu()
+		ShowOptionsMenu()
 	end
 end
 
@@ -1506,9 +1547,6 @@ function TeleporterOpenFrame()
 				buttonFrame.SortUpIcon = AddCustomizationIcon(buttonFrame.SortUpIcon, buttonFrame, SortUpIconOffset, iconOffsetY, iconW, iconH, "sortUpIcon", function() OnClickSortUp(spell) end)
 				buttonFrame.SortDownIcon = AddCustomizationIcon(buttonFrame.SortDownIcon, buttonFrame, SortDownIconOffset, iconOffsetY, iconW, iconH, "sortDownIcon", function() OnClickSortDown(spell) end)
 			
-				
-				--buttonFrame:SetScript("OnMouseUp", OnClickButton)				
-				
 				ButtonSettings[buttonFrame] = { isItem, spellName, cooldownbar, cooldownString, spellId, countString, toySpell, spell }	
 			end	
 		end
