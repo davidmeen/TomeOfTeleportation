@@ -21,6 +21,22 @@ The macro will be placed on your cursor and it can be dragged onto an action
 bar. This macro acts like the buttons in the Tome, with the first click 
 equipping the item and the second click using it.
 
+Right clicking the minimap icon will bring up a quick list of your favourite
+spells. To add a spell to this list right click on it in the main window.
+Equippable items can not be added to this menu.
+
+Adding New Items or Spells
+--------------------------
+
+Right click on the main window then select "Customize Spells". This will let you add 
+spells and items. To do this, you need to go to wowhead.com and get the spell or item
+id. For example, "Teleport: Moonglade" is at http://www.wowhead.com/spell=18960/teleport-moonglade
+which tells you the spell id is 18960.
+
+Customize Spells also lets you change the sort order with the up and down arrows, hide
+spells with the eye icon, and delete custom spells with the skull icon. The sort order
+will only be used if you right click the window and select Sort->Custom.
+
 Advanced Options
 ----------------
 
@@ -39,14 +55,6 @@ Show the minimap icon.
 
 /tele hideicon
 Show the minimap icon.
-
-Adding New Items or Spells
---------------------------
-
-I don't update this addon very often, so it's likely that there are some items 
-missing from the tome. The Tome of Customisation addon allows you to add new items
-and spells, and is included in this package. See Customisation.txt for instructions
-on how to install and use this.
 
 Known Issues
 ------------

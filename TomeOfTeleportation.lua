@@ -2,9 +2,6 @@
 
 -- TODO:
 -- More Legion spells/items
--- Refactor buttons
--- Favourites
--- Custom items
 -- Improve speed
 
 -- Low priority:
@@ -38,9 +35,12 @@ local ShouldNotBeEquiped = {}
 local ShouldBeEquiped = {}
 local EquipTime = 0
 local CustomizeSpells = false
+local RemoveIconOffset = 0
 local ShowIconOffset = 0
 local SortUpIconOffset = 0
 local SortDownIconOffset = 0
+local AddItemButton = nil
+local AddSpellButton = nil
 
 _G["BINDING_HEADER_TOMEOFTELEPORTATION"] = "Tome of Teleportation"
 
@@ -142,7 +142,8 @@ local DefaultOptions =
 	["QuickMenuSize"] = 50,
 	["sortUpIcon"] = "Interface/Icons/misc_arrowlup",
 	["sortDownIcon"] = "Interface/Icons/misc_arrowdown",
-	["showIcon"] = "Interface/Icons/inv_darkmoon_eye"	-- I need to find a better icon!	
+	["showButtonIcon"] = "Interface/Icons/levelupicon-lfd",
+	["removeButtonIcon"] = "Interface/Icons/INV_Misc_Bone_Skull_03"
 }
 
 -- Themes. For now there aren't many of these. Message me on curse.com
@@ -226,11 +227,33 @@ local function OnDayAtContinent(day, continent)
 	end
 end
 
+local function CreateSpell(id, dest)
+	local spell = {}
+	spell[1] = id
+	spell[2] = ST_Spell
+	spell[3] = dest
+	spell.spellId = id
+	spell.spellType = ST_Spell
+	spell.zone = dest
+	return spell
+end
+
+local function CreateItem(id, dest)
+	local spell = {}
+	spell[1] = id
+	spell[2] = ST_Item
+	spell[3] = dest
+	spell.spellId = id
+	spell.spellType = ST_Spell
+	spell.zone = dest
+	return spell
+end
+
 -- { id, isItem, destination, condition, consumable, spellName }
 -- It probably won't work if a single player has two different items
 -- with the same name in their inventory, but I don't think that's possible.
 -- spellName will be filled in when the addon loads.
-local TeleporterSpells = 
+local TeleporterDefaultSpells = 
 {	
 	{ 93672, ST_Item, HearthString },		-- Dark Portal
 	{ 54452, ST_Item, HearthString },		-- Ethereal Portal
@@ -501,6 +524,8 @@ local SpellBuffs =
 	--[126892] = { 126896, 126896 }	-- Zen Pilgrimage / Zen Pilgrimage: Return
 }
 
+local TeleporterSpells = {}
+
 local function GetTheme()
 	if TomeOfTele_ShareOptions then
 		if TomeOfTele_OptionsGlobal == nil or TomeOfTele_OptionsGlobal["theme"] == nil then
@@ -607,6 +632,31 @@ function TeleporterFindInSpecialFrames()
 		end
 	end
 	return nil
+end
+
+local function RebuildSpellList()
+	TeleporterSpells = {}
+	for i,spell in ipairs(TeleporterDefaultSpells) do
+		tinsert(TeleporterSpells, spell)
+	end
+	
+	local extraSpells = GetOption("extraSpells")
+	if extraSpells then		
+		for id,dest in pairs(extraSpells) do
+			local spell = CreateSpell(id,dest)
+			spell.isCustom = true
+			tinsert(TeleporterSpells, spell)
+		end
+	end
+	
+	local extraItems = GetOption("extraItems")
+	if extraItems then
+		for id,dest in pairs(extraItems) do
+			local spell = CreateItem(id,dest)
+			spell.isCustom = true
+			tinsert(TeleporterSpells, spell)
+		end
+	end
 end
 
 function Teleporter_OnLoad() 
@@ -1339,7 +1389,31 @@ local function OnClickSortDown(spell)
 	Refresh()
 end
 
-local function AddCustomizationIcon(existingIcon, buttonFrame, xOffset, yOffset, width, height, optionName, onClick)
+local function OnClickRemove(spell)
+	local dialogText = "Are you sure you want to remove " .. spell.spellName .. "?"
+	
+	StaticPopupDialogs["TELEPORTER_CONFIRM_REMOVE"] = 
+	{
+		text = dialogText,
+		button1 = "Yes",
+		button2 = "No",
+		OnAccept = function() 
+			if spell.spellType == ST_Item then
+				GetOption("extraItems")[spell.spellId] = nil
+			else
+				GetOption("extraSpells")[spell.spellId] = nil
+			end
+			RebuildSpellList()
+			Refresh()
+		end,
+		OnCancel = function() end,
+		hideOnEscape = true
+	}
+	
+	StaticPopup_Show("TELEPORTER_CONFIRM_REMOVE")
+end
+
+local function AddCustomizationIcon(existingIcon, buttonFrame, xOffset, yOffset, width, height, optionName, onClick, forceHidden)
 	local iconObject = existingIcon
 	if not iconObject then		
 		iconObject = {}
@@ -1359,7 +1433,7 @@ local function AddCustomizationIcon(existingIcon, buttonFrame, xOffset, yOffset,
 		iconObject.frame:SetWidth(width)
 		iconObject.frame:SetHeight(height)
 		
-		if CustomizeSpells then
+		if CustomizeSpells and not forceHidden then
 			iconObject.icon:Show()
 			iconObject.frame:Show()
 		else
@@ -1383,7 +1457,186 @@ local function InitalizeOptions()
 	if not TomeOfTele_Options["sortOrder"] then TomeOfTele_Options["sortOrder"] = {} end
 end
 
--- TODO: Refactor!
+local IsAdding = false
+
+local function FinishAddingItem(dialog, isItem, id)
+	IsAdding = false
+	
+	if isItem then
+		local extraItems = GetOption("extraItems")
+		if not extraItems then
+			extraItems = {}
+			SetOption("extraItems", extraItems)
+		end
+		extraItems[id] = dialog.editBox:GetText()
+	else
+		local extraSpells = GetOption("extraSpells")
+		if not extraSpells then
+			extraSpells = {}
+			SetOption("extraSpells", extraSpells)
+		end
+		extraSpells[id] = dialog.editBox:GetText()
+	end
+	
+	RebuildSpellList()
+	Refresh()
+end
+
+local function ShowSelectDestinationUI(dialog, isItem)
+	local id = dialog.editBox:GetText()
+	local name
+	if isItem then
+		name = GetItemInfo(id)
+	else
+		name = GetSpellInfo(id)
+	end
+	
+	if name then
+		local dialogText = "Adding " .. name .. ".\nWhat zone does it teleport to?"
+		
+		StaticPopupDialogs["TELEPORTER_ADDITEM_DEST"] = 
+		{
+			text = dialogText,
+			button1 = "OK",
+			button2 = "Cancel",
+			OnAccept = function(dialog) FinishAddingItem(dialog, isItem, id) end,
+			OnCancel = function() IsAdding = false; end,
+			hideOnEscape = true,
+			hasEditBox = true
+		}
+		
+		StaticPopup_Show("TELEPORTER_ADDITEM_DEST")
+	else
+		local dialogText
+		
+		if isItem then
+			dialogText = "Could not find an item with this ID."
+		else
+			dialogText = "Could not find a spell with this ID."
+		end
+		
+		StaticPopupDialogs["TELEPORTER_ADDITEM_FAIL"] = 
+		{
+			text = dialogText,
+			button1 = "OK",
+			OnAccept = function() IsAdding = false; end,
+			OnCancel = function() IsAdding = false; end,
+			hideOnEscape = true
+		}
+		
+		StaticPopup_Show("TELEPORTER_ADDITEM_FAIL")
+	end
+	
+	
+end
+
+local function ShowAddItemUI(isItem)
+	local dialogText
+	
+	if IsAdding then return end
+	
+	IsAdding = true
+	
+	if isItem then
+		dialogText = "Enter the item ID. You can get this from wowhead.com."
+	else
+		dialogText = "Enter the spell ID. You can get this from wowhead.com."
+	end
+	
+	StaticPopupDialogs["TELEPORTER_ADDITEM"] = 
+	{
+		text = dialogText,
+		button1 = "OK",
+		button2 = "Cancel",
+		OnAccept = function(dialog) ShowSelectDestinationUI(dialog, isItem) end,
+		OnCancel = function() IsAdding = false; end,
+		hideOnEscape = true,
+		hasEditBox = true
+	}
+	
+	StaticPopup_Show("TELEPORTER_ADDITEM")
+end
+
+local function CreateMainFrame()
+	TeleporterParentFrame = TeleporterFrame
+	TeleporterParentFrame:SetFrameStrata("HIGH")		
+	
+	local buttonHeight = GetScaledOption("buttonHeight")
+	local buttonWidth = GetScaledOption("buttonWidth")
+	local labelHeight = GetScaledOption("labelHeight")
+	local numColumns = 1
+	local lastDest = nil
+	local maximumHeight = GetScaledOption("maximumHeight")
+	local fontHeight = GetScaledOption("fontHeight")
+	local frameEdgeSize = GetOption("frameEdgeSize")
+	local fontFile = GetOption("buttonFont")
+	local fontFlags = nil 
+	local titleWidth = GetScaledOption("titleWidth")
+	local titleHeight = GetScaledOption("titleHeight")
+	local buttonInset = GetOption("buttonInset")	
+	
+	TeleporterParentFrame:ClearAllPoints()
+	local points = GetOption("points")
+	if points then
+		for i,pt in ipairs(points) do
+			TeleporterParentFrame:SetPoint(pt[1], pt[2], pt[3], pt[4], pt[5])
+		end
+	else
+		TeleporterParentFrame:SetPoint("CENTER",0,0)
+	end
+				
+	tinsert(UISpecialFrames,TeleporterParentFrame:GetName());
+	--TeleporterParentFrame:SetScript( "OnHide", TeleporterClose )
+
+	-- Title bar
+	local titleFrame = CreateFrame("Frame","TeleporterTitleFrame",TeleporterParentFrame)	
+	TitleFrameBG = titleFrame:CreateTexture()
+	TitleFrameBG:SetTexture(GetOption("titleBackground"))
+	TitleFrameBG:SetAllPoints( titleFrame )
+	titleFrame:SetPoint("TOP",TeleporterParentFrame,"TOP",0,titleHeight / 2 - GetScaledOption("titleOffset"))
+	titleFrame:SetWidth(titleWidth)
+	titleFrame:SetHeight(titleHeight)
+
+	local titleString = titleFrame:CreateFontString("TeleporterTitleString", nil, GetOption("titleFont"))
+	titleString:SetFont(fontFile, fontHeight, fontFlags)
+	titleString:SetText( AddonTitle )
+	titleString:SetPoint("TOP", titleFrame, "TOP", 0, -titleHeight / 5)
+	
+	TeleporterParentFrame:RegisterForDrag("LeftButton")			
+	TeleporterParentFrame:SetScript("OnDragStart", function() TeleporterParentFrame:StartMoving() end )
+	TeleporterParentFrame:SetScript("OnDragStop", function() TeleporterParentFrame:StopMovingOrSizing(); SavePosition(); end )
+	TeleporterParentFrame:EnableMouse(true)
+	TeleporterParentFrame:SetMovable(true)
+	TeleporterParentFrame:SetScript("OnMouseUp", OnClickFrame)
+	
+	-- Close button
+	local closeButton = CreateFrame( "Button", "TeleporterCloseButton", TeleporterParentFrame, "UIPanelButtonTemplate" )
+	closeButton:SetText( "X" )
+	closeButton:SetPoint( "TOPRIGHT", TeleporterParentFrame, "TOPRIGHT", -buttonInset, -buttonInset )
+	closeButton:SetWidth( buttonWidth )
+	closeButton:SetHeight( buttonHeight )
+	closeButton:SetScript( "OnClick", TeleporterClose )			
+	
+	-- Help text
+	if GetOption("showHelp") then
+		local helpString = TeleporterParentFrame:CreateFontString("TeleporterHelpString", nil, GetOption("titleFont"))
+		helpString:SetFont(fontFile, fontHeight, fontFlags)
+		helpString:SetText( "Click to teleport, Ctrl+click to create a macro." )
+		helpString:SetJustifyV("CENTER")
+		helpString:SetJustifyH("LEFT")
+	end
+	
+	AddItemButton = CreateFrame( "Button", "TeleporterAddItemButton", TeleporterParentFrame, "UIPanelButtonTemplate" )
+	AddItemButton:SetText( "Add Item" )
+	AddItemButton:SetPoint( "BOTTOMLEFT", TeleporterParentFrame, "BOTTOMLEFT", buttonInset, buttonInset )
+	AddItemButton:SetScript( "OnClick", function() ShowAddItemUI(true) end )
+	
+	AddSpellButton = CreateFrame( "Button", "TeleporterAddSpellButton", TeleporterParentFrame, "UIPanelButtonTemplate" )
+	AddSpellButton:SetText( "Add Spell" )
+	AddSpellButton:SetPoint( "BOTTOMRIGHT", TeleporterParentFrame, "BOTTOMRIGHT", -buttonInset, buttonInset )
+	AddSpellButton:SetScript( "OnClick", function() ShowAddItemUI(false) end )
+end
+
 function TeleporterOpenFrame()
 
 	if UnitAffectingCombat("player") then
@@ -1413,59 +1666,7 @@ function TeleporterOpenFrame()
 		OpenTime = GetTime()
 
 		if TeleporterParentFrame == nil then
-			TeleporterParentFrame = TeleporterFrame
-			TeleporterParentFrame:SetFrameStrata("HIGH")		
-			
-			TeleporterParentFrame:ClearAllPoints()
-			local points = GetOption("points")
-			if points then
-				for i,pt in ipairs(points) do
-					TeleporterParentFrame:SetPoint(pt[1], pt[2], pt[3], pt[4], pt[5])
-				end
-			else
-				TeleporterParentFrame:SetPoint("CENTER",0,0)
-			end
-						
-			tinsert(UISpecialFrames,TeleporterParentFrame:GetName());
-			--TeleporterParentFrame:SetScript( "OnHide", TeleporterClose )
-
-			-- Title bar
-			local titleFrame = CreateFrame("Frame","TeleporterTitleFrame",TeleporterParentFrame)	
-			TitleFrameBG = titleFrame:CreateTexture()
-			TitleFrameBG:SetTexture(GetOption("titleBackground"))
-			TitleFrameBG:SetAllPoints( titleFrame )
-			titleFrame:SetPoint("TOP",TeleporterParentFrame,"TOP",0,titleHeight / 2 - GetScaledOption("titleOffset"))
-			titleFrame:SetWidth(titleWidth)
-			titleFrame:SetHeight(titleHeight)
-
-			local titleString = titleFrame:CreateFontString("TeleporterTitleString", nil, GetOption("titleFont"))
-			titleString:SetFont(fontFile, fontHeight, fontFlags)
-			titleString:SetText( AddonTitle )
-			titleString:SetPoint("TOP", titleFrame, "TOP", 0, -titleHeight / 5)
-			
-			TeleporterParentFrame:RegisterForDrag("LeftButton")			
-			TeleporterParentFrame:SetScript("OnDragStart", function() TeleporterParentFrame:StartMoving() end )
-			TeleporterParentFrame:SetScript("OnDragStop", function() TeleporterParentFrame:StopMovingOrSizing(); SavePosition(); end )
-			TeleporterParentFrame:EnableMouse(true)
-			TeleporterParentFrame:SetMovable(true)
-			TeleporterParentFrame:SetScript("OnMouseUp", OnClickFrame)
-			
-			-- Close button
-			local closeButton = CreateFrame( "Button", "TeleporterCloseButton", TeleporterParentFrame, "UIPanelButtonTemplate" )
-			closeButton:SetText( "X" )
-			closeButton:SetPoint( "TOPRIGHT", TeleporterParentFrame, "TOPRIGHT", -buttonInset, -buttonInset )
-			closeButton:SetWidth( buttonWidth )
-			closeButton:SetHeight( buttonHeight )
-			closeButton:SetScript( "OnClick", TeleporterClose )			
-			
-			-- Help text
-			if GetOption("showHelp") then
-				local helpString = TeleporterParentFrame:CreateFontString("TeleporterHelpString", nil, GetOption("titleFont"))
-				helpString:SetFont(fontFile, fontHeight, fontFlags)
-				helpString:SetText( "Click to teleport, Ctrl+click to create a macro." )
-				helpString:SetJustifyV("CENTER")
-				helpString:SetJustifyH("LEFT")
-			end
+			CreateMainFrame()			
 		end
 		
 		if GetOption("showTitle")then
@@ -1667,7 +1868,7 @@ function TeleporterOpenFrame()
 				nameString:SetPoint("TOP",cooldownString,"TOPRIGHT",0,0)
 				nameString:SetPoint("LEFT", buttonFrame, "TOPLEFT", iconOffsetX + iconW + 2, iconOffsetY - 1)
 				if CustomizeSpells then
-					nameString:SetPoint("BOTTOMRIGHT",cooldownString,"BOTTOMLEFT",-iconW * 3,0)
+					nameString:SetPoint("BOTTOMRIGHT",cooldownString,"BOTTOMLEFT",-iconW * 4,0)
 				else
 					nameString:SetPoint("BOTTOMRIGHT",cooldownString,"BOTTOMLEFT",0,0)
 				end
@@ -1688,11 +1889,13 @@ function TeleporterOpenFrame()
 					maxyoffset = -yoffset
 				end
 				
+				RemoveIconOffset = -iconOffsetX - iconW * 3
 				ShowIconOffset = -iconOffsetX - iconW * 2
 				SortUpIconOffset = -iconOffsetX - iconW
 				SortDownIconOffset = -iconOffsetX
 				
-				buttonFrame.ShowIcon = AddCustomizationIcon(buttonFrame.ShowIcon, buttonFrame, ShowIconOffset, iconOffsetY, iconW, iconH, "showIcon", function() OnClickShow(spell) end)				
+				buttonFrame.RemoveIcon = AddCustomizationIcon(buttonFrame.RemoveIcon, buttonFrame, RemoveIconOffset, iconOffsetY, iconW, iconH, "removeButtonIcon", function() OnClickRemove(spell) end, not spell.isCustom)
+				buttonFrame.ShowIcon = AddCustomizationIcon(buttonFrame.ShowIcon, buttonFrame, ShowIconOffset, iconOffsetY, iconW, iconH, "showButtonIcon", function() OnClickShow(spell) end)				
 				buttonFrame.SortUpIcon = AddCustomizationIcon(buttonFrame.SortUpIcon, buttonFrame, SortUpIconOffset, iconOffsetY, iconW, iconH, "sortUpIcon", function() OnClickSortUp(spell) end)
 				buttonFrame.SortDownIcon = AddCustomizationIcon(buttonFrame.SortDownIcon, buttonFrame, SortDownIconOffset, iconOffsetY, iconW, iconH, "sortDownIcon", function() OnClickSortDown(spell) end)
 				
@@ -1727,8 +1930,26 @@ function TeleporterOpenFrame()
 			helpTextHeight = 0
 		end
 		
+		local addRemoveButtonsHeight = 0
+	
+		if CustomizeSpells then
+			if numColumns < 2 then
+				numColumns = 2
+			end
+			
+			AddItemButton:SetWidth((numColumns * buttonWidth) / 2)			
+			AddSpellButton:SetWidth((numColumns * buttonWidth) / 2)			
+			addRemoveButtonsHeight = buttonInset + buttonHeight
+			
+			AddItemButton:Show()
+			AddSpellButton:Show()
+		else
+			AddItemButton:Hide()
+			AddSpellButton:Hide()
+		end
+		
 		TeleporterParentFrame:SetWidth(numColumns * buttonWidth + buttonInset * 2)
-		TeleporterParentFrame:SetHeight(maxyoffset + buttonInset * 2 + 2 + helpTextHeight)
+		TeleporterParentFrame:SetHeight(maxyoffset + buttonInset * 2 + 2 + helpTextHeight + addRemoveButtonsHeight)
 		
 	end
 
@@ -1933,6 +2154,8 @@ function Teleporter_OnAddonLoaded()
 	end
 	
 	icon:Register("TomeTele", dataobj, TomeOfTele_Icon)		
+	
+	RebuildSpellList()
 	
 	for index, spell in ipairs(TeleporterSpells) do		
 		-- TODO: Replace indices with names after refactor
