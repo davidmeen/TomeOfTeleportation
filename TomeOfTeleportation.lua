@@ -5,6 +5,7 @@
 -- Refactor buttons
 -- Favourites
 -- Custom items
+-- Improve speed
 
 -- Low priority:
 -- Proper options dialog
@@ -83,10 +84,17 @@ local ST_Item = 1
 local ST_Spell = 2
 local ST_Challenge = 3
 
+-- TODO: Always look up by name, not index.
 local SpellIdIndex = 1
 local SpellTypeIndex = 2
 local SpellZoneIndex = 3
+local SpellConditionIndex = 4
+local SpellConsumableIndex = 5
 local SpellNameIndex = 6
+
+local SortByDestination = 1
+local SortByType = 2
+local SortCustom = 3
 
 local TitleFrameBG
 
@@ -487,9 +495,10 @@ local TeleporterSpells =
 }
 
 -- [Orignal spell ID] = { Alt spell ID, Buff }
+-- Currently unused
 local SpellBuffs = 
 {
-	[126892] = { 126896, 126896 }	-- Zen Pilgrimage / Zen Pilgrimage: Return
+	--[126892] = { 126896, 126896 }	-- Zen Pilgrimage / Zen Pilgrimage: Return
 }
 
 local function GetTheme()
@@ -554,7 +563,7 @@ end
 
 
 local function GetOptionId(spell)
-	return spell[SpellIdIndex] .. "." .. spell[SpellZoneIndex]
+	return spell.spellId .. "." .. spell.zone
 end
 
 function Teleporter_OnEvent(self, event, ...)
@@ -814,19 +823,18 @@ end
 
 
 local function SortSpells(spell1, spell2, sortType)
-	local spellId1 = spell1[1]
-	local spellId2 = spell2[1]
-	local spellName1 = spell1[SpellNameIndex]
-	local spellName2 = spell2[SpellNameIndex]
-	local spellType1 = spell1[2]
-	local spellType2 = spell2[2]
-	local zone1 = spell1[3]
-	local zone2 = spell2[3]
+	local spellId1 = spell1.spellId
+	local spellId2 = spell2.spellId
+	local spellName1 = spell1.spellName
+	local spellName2 = spell2.spellName
+	local spellType1 = spell1.spellType
+	local spellType2 = spell2.spellType
+	local zone1 = spell1.zone
+	local zone2 = spell2.zone
 	
 	local so = GetOption("sortOrder")
 	
-	-- TODO: No magic numbers
-	if sortType == 3 then
+	if sortType == SortCustom then
 		local optId1 = GetOptionId(spell1)
 		local optId2 = GetOptionId(spell2)
 		-- New spells always sort last - not ideal, but makes it easier to have a deterministic sort.
@@ -837,7 +845,7 @@ local function SortSpells(spell1, spell2, sortType)
 		elseif so[optId2] then
 			return false
 		end
-	elseif sortType == 2 then
+	elseif sortType == SortByType then
 		if spellType1 ~= spellType2 then
 			return spellType1 < spellType2
 		end
@@ -850,14 +858,40 @@ local function SortSpells(spell1, spell2, sortType)
 	return spellName1 < spellName2
 end
 
+local function SetupSpells()
+	for index, spell in ipairs(TeleporterSpells) do		
+		if spell[2] == ST_Item then
+			spell[SpellNameIndex] = GetItemInfo( spell[1] )
+			spell.spellName = GetItemInfo( spell[1] )
+		else
+			spell[SpellNameIndex] = GetSpellInfo( spell[1] )
+			spell.spellName = GetSpellInfo( spell[1] )
+		end
+		
+		if not spell.spellName then
+			spell[SpellNameIndex] = "<Loading>"
+			spell.spellName = "<Loading>"
+		end
+		
+		-- The final stage of the refactor should get rid of these
+		spell.zone = spell[SpellZoneIndex]
+		spell.spellId = spell[SpellIdIndex]
+		spell.spellType = spell[SpellTypeIndex]
+		spell.isItem = spell.spellType == ST_Item
+		spell.condition = spell[SpellConditionIndex]
+		spell.consumable = spell[SpellConsumableIndex]
+	end
+end
 
 local function GetSortedFavourites(favourites)
+	SetupSpells()
+	
 	local sorted = {}
 	local index = 1
 
 	for spellId, isItem in pairs(favourites) do
 		for i,spell in ipairs(TeleporterSpells) do
-			if spell[1] == spellId then
+			if spell.spellId == spellId then
 				sorted[index] = spell
 				index = index + 1
 				break
@@ -994,8 +1028,8 @@ end
 
 local function OnClickTeleButton(frame,button)
 	if button == "RightButton" then	
-		local spellId = ButtonSettings[frame][5]
-		local isItem = ButtonSettings[frame][1]
+		local spellId = ButtonSettings[frame].spellId
+		local isItem = ButtonSettings[frame].isItem
 		
 		local favourites = GetOption("favourites")
 				
@@ -1029,15 +1063,15 @@ function TeleporterUpdateButton(button)
 	end
 
 	local settings = ButtonSettings[button]
-	local isItem = settings[1]
+	local isItem = settings.isItem
 	
-	local item = settings[2]
-	local cooldownbar = settings[3]
-	local cooldownString = settings[4]
-	local itemId = settings[5]
-	local countString = settings[6]
-	local toySpell = settings[7]
-	local spell = settings[8]
+	local item = settings.spellName
+	local cooldownbar = settings.cooldownbar
+	local cooldownString = settings.cooldownString
+	local itemId = settings.spellId
+	local countString = settings.countString
+	local toySpell = settings.toySpell
+	local spell = settings.spell
 	local onCooldown = false
 	local buttonInset = GetScaledOption("buttonInset")
 	
@@ -1164,20 +1198,6 @@ local function OnClickFrame(frame, button)
 	end
 end
 
-local function SetupSpells()
-	for index, spell in ipairs(TeleporterSpells) do		
-		if spell[2] == ST_Item then
-			spell[SpellNameIndex] = GetItemInfo( spell[1] )
-		else
-			spell[SpellNameIndex] = GetSpellInfo( spell[1] )			
-		end
-		
-		if not spell[SpellNameIndex] then
-			spell[SpellNameIndex] = "<Loading>"
-		end
-	end
-end
-
 local function ApplyResort()
 	local newSo = {}
 	
@@ -1193,7 +1213,7 @@ local function RebuildCustomSort()
 	SetupSpells()
 	local oldSo = GetOption("sortOrder")
 	
-	table.sort(TeleporterSpells, function(a, b) return SortSpells(a, b, 3) end)
+	table.sort(TeleporterSpells, function(a, b) return SortSpells(a, b, SortCustom) end)
 	
 	ApplyResort()
 end
@@ -1206,14 +1226,11 @@ end
 
 
 local function CanUseSpell(spell)
-	local spellId = spell[1]
-	local spellType = spell[2]
+	local spellId = spell.spellId
+	local spellType = spell.spellType
 	local isItem = (spellType == ST_Item)
-	local destination = spell[3]
-	local condition = spell[4]
-	local consumable = spell[5]
-	local spellName = spell[SpellNameIndex]
-	local displaySpellName = spellName
+	local condition = spell.condition
+	local consumable = spell.consumable
 	local itemTexture = nil
 	
 	local haveSpell = false
@@ -1223,22 +1240,24 @@ local function CanUseSpell(spell)
 		haveSpell = GetItemCount( spellId ) > 0 or haveToy
 	else
 		haveSpell = IsSpellKnown( spellId )					
-		if haveSpell and SpellBuffs[spellId] then
-			local targetSpell = SpellBuffs[spellId][1]
-			local targetBuff = SpellBuffs[spellId][2]
-			local buffIndex = 1
-			local buffName, _, _, _, _, _, _, _, _, _, buffID = UnitBuff("player", buffIndex)
-			while buffName do
-				if  buffID == targetBuff  then
-					spellId = targetSpell
-					displaySpellName = GetSpellInfo(spellId)
-					buffName = nil
-				else
-					buffIndex = buffIndex + 1
-					buffName, _, _, _, _, _, _, _, _, _, buffID = UnitBuff("player", buffIndex)							
-				end
-			end
-		end
+		
+		-- This isn't currently used - delete it if it's not needed in BfA, move it to the right place if it is.
+		--if haveSpell and SpellBuffs[spellId] then
+		--	local targetSpell = SpellBuffs[spellId][1]
+		--	local targetBuff = SpellBuffs[spellId][2]
+		--	local buffIndex = 1
+		--	local buffName, _, _, _, _, _, _, _, _, _, buffID = UnitBuff("player", buffIndex)
+		--	while buffName do
+		--		if  buffID == targetBuff  then
+		--			spellId = targetSpell
+		--			displaySpellName = GetSpellInfo(spellId)
+		--			buffName = nil
+		--		else
+		--			buffIndex = buffIndex + 1
+		--			buffName, _, _, _, _, _, _, _, _, _, buffID = UnitBuff("player", buffIndex)							
+		--		end
+		--	end
+		--end
 	end
 	
 	if condition and not CustomizeSpells then
@@ -1395,7 +1414,7 @@ function TeleporterOpenFrame()
 
 		if TeleporterParentFrame == nil then
 			TeleporterParentFrame = TeleporterFrame
-			TeleporterParentFrame:SetFrameStrata("BACKGROUND")		
+			TeleporterParentFrame:SetFrameStrata("HIGH")		
 			
 			TeleporterParentFrame:ClearAllPoints()
 			local points = GetOption("points")
@@ -1495,52 +1514,28 @@ function TeleporterOpenFrame()
 		SetupSpells()
 		local SortType = GetOption("sort")
 		if CustomizeSpells then
-			SortType = 3
+			SortType = SortCustom
 		end
 		table.sort(TeleporterSpells, function(a,b) return SortSpells(a, b, SortType) end)
 
 		for index, spell in ipairs(TeleporterSpells) do		
-			local spellId = spell[1]
-			local spellType = spell[2]
+			local spellId = spell.spellId
+			local spellType = spell.spellType
 			local isItem = (spellType == ST_Item)
-			local destination = spell[3]
-			local condition = spell[4]
-			local consumable = spell[5]
-			local spellName = spell[SpellNameIndex]
+			local destination = spell.zone
+			local consumable = spell.consumable
+			local spellName = spell.spellName
 			local displaySpellName = spellName
 			local isValidSpell = true
 			local itemTexture = nil
 
-			if destination == HearthString then
+			if destination == HearthString or destination == RecallString then
 				local bindLocation = GetBindLocation()
 				if bindLocation then
 					destination = "Hearth (" .. bindLocation .. ")"
 				else
 					destination = "Hearth"
 				end
-			end
-			
-			-- Glyph of Astral Fixation changes spell destination to faction's Earthshrine
-			local AstralGlyph = 147787
-			if destination == RecallString then
-				--TODO: Is there a Legion equivalent?
-				--local hasGlyph = false
-				--local glyphIdx
-				--for glyphIdx = 1,NUM_GLYPH_SLOTS do
-				--	local _,_,_,glyphId = GetGlyphSocketInfo(glyphIdx)
-				--	if glyphId == AstralGlyph then
-				--		hasGlyph = true
-				--	end
-				--end
-				
-				--if not hasGlyph then
-					local bindLocation = GetBindLocation()
-					if bindLocation then
-						destination = "Hearth (" .. bindLocation .. ")"
-					end
-				--else
-				--	destination = "Astral Recall (Earthshrine)"
-				--end
 			end
 
 			if isItem then
@@ -1587,7 +1582,7 @@ function TeleporterOpenFrame()
 
 				-- Main button
 				local buttonFrame = TeleporterCreateReusableFrame("Button","TeleporterB",TeleporterParentFrame,"SecureActionButtonTemplate")
-				buttonFrame:SetFrameStrata("BACKGROUND")
+				--buttonFrame:SetFrameStrata("MEDIUM")
 				buttonFrame:SetWidth(buttonWidth)
 				buttonFrame:SetHeight(buttonHeight)
 				buttonFrame:SetPoint("TOPLEFT",TeleporterParentFrame,"TOPLEFT",xoffset,yoffset)
@@ -1650,7 +1645,7 @@ function TeleporterOpenFrame()
 
 				-- Cooldown bar
 				local cooldownbar = TeleporterCreateReusableFrame( "Frame", "TeleporterCB", buttonFrame, nil )
-				cooldownbar:SetFrameStrata("LOW")
+				--cooldownbar:SetFrameStrata("MEDIUM")
 				cooldownbar:SetWidth(64)
 				cooldownbar:SetHeight(buttonHeight)
 				cooldownbar:SetPoint("TOPLEFT",buttonFrame,"TOPLEFT",0,0)
@@ -1703,7 +1698,17 @@ function TeleporterOpenFrame()
 				
 				buttonFrame:SetScript("OnMouseUp", OnClickTeleButton)
 				
-				ButtonSettings[buttonFrame] = { isItem, spellName, cooldownbar, cooldownString, spellId, countString, toySpell, spell, spellType }	
+				local buttonSetting = { }	
+				buttonSetting.isItem = isItem
+				buttonSetting.spellName = spellName
+				buttonSetting.cooldownbar = cooldownbar
+				buttonSetting.cooldownString = cooldownString
+				buttonSetting.spellId = spellId
+				buttonSetting.countString = countString
+				buttonSetting.toySpell = toySpell
+				buttonSetting.spell = spell
+				buttonSetting.spellType = spellType
+				ButtonSettings[buttonFrame] = buttonSetting
 			end	
 		end
 		
@@ -1930,10 +1935,12 @@ function Teleporter_OnAddonLoaded()
 	icon:Register("TomeTele", dataobj, TomeOfTele_Icon)		
 	
 	for index, spell in ipairs(TeleporterSpells) do		
-		local spellId = spell[1]
-		local spellType = spell[2]
+		-- TODO: Replace indices with names after refactor
+		local spellId = spell[SpellIdIndex]
+		local spellType = spell[SpellTypeIndex]
 		local isItem = (spellType == ST_Item)
 		if isItem then
+			-- Query this early so it will be ready when we need it.
 			C_ToyBox.IsToyUsable(spellId)			
 		end
 	end

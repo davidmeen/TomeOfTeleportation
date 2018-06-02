@@ -63,8 +63,8 @@ function TeleToggleQuickMenu(favourites, size)
 		for i, spell in pairs(favourites) do
 			local button = QuickMenuButtons[index]
 			
-			local isItem = spell[2] == 1	-- Needs to be fixed in the refactor
-			local spellId = spell[1]
+			local isItem = spell.isItem
+			local spellId = spell.spellId
 			
 			local texture
 			local name
