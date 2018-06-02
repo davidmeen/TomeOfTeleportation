@@ -131,9 +131,10 @@ local DefaultOptions =
 	["disabledColourR"] = 0.5,
 	["disabledColourG"] = 0.5,
 	["disabledColourB"] = 0.5,
+	["QuickMenuSize"] = 64,
 	["sortUpIcon"] = "Interface/Icons/misc_arrowlup",
 	["sortDownIcon"] = "Interface/Icons/misc_arrowdown",
-	["showIcon"] = "Interface/Icons/inv_darkmoon_eye"	-- I need to find a better icon!
+	["showIcon"] = "Interface/Icons/inv_darkmoon_eye"	-- I need to find a better icon!	
 }
 
 -- Themes. For now there aren't many of these. Message me on curse.com
@@ -775,22 +776,13 @@ local function InitTeleporterMenu(frame, level, menuList)
 	if level == 1 then
 		local info = UIDropDownMenu_CreateInfo()
 		
-		for spellId, isItem in pairs(GetOption("favourites")) do
-			info.owner = frame			
-			info.hasArrow = false
-			info.menuList = "Options"
-			info.checked = nil
-			
-			if isItem then
-				info.text = GetItemInfo(spellId)
-				info.func = function() print("Item"); TeleporterUseItemSlashCmdFunction(spellId) end
-			else
-				info.text = GetSpellInfo(spellId)
-				info.func = function() print("Spell"); TeleporterCastSpellSlashCmdFunction(spellId) end
-			end
-			
-			UIDropDownMenu_AddButton(info, level)
-		end
+		info.owner = frame
+		info.text = "Right click a spell to add favourites"
+		info.hasArrow = false
+		info.menuList = nil
+		info.value = 0
+		info.checked = nil
+		UIDropDownMenu_AddButton(info, level)
 		
 		info.owner = frame
 		info.text = "Options"
@@ -816,10 +808,16 @@ local function ShowOptionsMenu()
 end
 
 local function ShowMenu()
-	TeleporterMenu = CreateFrame("Frame", "TomeOfTeleMenu", UIParent, "UIDropDownMenuTemplate")
-	UIDropDownMenu_Initialize(TeleporterMenu, InitTeleporterMenu, "MENU")
-	
-	ToggleDropDownMenu(1, nil, TeleporterMenu, "cursor", 3, -3)
+	local favourites = GetOption("favourites")
+	local next = next
+	if favourites and next(favourites) ~= nil and not UnitAffectingCombat("player") then
+		TeleToggleQuickMenu(favourites, GetScaledOption("QuickMenuSize"))
+	else
+		TeleporterMenu = CreateFrame("Frame", "TomeOfTeleMenu", UIParent, "UIDropDownMenuTemplate")	
+		UIDropDownMenu_Initialize(TeleporterMenu, InitTeleporterMenu, "MENU")
+		
+		ToggleDropDownMenu(1, nil, TeleporterMenu, "cursor", 3, -3)
+	end
 end
 
 function TeleporterItemMustBeEquipped(item)
@@ -856,11 +854,87 @@ local function InitTeleporterMenu(frame, level, menuList)
 	UIDropDownMenu_AddButton(info, level)
 end
 
-local function OnClickTeleButton(frame,button)
-	if button == "RightButton" then
-		local menu = CreateFrame("Frame", "TomeOfTeleButtonMenu", UIParent, "UIDropDownMenuTemplate")
-		local info = UIDropDownMenu_CreateInfo()
+local FavouriteToAddRemove = nil
+local FavouriteToAddRemoveIsItem
+local AddFavouriteMenu = nil
+local RemoveFavouriteMenu = nil
+local CantAddFavouriteMenu = nil
+
+local function CreateAddFavouriteMenu()
+	if not AddFavouriteMenu then
+		AddFavouriteMenu = CreateFrame("Frame", "TomeOfTeleAddFavouriteMenu", UIParent, "UIDropDownMenuTemplate")
+			
+		UIDropDownMenu_Initialize(
+			AddFavouriteMenu, 
+			function(frame, level, menuList)
+				local info = UIDropDownMenu_CreateInfo()
+				
+				info.owner = frame
+				info.hasArrow = false
+				info.value = 1000
+				info.checked = nil
+				
+				info.text = "Add favourite"
+				info.func = function()
+					local favourites = GetOption("favourites")
+					favourites[FavouriteToAddRemove] = FavouriteToAddRemoveIsItem
+				end
 		
+				UIDropDownMenu_AddButton(info, level)
+			end, 
+			"MENU")
+	end
+end
+
+local function CreateRemoveFavouriteMenu()
+	if not RemoveFavouriteMenu then
+		RemoveFavouriteMenu = CreateFrame("Frame", "TomeOfTeleRemoveFavouriteMenu", UIParent, "UIDropDownMenuTemplate")
+		
+		UIDropDownMenu_Initialize(
+			RemoveFavouriteMenu, 
+			function(frame, level, menuList)
+				local info = UIDropDownMenu_CreateInfo()
+				
+				info.owner = frame
+				info.hasArrow = false
+				info.value = 1001
+				info.checked = nil
+				
+				info.text = "Remove favourite"
+				info.func = function()
+					local favourites = GetOption("favourites")
+					favourites[FavouriteToAddRemove] = nil
+				end
+				UIDropDownMenu_AddButton(info, level)
+			end, 
+			"MENU")
+	end
+end
+
+local function CreateCantAddFavouriteMenu()
+	if not RemoveFavouriteMenu then
+		CantAddFavouriteMenu = CreateFrame("Frame", "TomeOfTeleCantAddFavouriteMenu", UIParent, "UIDropDownMenuTemplate")
+		
+		UIDropDownMenu_Initialize(
+			CantAddFavouriteMenu, 
+			function(frame, level, menuList)
+				local info = UIDropDownMenu_CreateInfo()
+				
+				info.owner = frame
+				info.hasArrow = false
+				info.value = 1002
+				info.checked = nil
+				
+				info.text = "This item can not be added to favourites"
+				info.func = nil
+				UIDropDownMenu_AddButton(info, level)
+			end, 
+			"MENU")
+	end
+end
+
+local function OnClickTeleButton(frame,button)
+	if button == "RightButton" then	
 		local spellId = ButtonSettings[frame][5]
 		local isItem = ButtonSettings[frame][1]
 		
@@ -871,35 +945,21 @@ local function OnClickTeleButton(frame,button)
 			SetOption("favourites", favourites)
 		end
 		
+		FavouriteToAddRemove = spellId
+		FavouriteToAddRemoveIsItem = isItem
+		
 		local isFavourite = favourites[spellId] ~= nil
 		
-		info.owner = frame		
-		info.hasArrow = false
-		info.value = 1
-		info.checked = nil
-		
-		if isItem and IsEquippableItem( spellId ) then 
-			info.text = "Cannot set this item as a favourite"
-			info.func = function() end
-		elseif isFavourite then
-			info.text = "Remove favourite"
-			info.func = function()
-				favourites[spellId] = nil
-			end
+		if isItem and IsEquippableItem(spellId) then
+			CreateCantAddFavouriteMenu()
+			ToggleDropDownMenu(1, nil, CantAddFavouriteMenu, "cursor", 3, -3)
+		elseif not isFavourite then
+			CreateAddFavouriteMenu()
+			ToggleDropDownMenu(1, nil, AddFavouriteMenu, "cursor", 3, -3)
 		else
-			info.text = "Add favourite"
-			info.func = function()
-				favourites[spellId] = isItem
-			end
+			CreateRemoveFavouriteMenu()
+			ToggleDropDownMenu(1, nil, RemoveFavouriteMenu, "cursor", 3, -3)
 		end
-	
-		UIDropDownMenu_Initialize(menu, 
-			function(frame, level, menuList)
-				UIDropDownMenu_AddButton(info, level)
-			end, 
-			"MENU")
-			
-		ToggleDropDownMenu(1, nil, menu, "cursor", 3, -3)
 	end
 end
 
@@ -921,7 +981,7 @@ function TeleporterUpdateButton(button)
 	local spell = settings[8]
 	local onCooldown = false
 	local buttonInset = GetScaledOption("buttonInset")
-
+	
 	if item then
 		local cooldownStart, cooldownDuration
 		if isItem then
@@ -990,8 +1050,8 @@ function TeleporterUpdateButton(button)
 				"/script print( \"" .. item .. " is currently on cooldown.\")")
 		else
 			button:SetBackdropColor(GetOption("readyColourR"), GetOption("readyColourG"), GetOption("readyColourB"), 1)
-
-			if toySpell then
+			
+			if toySpell then		
 				button:SetAttribute(
 					"macrotext1",
 					"/teleportercastspell " .. toySpell .. "\n" ..
@@ -1137,13 +1197,9 @@ local function CanUseSpell(spell)
 	
 	local haveSpell = false
 	local haveToy = false
-	local toySpell = nil
 	if isItem then
 		haveToy = PlayerHasToy(spellId) and C_ToyBox.IsToyUsable(spellId)
 		haveSpell = GetItemCount( spellId ) > 0 or haveToy
-		if haveToy then
-			toySpell = GetItemSpell(spellId)
-		end
 	else
 		haveSpell = IsSpellKnown( spellId )					
 		if haveSpell and SpellBuffs[spellId] then
@@ -1478,8 +1534,14 @@ function TeleporterOpenFrame()
 				end
 			end
 			
-			local haveSpell = isValidSpell and CanUseSpell(spell)			
-			
+			local haveSpell = isValidSpell and CanUseSpell(spell)	
+
+			local toySpell = nil
+			if isItem then
+				if PlayerHasToy(spellId) then
+					toySpell = GetItemSpell(spellId)
+				end			
+			end
 			
 			if haveSpell then
 				-- Add extra column if needed
@@ -1681,6 +1743,9 @@ function TeleporterClose()
 		if TeleporterParentFrame then
 			TeleporterParentFrame:Hide()
 			IsVisible = false
+		end
+		if TeleporterQuickMenuFrame then
+			TeleporterQuickMenuFrame:Hide()
 		end
 	end
 end
