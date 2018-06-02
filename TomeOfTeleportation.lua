@@ -131,7 +131,7 @@ local DefaultOptions =
 	["disabledColourR"] = 0.5,
 	["disabledColourG"] = 0.5,
 	["disabledColourB"] = 0.5,
-	["QuickMenuSize"] = 64,
+	["QuickMenuSize"] = 50,
 	["sortUpIcon"] = "Interface/Icons/misc_arrowlup",
 	["sortDownIcon"] = "Interface/Icons/misc_arrowdown",
 	["showIcon"] = "Interface/Icons/inv_darkmoon_eye"	-- I need to find a better icon!	
@@ -552,6 +552,11 @@ local function SetOption(option, value)
 	end
 end
 
+
+local function GetOptionId(spell)
+	return spell[SpellIdIndex] .. "." .. spell[SpellZoneIndex]
+end
+
 function Teleporter_OnEvent(self, event, ...)
 	if event == "ADDON_LOADED" then
 		local loadedAddon = ...
@@ -807,11 +812,70 @@ local function ShowOptionsMenu()
 	ToggleDropDownMenu(1, nil, TeleporterOptionsMenu, "cursor", 3, -3)
 end
 
+
+local function SortSpells(spell1, spell2, sortType)
+	local spellId1 = spell1[1]
+	local spellId2 = spell2[1]
+	local spellName1 = spell1[SpellNameIndex]
+	local spellName2 = spell2[SpellNameIndex]
+	local spellType1 = spell1[2]
+	local spellType2 = spell2[2]
+	local zone1 = spell1[3]
+	local zone2 = spell2[3]
+	
+	local so = GetOption("sortOrder")
+	
+	-- TODO: No magic numbers
+	if sortType == 3 then
+		local optId1 = GetOptionId(spell1)
+		local optId2 = GetOptionId(spell2)
+		-- New spells always sort last - not ideal, but makes it easier to have a deterministic sort.
+		if so[optId1] and so[optId2] then
+			return so[optId1] < so[optId2]			
+		elseif so[optId1] then
+			return true
+		elseif so[optId2] then
+			return false
+		end
+	elseif sortType == 2 then
+		if spellType1 ~= spellType2 then
+			return spellType1 < spellType2
+		end
+	end
+	
+	if zone1 ~= zone2 then
+		return zone1 < zone2
+	end
+	
+	return spellName1 < spellName2
+end
+
+
+local function GetSortedFavourites(favourites)
+	local sorted = {}
+	local index = 1
+
+	for spellId, isItem in pairs(favourites) do
+		for i,spell in ipairs(TeleporterSpells) do
+			if spell[1] == spellId then
+				sorted[index] = spell
+				index = index + 1
+				break
+			end
+		end		
+	end
+	
+	local sortType = GetOption("sort")
+	table.sort(sorted, function(a,b) return SortSpells(a, b, sortType) end)
+	
+	return sorted
+end
+
 local function ShowMenu()
 	local favourites = GetOption("favourites")
 	local next = next
 	if favourites and next(favourites) ~= nil and not UnitAffectingCombat("player") then
-		TeleToggleQuickMenu(favourites, GetScaledOption("QuickMenuSize"))
+		TeleToggleQuickMenu(GetSortedFavourites(favourites), GetScaledOption("QuickMenuSize"))
 	else
 		TeleporterMenu = CreateFrame("Frame", "TomeOfTeleMenu", UIParent, "UIDropDownMenuTemplate")	
 		UIDropDownMenu_Initialize(TeleporterMenu, InitTeleporterMenu, "MENU")
@@ -827,11 +891,6 @@ function TeleporterItemMustBeEquipped(item)
 		return false
 	end
 end
-
-local function GetOptionId(spell)
-	return spell[SpellIdIndex] .. "." .. spell[SpellZoneIndex]
-end
-
 
 local function IsSpellVisible(spell)
 	local showSpells = GetOption("showSpells")
@@ -1104,44 +1163,6 @@ local function OnClickFrame(frame, button)
 		ShowOptionsMenu()
 	end
 end
-
-local function SortSpells(spell1, spell2, sortType)
-	local spellId1 = spell1[1]
-	local spellId2 = spell2[1]
-	local spellName1 = spell1[SpellNameIndex]
-	local spellName2 = spell2[SpellNameIndex]
-	local spellType1 = spell1[2]
-	local spellType2 = spell2[2]
-	local zone1 = spell1[3]
-	local zone2 = spell2[3]
-	
-	local so = GetOption("sortOrder")
-	
-	-- TODO: No magic numbers
-	if sortType == 3 then
-		local optId1 = GetOptionId(spell1)
-		local optId2 = GetOptionId(spell2)
-		-- New spells always sort last - not ideal, but makes it easier to have a deterministic sort.
-		if so[optId1] and so[optId2] then
-			return so[optId1] < so[optId2]			
-		elseif so[optId1] then
-			return true
-		elseif so[optId2] then
-			return false
-		end
-	elseif sortType == 2 then
-		if spellType1 ~= spellType2 then
-			return spellType1 < spellType2
-		end
-	end
-	
-	if zone1 ~= zone2 then
-		return zone1 < zone2
-	end
-	
-	return spellName1 < spellName2
-end
-
 
 local function SetupSpells()
 	for index, spell in ipairs(TeleporterSpells) do		
