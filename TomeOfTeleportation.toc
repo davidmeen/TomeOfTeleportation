@@ -2,7 +2,7 @@
 ## Title : Tome of Teleportation
 ## Notes: An interface for managing teleportation spells and items.
 ## Author: Remeen
-## SavedVariablesPerCharacter: TomeOfTele_Points, TomeOfTele_Icon, TomeOfTele_HideItems, TomeOfTele_HideSpells, TomeOfTele_HideConsumable, TomeOfTele_HideChallenge, TomeOfTele_Options
+## SavedVariablesPerCharacter: TomeOfTele_Icon, TomeOfTele_Options, TomeOfTele_ShareOptions
 ## SavedVariables: TomeOfTele_OptionsGlobal
 
 
@@ -10,6 +10,6 @@ libs\LibStub\LibStub.lua
 libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
 libs\libdatabroker-1-1\LibDataBroker-1.1.lua
 libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+TomeQuickMenu.lua
 TomeOfTeleportation.lua
 TomeOfTeleportation.xml
-

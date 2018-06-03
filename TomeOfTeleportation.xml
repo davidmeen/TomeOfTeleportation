@@ -19,4 +19,9 @@
 	  <OnHide function="Teleporter_OnHide"/>
     </Scripts>
   </Frame>
+  <Frame name="TeleporterQuickMenuFrame">
+	<Scripts>
+	  <OnHide function="TeleQuickMenu_OnHide"/>
+	</Scripts>
+  </Frame>
 </Ui>

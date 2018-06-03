@@ -2,10 +2,11 @@
 
 -- TODO:
 -- More Battle for Azeroth items
--- Improve Undercurrent
--- Refactor settings
--- Refactor dialogs
--- Favourites
+-- Improve speed
+-- Fix day specfic spells
+
+-- Low priority:
+-- Proper options dialog
 
 local AddonName = "TomeOfTeleportation"
 local AddonTitle = "Tome of Teleportation"
@@ -36,9 +37,12 @@ local ShouldNotBeEquiped = {}
 local ShouldBeEquiped = {}
 local EquipTime = 0
 local CustomizeSpells = false
+local RemoveIconOffset = 0
 local ShowIconOffset = 0
 local SortUpIconOffset = 0
 local SortDownIconOffset = 0
+local AddItemButton = nil
+local AddSpellButton = nil
 
 _G["BINDING_HEADER_TOMEOFTELEPORTATION"] = "Tome of Teleportation"
 
@@ -83,10 +87,17 @@ local ST_Item = 1
 local ST_Spell = 2
 local ST_Challenge = 3
 
+-- TODO: Always look up by name, not index.
 local SpellIdIndex = 1
 local SpellTypeIndex = 2
 local SpellZoneIndex = 3
+local SpellConditionIndex = 4
+local SpellConsumableIndex = 5
 local SpellNameIndex = 6
+
+local SortByDestination = 1
+local SortByType = 2
+local SortCustom = 3
 
 local TitleFrameBG
 
@@ -131,9 +142,11 @@ local DefaultOptions =
 	["disabledColourR"] = 0.5,
 	["disabledColourG"] = 0.5,
 	["disabledColourB"] = 0.5,
+	["QuickMenuSize"] = 50,
 	["sortUpIcon"] = "Interface/Icons/misc_arrowlup",
 	["sortDownIcon"] = "Interface/Icons/misc_arrowdown",
-	["showIcon"] = "Interface/Icons/inv_darkmoon_eye"	-- I need to find a better icon!
+	["showButtonIcon"] = "Interface/Icons/levelupicon-lfd",
+	["removeButtonIcon"] = "Interface/Icons/INV_Misc_Bone_Skull_03"
 }
 
 -- Themes. For now there aren't many of these. Message me on curse.com
@@ -205,8 +218,9 @@ local DaySaturday = 7
 
 local function OnDay(day)
 	return function()
-		local today = CalendarGetDate()
-		return day == today
+		return false
+		--local today = CalendarGetDate()
+		--return day == today
 	end
 end
 
@@ -216,11 +230,33 @@ local function OnDayAtContinent(day, continent)
 	end
 end
 
+local function CreateSpell(id, dest)
+	local spell = {}
+	spell[1] = id
+	spell[2] = ST_Spell
+	spell[3] = dest
+	spell.spellId = id
+	spell.spellType = ST_Spell
+	spell.zone = dest
+	return spell
+end
+
+local function CreateItem(id, dest)
+	local spell = {}
+	spell[1] = id
+	spell[2] = ST_Item
+	spell[3] = dest
+	spell.spellId = id
+	spell.spellType = ST_Spell
+	spell.zone = dest
+	return spell
+end
+
 -- { id, isItem, destination, condition, consumable, spellName }
 -- It probably won't work if a single player has two different items
 -- with the same name in their inventory, but I don't think that's possible.
 -- spellName will be filled in when the addon loads.
-local TeleporterSpells = 
+local TeleporterDefaultSpells = 
 {	
 	{ 93672, ST_Item, HearthString },		-- Dark Portal
 	{ 54452, ST_Item, HearthString },		-- Ethereal Portal
@@ -484,21 +520,43 @@ local TeleporterSpells =
 }
 
 -- [Orignal spell ID] = { Alt spell ID, Buff }
+-- Currently unused
 local SpellBuffs = 
 {
-	[126892] = { 126896, 126896 }	-- Zen Pilgrimage / Zen Pilgrimage: Return
+	--[126892] = { 126896, 126896 }	-- Zen Pilgrimage / Zen Pilgrimage: Return
 }
 
+local TeleporterSpells = {}
+
 local function GetTheme()
-	if TomeOfTele_Options == nil or TomeOfTele_Options["theme"] == nil then
-		return DefaultOptions["theme"]
+	if TomeOfTele_ShareOptions then
+		if TomeOfTele_OptionsGlobal == nil or TomeOfTele_OptionsGlobal["theme"] == nil then
+			return DefaultOptions["theme"]
+		else
+			return TomeOfTele_OptionsGlobal["theme"]
+		end
 	else
-		return TomeOfTele_Options["theme"]
+		if TomeOfTele_Options == nil or TomeOfTele_Options["theme"] == nil then
+			return DefaultOptions["theme"]
+		else
+			return TomeOfTele_Options["theme"]
+		end
 	end
 end
 
 local function GetOption(option)
-	if TomeOfTele_Options == nil or TomeOfTele_Options[option] == nil then
+	local value = nil
+	if TomeOfTele_ShareOptions then
+		if TomeOfTele_OptionsGlobal then
+			value = TomeOfTele_OptionsGlobal[option]
+		end
+	else
+		if TomeOfTele_Options then
+			value = TomeOfTele_Options[option]
+		end
+	end
+	
+	if value == nil then
 		local theme = Themes[GetTheme()]
 		if theme and theme[option] then
 			return theme[option][1]
@@ -506,7 +564,7 @@ local function GetOption(option)
 			return DefaultOptions[option]
 		end
 	else
-		return TomeOfTele_Options[option]
+		return value
 	end
 end
 
@@ -523,7 +581,16 @@ local function SetOption(option, value)
 	if TomeOfTele_Options == nil then
 		TomeOfTele_Options = {}
 	end
-	TomeOfTele_Options[option] = value
+	if TomeOfTele_ShareOptions then
+		TomeOfTele_OptionsGlobal[option] = value
+	else
+		TomeOfTele_Options[option] = value
+	end
+end
+
+
+local function GetOptionId(spell)
+	return spell.spellId .. "." .. spell.zone
 end
 
 function Teleporter_OnEvent(self, event, ...)
@@ -569,6 +636,31 @@ function TeleporterFindInSpecialFrames()
 	return nil
 end
 
+local function RebuildSpellList()
+	TeleporterSpells = {}
+	for i,spell in ipairs(TeleporterDefaultSpells) do
+		tinsert(TeleporterSpells, spell)
+	end
+	
+	local extraSpells = GetOption("extraSpells")
+	if extraSpells then		
+		for id,dest in pairs(extraSpells) do
+			local spell = CreateSpell(id,dest)
+			spell.isCustom = true
+			tinsert(TeleporterSpells, spell)
+		end
+	end
+	
+	local extraItems = GetOption("extraItems")
+	if extraItems then
+		for id,dest in pairs(extraItems) do
+			local spell = CreateItem(id,dest)
+			spell.isCustom = true
+			tinsert(TeleporterSpells, spell)
+		end
+	end
+end
+
 function Teleporter_OnLoad() 
 	SlashCmdList["TELEPORTER"] = TeleporterSlashCmdFunction
 	SLASH_TELEPORTER1 = "/tomeofteleport"
@@ -588,10 +680,11 @@ function Teleporter_OnLoad()
 end 
 
 local function SavePosition()
-	TomeOfTele_Points = {}
+	local points = {}
 	for i = 1,TeleporterParentFrame:GetNumPoints(),1 do
-		tinsert(TomeOfTele_Points,{TeleporterParentFrame:GetPoint(i)})
+		tinsert(points,{TeleporterParentFrame:GetPoint(i)})
 	end
+	SetOption("points", points)
 end
 
 
@@ -603,31 +696,12 @@ local function Refresh()
 end
 
 local TeleporterMenu = nil
+local TeleporterOptionsMenu = nil
 
-local function OnHideItems(info)
-	TomeOfTele_HideItems = not TomeOfTele_HideItems
-	info.checked = TomeOfTele_HideItems
-	
-	Refresh()
-end
-
-local function OnHideSpells(info)
-	TomeOfTele_HideSpells = not TomeOfTele_HideSpells
-	info.checked = TomeOfTele_HideSpells
-	
-	Refresh()
-end
-
-local function OnHideChallenges(info)
-	TomeOfTele_HideChallenge = not TomeOfTele_HideChallenge
-	info.checked = TomeOfTele_HideChallenge
-	
-	Refresh()
-end
-
-local function OnHideConsumable(info)
-	TomeOfTele_HideConsumable = not TomeOfTele_HideConsumable
-	info.checked = TomeOfTele_HideConsumable
+local function OnHideOption(info, option)
+	local hide = not GetOption(option)
+	info.checked = hide
+	SetOption(option, hide)
 	
 	Refresh()
 end
@@ -654,67 +728,65 @@ local function TomeOfTele_SetTheme(scale)
 	end	
 end
 
-local function InitTeleporterMenu(frame, level, menuList)
-	if level == 1 then 
+local function AddHideOptionMenu(index, text, option, owner, level)
+	local info = UIDropDownMenu_CreateInfo()
+	info.text = text
+	info.value = index
+	info.func = function(info) OnHideOption(info, option) end
+	info.owner = owner
+	info.checked = GetOption(option)
+	UIDropDownMenu_AddButton(info, level)
+end
+
+local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
+	if level == 1 or topLevel then 		
 		local info = UIDropDownMenu_CreateInfo()
-		info.text = "Hide Items"
-		info.value = 1
-		info.func = function(info) OnHideItems(info) end
-		info.owner = TeleporterMenu
-		info.checked = TomeOfTele_HideItems
-		UIDropDownMenu_AddButton(info, 1)		
+		info.owner = frame
 		
-		info.text = "Hide Class Spells"
-		info.value = 2
-		info.func = function(info) OnHideSpells(info) end
-		info.owner = TeleporterMenu
-		info.checked = TomeOfTele_HideSpells
-		UIDropDownMenu_AddButton(info, 1)	
-		
-		info.text = "Hide Challenge Mode Spells"
-		info.value = 3
-		info.func = function(info) OnHideChallenges(info) end
-		info.owner = TeleporterMenu
-		info.checked = TomeOfTele_HideChallenge
-		UIDropDownMenu_AddButton(info, 1)	
-		
-		info.text = "Hide Consumables"
-		info.value = 4
-		info.func = function(info) OnHideConsumable(info) end
-		info.owner = TeleporterMenu
-		info.checked = TomeOfTele_HideConsumable
-		UIDropDownMenu_AddButton(info, 1)	
-		
+		AddHideOptionMenu(1, "Hide Items", "hideItems", frame, level)
+		AddHideOptionMenu(2, "Hide Challenge Mode Spells", "hideChallenge", frame, level)
+		AddHideOptionMenu(3, "Hide Spells", "hideSpells", frame, level)
+		AddHideOptionMenu(4, "Hide Consumables", "hideConsumable", frame, level)
+				
 		info.text = "Sort"
 		info.hasArrow = true
 		info.menuList = "Sort"
 		info.value = 5
 		info.func = nil
 		info.checked = nil
-		UIDropDownMenu_AddButton(info, 1)	
+		UIDropDownMenu_AddButton(info, level)	
 		
 		info.text = "Scale"
 		info.hasArrow = true
 		info.menuList = "Scale"
 		info.value = 6
 		info.checked =nil
-		UIDropDownMenu_AddButton(info, 1)	
+		UIDropDownMenu_AddButton(info, level)	
 		
 		info.text = "Theme"
 		info.hasArrow = true
 		info.menuList = "Theme"
 		info.value = 7
 		info.checked = nil
-		UIDropDownMenu_AddButton(info, 1)
+		UIDropDownMenu_AddButton(info, level)
 		
-		info.text = "Customize Spells"
+		info.text = "Use Shared Settings"
 		info.value = 8
 		info.hasArrow = false
 		info.menuList = nil
+		info.func = function(info) TomeOfTele_ShareOptions = not TomeOfTele_ShareOptions; Refresh(); end
+		info.owner = frame
+		info.checked = TomeOfTele_ShareOptions
+		UIDropDownMenu_AddButton(info, level)
+		
+		info.text = "Customize Spells"
+		info.value = 9
+		info.hasArrow = false
+		info.menuList = nil
 		info.func = function(info) CustomizeSpells = not CustomizeSpells; Refresh(); end
-		info.owner = TeleporterMenu
+		info.owner = frame
 		info.checked = CustomizeSpells
-		UIDropDownMenu_AddButton(info, 1)	
+		UIDropDownMenu_AddButton(info, level)	
 		
 	elseif menuList == "Scale" then
 		local scales = { 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200 }
@@ -723,7 +795,7 @@ local function InitTeleporterMenu(frame, level, menuList)
 			info.text = s
 			info.value = s / 10 + 20
 			info.func = function(info) TomeOfTele_SetScale(s / 100) end
-			info.owner = TeleporterMenu
+			info.owner = frame
 			info.checked = function(info) return GetOption("scale") == s / 100 end
 			UIDropDownMenu_AddButton(info, level)	
 		end
@@ -734,7 +806,7 @@ local function InitTeleporterMenu(frame, level, menuList)
 			info.text = themeName
 			info.value = index
 			info.func = function(info) TomeOfTele_SetTheme(themeName) end
-			info.owner = TeleporterMenu
+			info.owner = frame
 			info.checked = function(info) return GetOption("theme") == themeName end
 			UIDropDownMenu_AddButton(info, level)	
 			
@@ -745,33 +817,157 @@ local function InitTeleporterMenu(frame, level, menuList)
 		info.text = "Destination"
 		info.value = 1
 		info.func = function(info) TomeOfTele_SetSort(1) end
-		info.owner = TeleporterMenu
+		info.owner = frame
 		info.checked = function(info) sortMode = GetOption("sort"); return sortMode == nil or sortMode == 1; end
 		UIDropDownMenu_AddButton(info, level)
 		
 		info.text = "Type"
 		info.value = 2
 		info.func = function(info) TomeOfTele_SetSort(2) end
-		info.owner = TeleporterMenu
+		info.owner = frame
 		info.checked = function(info) return GetOption("sort") == 2; end
 		UIDropDownMenu_AddButton(info, level)
 		
 		info.text = "Custom"
 		info.value = 3
 		info.func = function(info) TomeOfTele_SetSort(3) end
-		info.owner = TeleporterMenu
+		info.owner = frame
 		info.checked = function(info) return GetOption("sort") == 3; end
 		UIDropDownMenu_AddButton(info, level)
 	end
 end
 
-local function ShowMenu()
-	if not TeleporterMenu then
-		TeleporterMenu = CreateFrame("Frame", "TomeOFTeleMenu", UIParent, "UIDropDownMenuTemplate")
-		UIDropDownMenu_Initialize(TeleporterMenu, InitTeleporterMenu, "MENU")
+
+local function InitTeleporterMenu(frame, level, menuList)
+	if level == 1 then
+		local info = UIDropDownMenu_CreateInfo()
+		
+		info.owner = frame
+		info.text = "Right click a spell to add favourites"
+		info.hasArrow = false
+		info.menuList = nil
+		info.value = 0
+		info.checked = nil
+		UIDropDownMenu_AddButton(info, level)
+		
+		info.owner = frame
+		info.text = "Options"
+		info.hasArrow = true
+		info.menuList = "Options"
+		info.value = 0
+		info.checked = nil
+		UIDropDownMenu_AddButton(info, level)
+	elseif level == 2 then
+		InitTeleporterOptionsMenu(frame, level, menuList, true)
+	else
+		InitTeleporterOptionsMenu(frame, level, menuList, false)
+	end
+end
+
+local function ShowOptionsMenu()
+	if not TeleporterOptionsMenu then
+		TeleporterOptionsMenu = CreateFrame("Frame", "TomeOfTeleOptionsMenu", UIParent, "UIDropDownMenuTemplate")
+		UIDropDownMenu_Initialize(TeleporterOptionsMenu, InitTeleporterOptionsMenu, "MENU")
 	end
 	
-	ToggleDropDownMenu(1, nil, TeleporterMenu, "cursor", 3, -3)
+	ToggleDropDownMenu(1, nil, TeleporterOptionsMenu, "cursor", 3, -3)
+end
+
+
+local function SortSpells(spell1, spell2, sortType)
+	local spellId1 = spell1.spellId
+	local spellId2 = spell2.spellId
+	local spellName1 = spell1.spellName
+	local spellName2 = spell2.spellName
+	local spellType1 = spell1.spellType
+	local spellType2 = spell2.spellType
+	local zone1 = spell1.zone
+	local zone2 = spell2.zone
+	
+	local so = GetOption("sortOrder")
+	
+	if sortType == SortCustom then
+		local optId1 = GetOptionId(spell1)
+		local optId2 = GetOptionId(spell2)
+		-- New spells always sort last - not ideal, but makes it easier to have a deterministic sort.
+		if so[optId1] and so[optId2] then
+			return so[optId1] < so[optId2]			
+		elseif so[optId1] then
+			return true
+		elseif so[optId2] then
+			return false
+		end
+	elseif sortType == SortByType then
+		if spellType1 ~= spellType2 then
+			return spellType1 < spellType2
+		end
+	end
+	
+	if zone1 ~= zone2 then
+		return zone1 < zone2
+	end
+	
+	return spellName1 < spellName2
+end
+
+local function SetupSpells()
+	for index, spell in ipairs(TeleporterSpells) do		
+		if spell[2] == ST_Item then
+			spell[SpellNameIndex] = GetItemInfo( spell[1] )
+			spell.spellName = GetItemInfo( spell[1] )
+		else
+			spell[SpellNameIndex] = GetSpellInfo( spell[1] )
+			spell.spellName = GetSpellInfo( spell[1] )
+		end
+		
+		if not spell.spellName then
+			spell[SpellNameIndex] = "<Loading>"
+			spell.spellName = "<Loading>"
+		end
+		
+		-- The final stage of the refactor should get rid of these
+		spell.zone = spell[SpellZoneIndex]
+		spell.spellId = spell[SpellIdIndex]
+		spell.spellType = spell[SpellTypeIndex]
+		spell.isItem = spell.spellType == ST_Item
+		spell.condition = spell[SpellConditionIndex]
+		spell.consumable = spell[SpellConsumableIndex]
+	end
+end
+
+local function GetSortedFavourites(favourites)
+	SetupSpells()
+	
+	local sorted = {}
+	local index = 1
+
+	for spellId, isItem in pairs(favourites) do
+		for i,spell in ipairs(TeleporterSpells) do
+			if spell.spellId == spellId then
+				sorted[index] = spell
+				index = index + 1
+				break
+			end
+		end		
+	end
+	
+	local sortType = GetOption("sort")
+	table.sort(sorted, function(a,b) return SortSpells(a, b, sortType) end)
+	
+	return sorted
+end
+
+local function ShowMenu()
+	local favourites = GetOption("favourites")
+	local next = next
+	if favourites and next(favourites) ~= nil and not UnitAffectingCombat("player") then
+		TeleToggleQuickMenu(GetSortedFavourites(favourites), GetScaledOption("QuickMenuSize"))
+	else
+		TeleporterMenu = CreateFrame("Frame", "TomeOfTeleMenu", UIParent, "UIDropDownMenuTemplate")	
+		UIDropDownMenu_Initialize(TeleporterMenu, InitTeleporterMenu, "MENU")
+		
+		ToggleDropDownMenu(1, nil, TeleporterMenu, "cursor", 3, -3)
+	end
 end
 
 function TeleporterItemMustBeEquipped(item)
@@ -782,17 +978,133 @@ function TeleporterItemMustBeEquipped(item)
 	end
 end
 
-local function GetOptionId(spell)
-	return spell[SpellIdIndex] .. "." .. spell[SpellZoneIndex]
-end
-
-
 local function IsSpellVisible(spell)
-	local visible = TomeOfTele_OptionsGlobal.ShowSpells[GetOptionId(spell)]
+	local showSpells = GetOption("showSpells")
+	local visible = showSpells[GetOptionId(spell)]
 	if visible ~= nil then
 		return visible
 	else
 		return true
+	end
+end
+
+local function InitTeleporterMenu(frame, level, menuList)
+	local info = UIDropDownMenu_CreateInfo()
+	info.owner = frame
+	info.text = "Options"
+	info.hasArrow = true
+	info.menuList = "Options"
+	info.value = 0
+	info.checked = nil
+	UIDropDownMenu_AddButton(info, level)
+end
+
+local FavouriteToAddRemove = nil
+local FavouriteToAddRemoveIsItem
+local AddFavouriteMenu = nil
+local RemoveFavouriteMenu = nil
+local CantAddFavouriteMenu = nil
+
+local function CreateAddFavouriteMenu()
+	if not AddFavouriteMenu then
+		AddFavouriteMenu = CreateFrame("Frame", "TomeOfTeleAddFavouriteMenu", UIParent, "UIDropDownMenuTemplate")
+			
+		UIDropDownMenu_Initialize(
+			AddFavouriteMenu, 
+			function(frame, level, menuList)
+				local info = UIDropDownMenu_CreateInfo()
+				
+				info.owner = frame
+				info.hasArrow = false
+				info.value = 1000
+				info.checked = nil
+				
+				info.text = "Add favourite"
+				info.func = function()
+					local favourites = GetOption("favourites")
+					favourites[FavouriteToAddRemove] = FavouriteToAddRemoveIsItem
+				end
+		
+				UIDropDownMenu_AddButton(info, level)
+			end, 
+			"MENU")
+	end
+end
+
+local function CreateRemoveFavouriteMenu()
+	if not RemoveFavouriteMenu then
+		RemoveFavouriteMenu = CreateFrame("Frame", "TomeOfTeleRemoveFavouriteMenu", UIParent, "UIDropDownMenuTemplate")
+		
+		UIDropDownMenu_Initialize(
+			RemoveFavouriteMenu, 
+			function(frame, level, menuList)
+				local info = UIDropDownMenu_CreateInfo()
+				
+				info.owner = frame
+				info.hasArrow = false
+				info.value = 1001
+				info.checked = nil
+				
+				info.text = "Remove favourite"
+				info.func = function()
+					local favourites = GetOption("favourites")
+					favourites[FavouriteToAddRemove] = nil
+				end
+				UIDropDownMenu_AddButton(info, level)
+			end, 
+			"MENU")
+	end
+end
+
+local function CreateCantAddFavouriteMenu()
+	if not RemoveFavouriteMenu then
+		CantAddFavouriteMenu = CreateFrame("Frame", "TomeOfTeleCantAddFavouriteMenu", UIParent, "UIDropDownMenuTemplate")
+		
+		UIDropDownMenu_Initialize(
+			CantAddFavouriteMenu, 
+			function(frame, level, menuList)
+				local info = UIDropDownMenu_CreateInfo()
+				
+				info.owner = frame
+				info.hasArrow = false
+				info.value = 1002
+				info.checked = nil
+				
+				info.text = "This item can not be added to favourites"
+				info.func = nil
+				UIDropDownMenu_AddButton(info, level)
+			end, 
+			"MENU")
+	end
+end
+
+local function OnClickTeleButton(frame,button)
+	if button == "RightButton" then	
+		local spellId = ButtonSettings[frame].spellId
+		local isItem = ButtonSettings[frame].isItem
+		
+		local favourites = GetOption("favourites")
+				
+		if not favourites then
+			favourites = {}
+			SetOption("favourites", favourites)
+		end
+		
+		FavouriteToAddRemove = spellId
+		FavouriteToAddRemoveIsItem = isItem
+		
+		local isFavourite = favourites[spellId] ~= nil
+		
+		if isItem and IsEquippableItem(spellId) then
+			CreateCantAddFavouriteMenu()
+			ToggleDropDownMenu(1, nil, CantAddFavouriteMenu, "cursor", 3, -3)
+		elseif not isFavourite then
+			CreateAddFavouriteMenu()
+			ToggleDropDownMenu(1, nil, AddFavouriteMenu, "cursor", 3, -3)
+		else
+			CreateRemoveFavouriteMenu()
+			ToggleDropDownMenu(1, nil, RemoveFavouriteMenu, "cursor", 3, -3)
+		end
 	end
 end
 
@@ -803,18 +1115,18 @@ function TeleporterUpdateButton(button)
 	end
 
 	local settings = ButtonSettings[button]
-	local isItem = settings[1]
+	local isItem = settings.isItem
 	
-	local item = settings[2]
-	local cooldownbar = settings[3]
-	local cooldownString = settings[4]
-	local itemId = settings[5]
-	local countString = settings[6]
-	local toySpell = settings[7]
-	local spell = settings[8]
+	local item = settings.spellName
+	local cooldownbar = settings.cooldownbar
+	local cooldownString = settings.cooldownString
+	local itemId = settings.spellId
+	local countString = settings.countString
+	local toySpell = settings.toySpell
+	local spell = settings.spell
 	local onCooldown = false
 	local buttonInset = GetScaledOption("buttonInset")
-
+	
 	if item then
 		local cooldownStart, cooldownDuration
 		if isItem then
@@ -883,8 +1195,8 @@ function TeleporterUpdateButton(button)
 				"/script print( \"" .. item .. " is currently on cooldown.\")")
 		else
 			button:SetBackdropColor(GetOption("readyColourR"), GetOption("readyColourG"), GetOption("readyColourB"), 1)
-
-			if toySpell then
+			
+			if toySpell then		
 				button:SetAttribute(
 					"macrotext1",
 					"/teleportercastspell " .. toySpell .. "\n" ..
@@ -934,59 +1246,7 @@ end
 
 local function OnClickFrame(frame, button)
 	if button == "RightButton" then
-		ShowMenu()
-	end
-end
-
-local function SortSpells(spell1, spell2, sortType)
-	local spellId1 = spell1[1]
-	local spellId2 = spell2[1]
-	local spellName1 = spell1[SpellNameIndex]
-	local spellName2 = spell2[SpellNameIndex]
-	local spellType1 = spell1[2]
-	local spellType2 = spell2[2]
-	local zone1 = spell1[3]
-	local zone2 = spell2[3]
-	
-	local so = TomeOfTele_OptionsGlobal.SortOrder
-	
-	-- TODO: No magic numbers
-	if sortType == 3 then
-		local optId1 = GetOptionId(spell1)
-		local optId2 = GetOptionId(spell2)
-		-- New spells always sort last - not ideal, but makes it easier to have a deterministic sort.
-		if so[optId1] and so[optId2] then
-			return so[optId1] < so[optId2]			
-		elseif so[optId1] then
-			return true
-		elseif so[optId2] then
-			return false
-		end
-	elseif sortType == 2 then
-		if spellType1 ~= spellType2 then
-			return spellType1 < spellType2
-		end
-	end
-	
-	if zone1 ~= zone2 then
-		return zone1 < zone2
-	end
-	
-	return spellName1 < spellName2
-end
-
-
-local function SetupSpells()
-	for index, spell in ipairs(TeleporterSpells) do		
-		if spell[2] == ST_Item then
-			spell[SpellNameIndex] = GetItemInfo( spell[1] )
-		else
-			spell[SpellNameIndex] = GetSpellInfo( spell[1] )			
-		end
-		
-		if not spell[SpellNameIndex] then
-			spell[SpellNameIndex] = "<Loading>"
-		end
+		ShowOptionsMenu()
 	end
 end
 
@@ -998,65 +1258,58 @@ local function ApplyResort()
 		newSo[optId] = index
 	end
 		
-	TomeOfTele_OptionsGlobal.SortOrder = newSo
+	SetOption("sortOrder", newSo)
 end
 
 local function RebuildCustomSort()
 	SetupSpells()
-	local oldSo = TomeOfTele_OptionsGlobal.SortOrder
+	local oldSo = GetOption("sortOrder")
 	
-	table.sort(TeleporterSpells, function(a, b) return SortSpells(a, b, 3) end)
+	table.sort(TeleporterSpells, function(a, b) return SortSpells(a, b, SortCustom) end)
 	
 	ApplyResort()
 end
 
 local function OnClickShow(spell)
-	TomeOfTele_OptionsGlobal.ShowSpells[GetOptionId(spell)] = not IsSpellVisible(spell)
+	local showSpells = GetOption("showSpells")
+	showSpells[GetOptionId(spell)] = not IsSpellVisible(spell)
 end
 
 
 
 local function CanUseSpell(spell)
-	local spellId = spell[1]
-	local spellType = spell[2]
+	local spellId = spell.spellId
+	local spellType = spell.spellType
 	local isItem = (spellType == ST_Item)
-	local destination = spell[3]
-	local condition = spell[4]
-	local consumable = spell[5]
-	local spellName = spell[SpellNameIndex]
-	local displaySpellName = spellName
-	local isValidSpell = true
+	local condition = spell.condition
+	local consumable = spell.consumable
 	local itemTexture = nil
 	
 	local haveSpell = false
 	local haveToy = false
-	local toySpell = nil
-	if isValidSpell then
-		if isItem then
-			haveToy = PlayerHasToy(spellId) and C_ToyBox.IsToyUsable(spellId)
-			haveSpell = GetItemCount( spellId ) > 0 or haveToy
-			if haveToy then
-				toySpell = GetItemSpell(spellId)
-			end
-		else
-			haveSpell = IsSpellKnown( spellId )					
-			if haveSpell and SpellBuffs[spellId] then
-				local targetSpell = SpellBuffs[spellId][1]
-				local targetBuff = SpellBuffs[spellId][2]
-				local buffIndex = 1
-				local buffName, _, _, _, _, _, _, _, _, _, buffID = UnitBuff("player", buffIndex)
-				while buffName do
-					if  buffID == targetBuff  then
-						spellId = targetSpell
-						displaySpellName = GetSpellInfo(spellId)
-						buffName = nil
-					else
-						buffIndex = buffIndex + 1
-						buffName, _, _, _, _, _, _, _, _, _, buffID = UnitBuff("player", buffIndex)							
-					end
-				end
-			end
-		end
+	if isItem then
+		haveToy = PlayerHasToy(spellId) and C_ToyBox.IsToyUsable(spellId)
+		haveSpell = GetItemCount( spellId ) > 0 or haveToy
+	else
+		haveSpell = IsSpellKnown( spellId )					
+		
+		-- This isn't currently used - delete it if it's not needed in BfA, move it to the right place if it is.
+		--if haveSpell and SpellBuffs[spellId] then
+		--	local targetSpell = SpellBuffs[spellId][1]
+		--	local targetBuff = SpellBuffs[spellId][2]
+		--	local buffIndex = 1
+		--	local buffName, _, _, _, _, _, _, _, _, _, buffID = UnitBuff("player", buffIndex)
+		--	while buffName do
+		--		if  buffID == targetBuff  then
+		--			spellId = targetSpell
+		--			displaySpellName = GetSpellInfo(spellId)
+		--			buffName = nil
+		--		else
+		--			buffIndex = buffIndex + 1
+		--			buffName, _, _, _, _, _, _, _, _, _, buffID = UnitBuff("player", buffIndex)							
+		--		end
+		--	end
+		--end
 	end
 	
 	if condition and not CustomizeSpells then
@@ -1068,19 +1321,19 @@ local function CanUseSpell(spell)
 	-- Uncomment this to test all items.
 	--haveSpell = true
 	
-	if TomeOfTele_HideItems and spellType == ST_Item then
+	if GetOption("hideItems") and spellType == ST_Item then
 		haveSpell = false
 	end
 	
-	if TomeOfTele_HideConsumable and consumable then
+	if GetOption("hideConsumable") and consumable then
 		haveSpell = false
 	end
 	
-	if TomeOfTele_HideSpells and spellType == ST_Spell then
+	if GetOption("hideSpells") and spellType == ST_Spell then
 		haveSpell = false
 	end
 	
-	if TomeOfTele_HideChallenge and spellType == ST_Challenge then
+	if GetOption("hideChallenge") and spellType == ST_Challenge then
 		haveSpell = false
 	end
 	
@@ -1095,7 +1348,7 @@ end
 local function OnClickSortUp(spell)
 	RebuildCustomSort()
 	
-	local so = TomeOfTele_OptionsGlobal.SortOrder
+	local so = GetOption("sortOrder")
 	local id = GetOptionId(spell)	
 	if so[id] and so[id] > 1 then
 		local potentialPos = so[id] - 1
@@ -1118,7 +1371,7 @@ end
 local function OnClickSortDown(spell)
 	RebuildCustomSort()
 	
-	local so = TomeOfTele_OptionsGlobal.SortOrder
+	local so = GetOption("sortOrder")
 	local id = GetOptionId(spell)	
 	if so[id] and so[id] < #TeleporterSpells then
 		local potentialPos = so[id] + 1
@@ -1138,7 +1391,31 @@ local function OnClickSortDown(spell)
 	Refresh()
 end
 
-local function AddCustomizationIcon(existingIcon, buttonFrame, xOffset, yOffset, width, height, optionName, onClick)
+local function OnClickRemove(spell)
+	local dialogText = "Are you sure you want to remove " .. spell.spellName .. "?"
+	
+	StaticPopupDialogs["TELEPORTER_CONFIRM_REMOVE"] = 
+	{
+		text = dialogText,
+		button1 = "Yes",
+		button2 = "No",
+		OnAccept = function() 
+			if spell.spellType == ST_Item then
+				GetOption("extraItems")[spell.spellId] = nil
+			else
+				GetOption("extraSpells")[spell.spellId] = nil
+			end
+			RebuildSpellList()
+			Refresh()
+		end,
+		OnCancel = function() end,
+		hideOnEscape = true
+	}
+	
+	StaticPopup_Show("TELEPORTER_CONFIRM_REMOVE")
+end
+
+local function AddCustomizationIcon(existingIcon, buttonFrame, xOffset, yOffset, width, height, optionName, onClick, forceHidden)
 	local iconObject = existingIcon
 	if not iconObject then		
 		iconObject = {}
@@ -1158,7 +1435,7 @@ local function AddCustomizationIcon(existingIcon, buttonFrame, xOffset, yOffset,
 		iconObject.frame:SetWidth(width)
 		iconObject.frame:SetHeight(height)
 		
-		if CustomizeSpells then
+		if CustomizeSpells and not forceHidden then
 			iconObject.icon:Show()
 			iconObject.frame:Show()
 		else
@@ -1174,14 +1451,194 @@ end
 
 
 local function InitalizeOptions()
-	if not TomeOfTele_OptionsGlobal then
-		TomeOfTele_OptionsGlobal = {}
-		TomeOfTele_OptionsGlobal.ShowSpells = {}
-		TomeOfTele_OptionsGlobal.SortOrder = {}
-	end	
+	if not TomeOfTele_OptionsGlobal then TomeOfTele_OptionsGlobal = {} end
+	if not TomeOfTele_OptionsGlobal["showSpells"] then TomeOfTele_OptionsGlobal["showSpells"] = {} end
+	if not TomeOfTele_OptionsGlobal["sortOrder"] then TomeOfTele_OptionsGlobal["sortOrder"] = {} end
+	if not TomeOfTele_Options then TomeOfTele_Options = {} end
+	if not TomeOfTele_Options["showSpells"] then TomeOfTele_Options["showSpells"] = {} end
+	if not TomeOfTele_Options["sortOrder"] then TomeOfTele_Options["sortOrder"] = {} end
 end
 
--- TODO: Refactor!
+local IsAdding = false
+
+local function FinishAddingItem(dialog, isItem, id)
+	IsAdding = false
+	
+	if isItem then
+		local extraItems = GetOption("extraItems")
+		if not extraItems then
+			extraItems = {}
+			SetOption("extraItems", extraItems)
+		end
+		extraItems[id] = dialog.editBox:GetText()
+	else
+		local extraSpells = GetOption("extraSpells")
+		if not extraSpells then
+			extraSpells = {}
+			SetOption("extraSpells", extraSpells)
+		end
+		extraSpells[id] = dialog.editBox:GetText()
+	end
+	
+	RebuildSpellList()
+	Refresh()
+end
+
+local function ShowSelectDestinationUI(dialog, isItem)
+	local id = dialog.editBox:GetText()
+	local name
+	if isItem then
+		name = GetItemInfo(id)
+	else
+		name = GetSpellInfo(id)
+	end
+	
+	if name then
+		local dialogText = "Adding " .. name .. ".\nWhat zone does it teleport to?"
+		
+		StaticPopupDialogs["TELEPORTER_ADDITEM_DEST"] = 
+		{
+			text = dialogText,
+			button1 = "OK",
+			button2 = "Cancel",
+			OnAccept = function(dialog) FinishAddingItem(dialog, isItem, id) end,
+			OnCancel = function() IsAdding = false; end,
+			hideOnEscape = true,
+			hasEditBox = true
+		}
+		
+		StaticPopup_Show("TELEPORTER_ADDITEM_DEST")
+	else
+		local dialogText
+		
+		if isItem then
+			dialogText = "Could not find an item with this ID."
+		else
+			dialogText = "Could not find a spell with this ID."
+		end
+		
+		StaticPopupDialogs["TELEPORTER_ADDITEM_FAIL"] = 
+		{
+			text = dialogText,
+			button1 = "OK",
+			OnAccept = function() IsAdding = false; end,
+			OnCancel = function() IsAdding = false; end,
+			hideOnEscape = true
+		}
+		
+		StaticPopup_Show("TELEPORTER_ADDITEM_FAIL")
+	end
+	
+	
+end
+
+local function ShowAddItemUI(isItem)
+	local dialogText
+	
+	if IsAdding then return end
+	
+	IsAdding = true
+	
+	if isItem then
+		dialogText = "Enter the item ID. You can get this from wowhead.com."
+	else
+		dialogText = "Enter the spell ID. You can get this from wowhead.com."
+	end
+	
+	StaticPopupDialogs["TELEPORTER_ADDITEM"] = 
+	{
+		text = dialogText,
+		button1 = "OK",
+		button2 = "Cancel",
+		OnAccept = function(dialog) ShowSelectDestinationUI(dialog, isItem) end,
+		OnCancel = function() IsAdding = false; end,
+		hideOnEscape = true,
+		hasEditBox = true
+	}
+	
+	StaticPopup_Show("TELEPORTER_ADDITEM")
+end
+
+local function CreateMainFrame()
+	TeleporterParentFrame = TeleporterFrame
+	TeleporterParentFrame:SetFrameStrata("HIGH")		
+	
+	local buttonHeight = GetScaledOption("buttonHeight")
+	local buttonWidth = GetScaledOption("buttonWidth")
+	local labelHeight = GetScaledOption("labelHeight")
+	local numColumns = 1
+	local lastDest = nil
+	local maximumHeight = GetScaledOption("maximumHeight")
+	local fontHeight = GetScaledOption("fontHeight")
+	local frameEdgeSize = GetOption("frameEdgeSize")
+	local fontFile = GetOption("buttonFont")
+	local fontFlags = nil 
+	local titleWidth = GetScaledOption("titleWidth")
+	local titleHeight = GetScaledOption("titleHeight")
+	local buttonInset = GetOption("buttonInset")	
+	
+	TeleporterParentFrame:ClearAllPoints()
+	local points = GetOption("points")
+	if points then
+		for i,pt in ipairs(points) do
+			TeleporterParentFrame:SetPoint(pt[1], pt[2], pt[3], pt[4], pt[5])
+		end
+	else
+		TeleporterParentFrame:SetPoint("CENTER",0,0)
+	end
+				
+	tinsert(UISpecialFrames,TeleporterParentFrame:GetName());
+	--TeleporterParentFrame:SetScript( "OnHide", TeleporterClose )
+
+	-- Title bar
+	local titleFrame = CreateFrame("Frame","TeleporterTitleFrame",TeleporterParentFrame)	
+	TitleFrameBG = titleFrame:CreateTexture()
+	TitleFrameBG:SetTexture(GetOption("titleBackground"))
+	TitleFrameBG:SetAllPoints( titleFrame )
+	titleFrame:SetPoint("TOP",TeleporterParentFrame,"TOP",0,titleHeight / 2 - GetScaledOption("titleOffset"))
+	titleFrame:SetWidth(titleWidth)
+	titleFrame:SetHeight(titleHeight)
+
+	local titleString = titleFrame:CreateFontString("TeleporterTitleString", nil, GetOption("titleFont"))
+	titleString:SetFont(fontFile, fontHeight, fontFlags)
+	titleString:SetText( AddonTitle )
+	titleString:SetPoint("TOP", titleFrame, "TOP", 0, -titleHeight / 5)
+	
+	TeleporterParentFrame:RegisterForDrag("LeftButton")			
+	TeleporterParentFrame:SetScript("OnDragStart", function() TeleporterParentFrame:StartMoving() end )
+	TeleporterParentFrame:SetScript("OnDragStop", function() TeleporterParentFrame:StopMovingOrSizing(); SavePosition(); end )
+	TeleporterParentFrame:EnableMouse(true)
+	TeleporterParentFrame:SetMovable(true)
+	TeleporterParentFrame:SetScript("OnMouseUp", OnClickFrame)
+	
+	-- Close button
+	local closeButton = CreateFrame( "Button", "TeleporterCloseButton", TeleporterParentFrame, "UIPanelButtonTemplate" )
+	closeButton:SetText( "X" )
+	closeButton:SetPoint( "TOPRIGHT", TeleporterParentFrame, "TOPRIGHT", -buttonInset, -buttonInset )
+	closeButton:SetWidth( buttonWidth )
+	closeButton:SetHeight( buttonHeight )
+	closeButton:SetScript( "OnClick", TeleporterClose )			
+	
+	-- Help text
+	if GetOption("showHelp") then
+		local helpString = TeleporterParentFrame:CreateFontString("TeleporterHelpString", nil, GetOption("titleFont"))
+		helpString:SetFont(fontFile, fontHeight, fontFlags)
+		helpString:SetText( "Click to teleport, Ctrl+click to create a macro." )
+		helpString:SetJustifyV("CENTER")
+		helpString:SetJustifyH("LEFT")
+	end
+	
+	AddItemButton = CreateFrame( "Button", "TeleporterAddItemButton", TeleporterParentFrame, "UIPanelButtonTemplate" )
+	AddItemButton:SetText( "Add Item" )
+	AddItemButton:SetPoint( "BOTTOMLEFT", TeleporterParentFrame, "BOTTOMLEFT", buttonInset, buttonInset )
+	AddItemButton:SetScript( "OnClick", function() ShowAddItemUI(true) end )
+	
+	AddSpellButton = CreateFrame( "Button", "TeleporterAddSpellButton", TeleporterParentFrame, "UIPanelButtonTemplate" )
+	AddSpellButton:SetText( "Add Spell" )
+	AddSpellButton:SetPoint( "BOTTOMRIGHT", TeleporterParentFrame, "BOTTOMRIGHT", -buttonInset, buttonInset )
+	AddSpellButton:SetScript( "OnClick", function() ShowAddItemUI(false) end )
+end
+
 function TeleporterOpenFrame()
 
 	if UnitAffectingCombat("player") then
@@ -1211,58 +1668,7 @@ function TeleporterOpenFrame()
 		OpenTime = GetTime()
 
 		if TeleporterParentFrame == nil then
-			TeleporterParentFrame = TeleporterFrame
-			TeleporterParentFrame:SetFrameStrata("BACKGROUND")		
-			
-			TeleporterParentFrame:ClearAllPoints()
-			if TomeOfTele_Points then
-				for i,pt in ipairs(TomeOfTele_Points) do
-					TeleporterParentFrame:SetPoint(pt[1], pt[2], pt[3], pt[4], pt[5])
-				end
-			else
-				TeleporterParentFrame:SetPoint("CENTER",0,0)
-			end
-						
-			tinsert(UISpecialFrames,TeleporterParentFrame:GetName());
-			--TeleporterParentFrame:SetScript( "OnHide", TeleporterClose )
-
-			-- Title bar
-			local titleFrame = CreateFrame("Frame","TeleporterTitleFrame",TeleporterParentFrame)	
-			TitleFrameBG = titleFrame:CreateTexture()
-			TitleFrameBG:SetTexture(GetOption("titleBackground"))
-			TitleFrameBG:SetAllPoints( titleFrame )
-			titleFrame:SetPoint("TOP",TeleporterParentFrame,"TOP",0,titleHeight / 2 - GetScaledOption("titleOffset"))
-			titleFrame:SetWidth(titleWidth)
-			titleFrame:SetHeight(titleHeight)
-
-			local titleString = titleFrame:CreateFontString("TeleporterTitleString", nil, GetOption("titleFont"))
-			titleString:SetFont(fontFile, fontHeight, fontFlags)
-			titleString:SetText( AddonTitle )
-			titleString:SetPoint("TOP", titleFrame, "TOP", 0, -titleHeight / 5)
-			
-			TeleporterParentFrame:RegisterForDrag("LeftButton")			
-			TeleporterParentFrame:SetScript("OnDragStart", function() TeleporterParentFrame:StartMoving() end )
-			TeleporterParentFrame:SetScript("OnDragStop", function() TeleporterParentFrame:StopMovingOrSizing(); SavePosition(); end )
-			TeleporterParentFrame:EnableMouse(true)
-			TeleporterParentFrame:SetMovable(true)
-			TeleporterParentFrame:SetScript("OnMouseUp", OnClickFrame)
-			
-			-- Close button
-			local closeButton = CreateFrame( "Button", "TeleporterCloseButton", TeleporterParentFrame, "UIPanelButtonTemplate" )
-			closeButton:SetText( "X" )
-			closeButton:SetPoint( "TOPRIGHT", TeleporterParentFrame, "TOPRIGHT", -buttonInset, -buttonInset )
-			closeButton:SetWidth( buttonWidth )
-			closeButton:SetHeight( buttonHeight )
-			closeButton:SetScript( "OnClick", TeleporterClose )			
-			
-			-- Help text
-			if GetOption("showHelp") then
-				local helpString = TeleporterParentFrame:CreateFontString("TeleporterHelpString", nil, GetOption("titleFont"))
-				helpString:SetFont(fontFile, fontHeight, fontFlags)
-				helpString:SetText( "Click to teleport, Ctrl+click to create a macro." )
-				helpString:SetJustifyV("CENTER")
-				helpString:SetJustifyH("LEFT")
-			end
+			CreateMainFrame()			
 		end
 		
 		if GetOption("showTitle")then
@@ -1311,23 +1717,22 @@ function TeleporterOpenFrame()
 		SetupSpells()
 		local SortType = GetOption("sort")
 		if CustomizeSpells then
-			SortType = 3
+			SortType = SortCustom
 		end
 		table.sort(TeleporterSpells, function(a,b) return SortSpells(a, b, SortType) end)
 
 		for index, spell in ipairs(TeleporterSpells) do		
-			local spellId = spell[1]
-			local spellType = spell[2]
+			local spellId = spell.spellId
+			local spellType = spell.spellType
 			local isItem = (spellType == ST_Item)
-			local destination = spell[3]
-			local condition = spell[4]
-			local consumable = spell[5]
-			local spellName = spell[SpellNameIndex]
+			local destination = spell.zone
+			local consumable = spell.consumable
+			local spellName = spell.spellName
 			local displaySpellName = spellName
 			local isValidSpell = true
 			local itemTexture = nil
 
-			if destination == HearthString then
+			if destination == HearthString or destination == RecallString then
 				local bindLocation = GetBindLocation()
 				if bindLocation then
 					destination = "Hearth (" .. bindLocation .. ")"
@@ -1335,33 +1740,11 @@ function TeleporterOpenFrame()
 					destination = "Hearth"
 				end
 			end
-			
-			-- Glyph of Astral Fixation changes spell destination to faction's Earthshrine
-			local AstralGlyph = 147787
-			if destination == RecallString then
-				--TODO: Is there a Legion equivalent?
-				--local hasGlyph = false
-				--local glyphIdx
-				--for glyphIdx = 1,NUM_GLYPH_SLOTS do
-				--	local _,_,_,glyphId = GetGlyphSocketInfo(glyphIdx)
-				--	if glyphId == AstralGlyph then
-				--		hasGlyph = true
-				--	end
-				--end
-				
-				--if not hasGlyph then
-					local bindLocation = GetBindLocation()
-					if bindLocation then
-						destination = "Hearth (" .. bindLocation .. ")"
-					end
-				--else
-				--	destination = "Astral Recall (Earthshrine)"
-				--end
-			end
-			
-			if destination == RecallString then
+						
+			if destination == FlightString then
 				bindLocation = "Flight Master"
 			end
+
 
 			if isItem then
 				_, _, _, _, _, _, _, _, _, itemTexture = GetItemInfo( spellId )
@@ -1375,8 +1758,14 @@ function TeleporterOpenFrame()
 				end
 			end
 			
-			local haveSpell = CanUseSpell(spell)			
-			
+			local haveSpell = isValidSpell and CanUseSpell(spell)	
+
+			local toySpell = nil
+			if isItem then
+				if PlayerHasToy(spellId) then
+					toySpell = GetItemSpell(spellId)
+				end			
+			end
 			
 			if haveSpell then
 				-- Add extra column if needed
@@ -1401,7 +1790,7 @@ function TeleporterOpenFrame()
 
 				-- Main button
 				local buttonFrame = TeleporterCreateReusableFrame("Button","TeleporterB",TeleporterParentFrame,"SecureActionButtonTemplate")
-				buttonFrame:SetFrameStrata("BACKGROUND")
+				--buttonFrame:SetFrameStrata("MEDIUM")
 				buttonFrame:SetWidth(buttonWidth)
 				buttonFrame:SetHeight(buttonHeight)
 				buttonFrame:SetPoint("TOPLEFT",TeleporterParentFrame,"TOPLEFT",xoffset,yoffset)
@@ -1464,7 +1853,7 @@ function TeleporterOpenFrame()
 
 				-- Cooldown bar
 				local cooldownbar = TeleporterCreateReusableFrame( "Frame", "TeleporterCB", buttonFrame, nil )
-				cooldownbar:SetFrameStrata("LOW")
+				--cooldownbar:SetFrameStrata("MEDIUM")
 				cooldownbar:SetWidth(64)
 				cooldownbar:SetHeight(buttonHeight)
 				cooldownbar:SetPoint("TOPLEFT",buttonFrame,"TOPLEFT",0,0)
@@ -1486,7 +1875,7 @@ function TeleporterOpenFrame()
 				nameString:SetPoint("TOP",cooldownString,"TOPRIGHT",0,0)
 				nameString:SetPoint("LEFT", buttonFrame, "TOPLEFT", iconOffsetX + iconW + 2, iconOffsetY - 1)
 				if CustomizeSpells then
-					nameString:SetPoint("BOTTOMRIGHT",cooldownString,"BOTTOMLEFT",-iconW * 3,0)
+					nameString:SetPoint("BOTTOMRIGHT",cooldownString,"BOTTOMLEFT",-iconW * 4,0)
 				else
 					nameString:SetPoint("BOTTOMRIGHT",cooldownString,"BOTTOMLEFT",0,0)
 				end
@@ -1507,18 +1896,29 @@ function TeleporterOpenFrame()
 					maxyoffset = -yoffset
 				end
 				
+				RemoveIconOffset = -iconOffsetX - iconW * 3
 				ShowIconOffset = -iconOffsetX - iconW * 2
 				SortUpIconOffset = -iconOffsetX - iconW
 				SortDownIconOffset = -iconOffsetX
 				
-				buttonFrame.ShowIcon = AddCustomizationIcon(buttonFrame.ShowIcon, buttonFrame, ShowIconOffset, iconOffsetY, iconW, iconH, "showIcon", function() OnClickShow(spell) end)				
+				buttonFrame.RemoveIcon = AddCustomizationIcon(buttonFrame.RemoveIcon, buttonFrame, RemoveIconOffset, iconOffsetY, iconW, iconH, "removeButtonIcon", function() OnClickRemove(spell) end, not spell.isCustom)
+				buttonFrame.ShowIcon = AddCustomizationIcon(buttonFrame.ShowIcon, buttonFrame, ShowIconOffset, iconOffsetY, iconW, iconH, "showButtonIcon", function() OnClickShow(spell) end)				
 				buttonFrame.SortUpIcon = AddCustomizationIcon(buttonFrame.SortUpIcon, buttonFrame, SortUpIconOffset, iconOffsetY, iconW, iconH, "sortUpIcon", function() OnClickSortUp(spell) end)
 				buttonFrame.SortDownIcon = AddCustomizationIcon(buttonFrame.SortDownIcon, buttonFrame, SortDownIconOffset, iconOffsetY, iconW, iconH, "sortDownIcon", function() OnClickSortDown(spell) end)
-			
 				
-				--buttonFrame:SetScript("OnMouseUp", OnClickButton)				
+				buttonFrame:SetScript("OnMouseUp", OnClickTeleButton)
 				
-				ButtonSettings[buttonFrame] = { isItem, spellName, cooldownbar, cooldownString, spellId, countString, toySpell, spell }	
+				local buttonSetting = { }	
+				buttonSetting.isItem = isItem
+				buttonSetting.spellName = spellName
+				buttonSetting.cooldownbar = cooldownbar
+				buttonSetting.cooldownString = cooldownString
+				buttonSetting.spellId = spellId
+				buttonSetting.countString = countString
+				buttonSetting.toySpell = toySpell
+				buttonSetting.spell = spell
+				buttonSetting.spellType = spellType
+				ButtonSettings[buttonFrame] = buttonSetting
 			end	
 		end
 		
@@ -1537,8 +1937,26 @@ function TeleporterOpenFrame()
 			helpTextHeight = 0
 		end
 		
+		local addRemoveButtonsHeight = 0
+	
+		if CustomizeSpells then
+			if numColumns < 2 then
+				numColumns = 2
+			end
+			
+			AddItemButton:SetWidth((numColumns * buttonWidth) / 2)			
+			AddSpellButton:SetWidth((numColumns * buttonWidth) / 2)			
+			addRemoveButtonsHeight = buttonInset + buttonHeight
+			
+			AddItemButton:Show()
+			AddSpellButton:Show()
+		else
+			AddItemButton:Hide()
+			AddSpellButton:Hide()
+		end
+		
 		TeleporterParentFrame:SetWidth(numColumns * buttonWidth + buttonInset * 2)
-		TeleporterParentFrame:SetHeight(maxyoffset + buttonInset * 2 + 2 + helpTextHeight)
+		TeleporterParentFrame:SetHeight(maxyoffset + buttonInset * 2 + 2 + helpTextHeight + addRemoveButtonsHeight)
 		
 	end
 
@@ -1580,6 +1998,9 @@ function TeleporterClose()
 			TeleporterParentFrame:Hide()
 			IsVisible = false
 		end
+		if TeleporterQuickMenuFrame then
+			TeleporterQuickMenuFrame:Hide()
+		end
 	end
 end
 
@@ -1601,7 +2022,7 @@ function TeleporterSlashCmdFunction(args)
 			SavePoints()
 		end
 	elseif splitArgs[1] == "reset" then
-		TomeOfTele_Points = nil
+		SetOption("points", nil)
 		if TeleporterParentFrame then
 			TeleporterParentFrame:ClearAllPoints()
 			TeleporterParentFrame:SetPoint("CENTER", "UIParent", "CENTER", 0, 0)
@@ -1741,11 +2162,15 @@ function Teleporter_OnAddonLoaded()
 	
 	icon:Register("TomeTele", dataobj, TomeOfTele_Icon)		
 	
+	RebuildSpellList()
+	
 	for index, spell in ipairs(TeleporterSpells) do		
-		local spellId = spell[1]
-		local spellType = spell[2]
+		-- TODO: Replace indices with names after refactor
+		local spellId = spell[SpellIdIndex]
+		local spellType = spell[SpellTypeIndex]
 		local isItem = (spellType == ST_Item)
 		if isItem then
+			-- Query this early so it will be ready when we need it.
 			C_ToyBox.IsToyUsable(spellId)			
 		end
 	end
