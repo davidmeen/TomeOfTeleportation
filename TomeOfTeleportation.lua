@@ -343,7 +343,7 @@ local function RebuildSpellList()
 	local extraSpells = GetOption("extraSpells")
 	if extraSpells then		
 		for id,dest in pairs(extraSpells) do
-			local spell = CreateSpell(id,dest)
+			local spell = TeleporterCreateSpell(id,dest)
 			spell.isCustom = true
 			tinsert(TeleporterSpells, spell)
 		end
@@ -352,7 +352,7 @@ local function RebuildSpellList()
 	local extraItems = GetOption("extraItems")
 	if extraItems then
 		for id,dest in pairs(extraItems) do
-			local spell = CreateItem(id,dest)
+			local spell = TeleporterCreateItem(id,dest)
 			spell.isCustom = true
 			tinsert(TeleporterSpells, spell)
 		end
@@ -1421,7 +1421,7 @@ function TeleporterOpenFrame()
 			local isValidSpell = true
 			local itemTexture = nil
 
-			if destination == HearthString or destination == RecallString then
+			if destination == TeleporterHearthString or destination == TeleporterRecallString then
 				local bindLocation = GetBindLocation()
 				if bindLocation then
 					destination = "Hearth (" .. bindLocation .. ")"
@@ -1430,7 +1430,7 @@ function TeleporterOpenFrame()
 				end
 			end
 						
-			if destination == FlightString then
+			if destination == TeleporterFlightString then
 				destination = "Flight Master"
 			end
 
@@ -1465,7 +1465,7 @@ function TeleporterOpenFrame()
 					numColumns = numColumns + 1
 					newColumn = true
 				end		
-
+				
 				-- Title
 				if newColumn or lastDest ~= destination then
 					local destString = TeleporterCreateReusableFontString("TeleporterDL", TeleporterParentFrame, "GameFontNormalSmall")
