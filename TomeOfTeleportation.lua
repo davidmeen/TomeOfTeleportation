@@ -315,10 +315,6 @@ local function CreateConsumable(id, dest)
 	return spell
 end
 
--- { id, isItem, destination, condition, consumable, spellName }
--- It probably won't work if a single player has two different items
--- with the same name in their inventory, but I don't think that's possible.
--- spellName will be filled in when the addon loads.
 local TeleporterDefaultSpells = 
 {	
 }
@@ -550,140 +546,300 @@ CreateDestination(
 		CreateChallengeSpell(159898),	-- Teleport: Skyreach
 		CreateChallengeSpell(159902),	-- Teleport: Upper Blackrock Spire
 	})
---
---	{ 50977, ST_Spell, "Ebon Hold" },		-- Death Gate
+
+CreateDestination(
+	"Ebon Hold",
+	{
+		CreateSpell(50977),			-- Death Gate
+	})
+
+CreateDestination(
+	"Emerald Dreamway",
+	{
+		CreateSpell(193753), 		-- Dreamwalk
+	})
+
+CreateDestination(
+	"Exodar",
+	{
+		CreateSpell(32271),			-- Teleport: Exodar
+		CreateSpell(32266),			-- Portal: Exodar
+	})
+
+CreateDestination(
+	"Fishing Pool",
+	{	
+		CreateConditionalSpell(201891, AtContinent(ContinentIdBrokenIsles)),	-- Undercurrent
+	})
+	
+CreateDestination(
+	"Garrison",
+	{
+		CreateItem(110560),				-- Garrison Hearthstone
+	})
+
+	
+CreateDestination(
+	"Hall of the Guardian",
+	{
+		CreateChallengeSpell(193759), 	-- Teleport: Hall of the Guardian
+	})
 --	
---	{ 193753, ST_Spell, "Emerald Dreamway" }, -- Dreamwalk
---	
---	{ 110560, ST_Item, "Garrison" },		-- Garrison Hearthstone
---	
---	{ 32271, ST_Spell, "Exodar" },			-- Teleport: Exodar
---	{ 32266, ST_Spell, "Exodar" },			-- Portal: Exodar
---	
---	{ 201891, ST_Spell, "Fishing Pool", AtContinent(ContinentIdBrokenIsles) },	-- Undercurrent
---	
---	{ 193759, ST_Spell, "Hall of the Guardian" }, -- Teleport: Hall of the Guardian
---	
---	{ 141017, ST_Item, "Highmountain", AtContinent(ContinentIdBrokenIsles), true },	-- Scroll of Town Portal: Lian'tril
---	{ 140493, ST_Item, "Highmountain", OnDayAtContinent(DayThursday, ContinentIdBrokenIsles) },	-- Adept's Guide to Dimensional Rifting
---	
---	{ 46874, ST_Item, "Icecrown" },		-- Argent Crusader's Tabard
---	
---	{ 3562, ST_Spell, "Ironforge" },		-- Teleport: Ironforge
---	{ 11416, ST_Spell, "Ironforge" },		-- Portal: Ironforge
---	
---	{ 95567, ST_Item, "Isle of Thunder", AtZone(MapIDIsleOfThunder ) },	-- Kirin Tor Beacon
---	{ 95568, ST_Item, "Isle of Thunder", AtZone(MapIDIsleOfThunder ) },	-- Sunreaver Beacon
---
---	{ 118663, ST_Item, "Karabor" },		-- Relic of Karabor
---	
---	{ 22589, ST_Item, "Karazhan" },		-- Atiesh, Greatstaff of the Guardian
---	{ 22630, ST_Item, "Karazhan" },		-- Atiesh, Greatstaff of the Guardian
---	{ 22631, ST_Item, "Karazhan" },		-- Atiesh, Greatstaff of the Guardian
---	{ 22632, ST_Item, "Karazhan" },		-- Atiesh, Greatstaff of the Guardian
---	{ 142469, ST_Item, "Karazhan" }, 	-- Violet Seal of the Grand Magus
---	
---	{ 126892, ST_Spell, "Kun Lai Summit", function() return not HaveUpgradedZen() end },	-- Zen Pilgrimage
---	
---	{ 18960, ST_Spell, "Moonglade" },		-- Teleport: Moonglade
---	{ 21711, ST_Item, "Moonglade" },		-- Lunar Festival Invitation
---
---	{ 30542, ST_Item, "Netherstorm" },		-- Dimensional Ripper - Area 52
---
---	{ 48933, ST_Item, "Northrend" },		-- Wormhole Generator: Northrend
---
---	{ 3567, ST_Spell, "Orgrimmar" },		-- Teleport: Orgrimmar
---	{ 11417, ST_Spell, "Orgrimmar" },		-- Portal: Orgrimmar
---	{ 63207, ST_Item, "Orgrimmar" },		-- Wrap of Unity
---	{ 63353, ST_Item, "Orgrimmar" },		-- Shroud of Cooperation
---	{ 65274, ST_Item, "Orgrimmar" },		-- Cloak of Coordination
---	
---	{ 129929, ST_Item, "Outland", AtContinent(ContinentIdDraenor) },	-- Ever-Shifting Mirror
---	
---	{ 87548, ST_Item, "Pandaria", AtContinent(ContinentIdPandaria), true }, -- Lorewalker's Lodestone
---	{ 87215, ST_Item, "Pandaria" },			-- Wormhole Generator: Pandaria
---	
---	{ 131225, ST_Challenge, "Pandaria Dungeons" },	-- Path of the Setting Sun	
---	{ 131222, ST_Challenge, "Pandaria Dungeons" },	-- Path of the Mogu King
---	{ 131231, ST_Challenge, "Pandaria Dungeons" },	-- Path of the Scarlet Blade	
---	{ 131229, ST_Challenge, "Pandaria Dungeons" },	-- Path of the Scarlet Mitre	
---	{ 131232, ST_Challenge, "Pandaria Dungeons" },	-- Path of the Necromancer
---	{ 131206, ST_Challenge, "Pandaria Dungeons" },	-- Path of the Shado-Pan
---	{ 131228, ST_Challenge, "Pandaria Dungeons" },	-- Path of the Black Ox
---	{ 131205, ST_Challenge, "Pandaria Dungeons" },	-- Path of the Stout Brew
---	{ 131204, ST_Challenge, "Pandaria Dungeons" },	-- Path of the Jade Serpent
---	
---	{ 147420, ST_Spell, "Random" },			-- One With Nature
---	{ 64457, ST_Item, "Random" }, 			-- The Last Relic of Argus
---	{ 136849, ST_Item, "Random", IsClass("DRUID") },			-- Nature's Beacon
---	
---	{ 139590, ST_Item, "Ravenholdt" },		-- Scroll of Teleport: Ravenholdt
---		
---	{ 33690, ST_Spell, "Shattrath" },		-- Teleport: Shattrath (Alliance)
---	{ 33691, ST_Spell, "Shattrath" },		-- Portal: Shattrath (Alliance)
---	{ 35715, ST_Spell, "Shattrath" },		-- Teleport: Shattrath (Horde)
---	{ 35717, ST_Spell, "Shattrath" },		-- Portal: Shattrath (Horde)
---	
---	{ 128353, ST_Item, "Shipyard" },		-- Admiral's Compass
---	
---	{ 32272, ST_Spell, "Silvermoon" },		-- Teleport: Silvermoon
---	{ 32267, ST_Spell, "Silvermoon" },		-- Portal: Silvermoon
---	
---	{ 49358, ST_Spell, "Stonard" },		-- Teleport: Stonard
---	{ 49361, ST_Spell, "Stonard" },		-- Portal: Stonard
---	
---	{ 140493, ST_Item, "Stormheim", OnDayAtContinent(DayFriday, ContinentIdBrokenIsles) },	-- Adept's Guide to Dimensional Rifting
---	
---	{ 3561, ST_Spell, "Stormwind" },		-- Teleport: Stormwind
---	{ 10059, ST_Spell, "Stormwind" },		-- Portal: Stormwind
---	{ 63206, ST_Item, "Stormwind" },		-- Wrap of Unity
---	{ 63352, ST_Item, "Stormwind" },		-- Shroud of Cooperation
---	{ 65360, ST_Item, "Stormwind" },		-- Cloak of Coordination
---	
---	{ 140324, ST_Item, "Suramar" },			-- Mobile Telemancy Beacon
---	{ 141014, ST_Item, "Suramar", AtContinent(ContinentIdBrokenIsles), true },	-- Scroll of Town Portal: Sashj'tar
---	{ 140493, ST_Item, "Suramar", OnDayAtContinent(DayTuesday, ContinentIdBrokenIsles) },	-- Adept's Guide to Dimensional Rifting
---
---	{ 128502, ST_Item, "Tanaan Jungle", AtZone(MapIDTanaanJungle) },	-- Hunter's Seeking Crystal
---	{ 128503, ST_Item, "Tanaan Jungle", AtZone(MapIDTanaanJungle) },	-- Master Hunter's Seeking Crystal
---	
---	{ 18986, ST_Item, "Tanaris" },			-- Ultrasafe Transporter - Gadgetzan
---	
---	{ 126892, ST_Spell, "Temple of Five Dawns", function() return HaveUpgradedZen() end },	-- Zen Pilgrimage
---	
---	{ 49359, ST_Spell, "Theramore" },		-- Teleport: Theramore
---	{ 49360, ST_Spell, "Theramore" },		-- Portal: Theramore
---	
---	{ 103678, ST_Item, "Timeless Isle" },	-- Time-Lost Artifact
---
---	{ 3566, ST_Spell, "Thunder Bluff" },	-- Teleport: Thunder Bluff
---	{ 11420, ST_Spell, "Thunder Bluff" },	-- Portal: Thunder Bluff
---	
---	{ 63378, ST_Item, "Tol Barad" },		-- Hellscream's Reach Tabard
---	{ 63379, ST_Item, "Tol Barad" },		-- Baradin's Wardens Tabard
---	{ 88342, ST_Spell, "Tol Barad" },		-- Teleport: Tol Barad (Alliance)
---	{ 88344, ST_Spell, "Tol Barad" },		-- Teleport: Tol Barad (Horde)
---	{ 88345, ST_Spell, "Tol Barad" },		-- Portal: Tol Barad (Alliance)
---	{ 88346, ST_Spell, "Tol Barad" },		-- Portal: Tol Barad (Horde)
---	
---
---	{ 3563, ST_Spell, "Undercity" },		-- Teleport: Undercity
---	{ 11418, ST_Spell, "Undercity" },		-- Portal: Undercity
---	
---	{ 141013, ST_Item, "Val'sharah", AtContinent(ContinentIdBrokenIsles), true },	-- Scroll of Town Portal: Shala'nir
---	{ 141015, ST_Item, "Val'sharah", AtContinent(ContinentIdBrokenIsles), true },	-- Scroll of Town Portal: Kal'delar	
---	{ 140493, ST_Item, "Val'sharah", OnDayAtContinent(DayMonday, ContinentIdBrokenIsles) },	-- Adept's Guide to Dimensional Rifting
---	
---	-- I don't know why there are so many of these, not sure which is right but it's now safe to
---	-- list them all.
---	{ 132621, ST_Spell, "Vale of Eternal Blossoms" },		-- Teleport: Vale of Eternal Blossoms
---	{ 132627, ST_Spell, "Vale of Eternal Blossoms" },		-- Teleport: Vale of Eternal Blossoms
---	{ 132620, ST_Spell, "Vale of Eternal Blossoms" },		-- Portal: Vale of Eternal Blossoms
---	{ 132622, ST_Spell, "Vale of Eternal Blossoms" },		-- Portal: Vale of Eternal Blossoms
---	{ 132624, ST_Spell, "Vale of Eternal Blossoms" },		-- Portal: Vale of Eternal Blossoms
---	{ 132626, ST_Spell, "Vale of Eternal Blossoms" },		-- Portal: Vale of Eternal Blossoms
---	
---	{ 18984, ST_Item, "Winterspring" },	-- Dimensional Ripper - Everlook
+CreateDestination(
+	"Highmountain",
+	{
+		CreateConditionalConsumable(141017, AtContinent(ContinentIdBrokenIsles)),				-- Scroll of Town Portal: Lian'tril
+		CreateConditionalItem(140493, OnDayAtContinent(DayThursday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
+	})
+
+CreateDestination(
+	"Icecrown",
+	{
+		CreateItem(46874),				-- Argent Crusader's Tabard
+	})
+
+CreateDestination(
+	"Ironforge",
+	{
+		CreateSpell(3562),				-- Teleport: Ironforge
+		CreateSpell(11416)				-- Portal: Ironforge
+	})
+
+CreateDestination(
+	"Isle of Thunder",
+	{
+		CreateConditionalItem(95567, AtZone(MapIDIsleOfThunder )),	-- Kirin Tor Beacon
+		CreateConditionalItem(95568, AtZone(MapIDIsleOfThunder )),	-- Sunreaver Beacon
+	})
+
+CreateDestination(
+	"Karabor",
+	{
+		CreateItem(118663),				-- Relic of Karabor
+	})
+
+CreateDestination(
+	"Karazhan",
+	{
+		CreateItem(22589),		-- Atiesh, Greatstaff of the Guardian
+		CreateItem(22630),		-- Atiesh, Greatstaff of the Guardian
+		CreateItem(22631),		-- Atiesh, Greatstaff of the Guardian
+		CreateItem(22632),		-- Atiesh, Greatstaff of the Guardian
+		CreateItem(142469), 	-- Violet Seal of the Grand Magus
+	})
+
+CreateDestination(
+	"Kun Lai Summit",
+	{
+		CreateConditionalSpell(126892, function() return not HaveUpgradedZen() end ),	-- Zen Pilgrimage
+	})
+
+CreateDestination(
+	"Moonglade",
+	{
+		CreateSpell(18960),		-- Teleport: Moonglade
+		CreateItem(21711),		-- Lunar Festival Invitation
+	})
+
+CreateDestination(
+	"Netherstorm",
+	{
+		CreateItem(30542),		-- Dimensional Ripper - Area 52
+	})
+
+CreateDestination(
+	"Northrend",
+	{
+		CreateItem(48933),		-- Wormhole Generator: Northrend
+	})
+
+CreateDestination(
+	"Orgrimmar",
+	{
+		CreateSpell(3567),		-- Teleport: Orgrimmar
+		CreateSpell(11417),		-- Portal: Orgrimmar
+		CreateItem(63207),		-- Wrap of Unity
+		CreateItem(63353),		-- Shroud of Cooperation
+		CreateItem(65274),		-- Cloak of Coordination
+	})
+
+CreateDestination(
+	"Outland",
+	{
+		CreateConditionalItem(129929, AtContinent(ContinentIdDraenor) ),	-- Ever-Shifting Mirror
+	})
+
+CreateDestination(
+	"Pandaria",
+	{
+		CreateConditionalConsumable(87548, AtContinent(ContinentIdPandaria)), 	-- Lorewalker's Lodestone
+		CreateItem(87215),														-- Wormhole Generator: Pandaria
+	})
+
+CreateDestination(
+	"Pandaria Dungeons",
+	{
+		CreateChallengeSpell(131225),	-- Path of the Setting Sun	
+		CreateChallengeSpell(131222),	-- Path of the Mogu King
+		CreateChallengeSpell(131231),	-- Path of the Scarlet Blade	
+		CreateChallengeSpell(131229),	-- Path of the Scarlet Mitre	
+		CreateChallengeSpell(131232),	-- Path of the Necromancer
+		CreateChallengeSpell(131206),	-- Path of the Shado-Pan
+		CreateChallengeSpell(131228),	-- Path of the Black Ox
+		CreateChallengeSpell(131205),	-- Path of the Stout Brew
+		CreateChallengeSpell(131204),	-- Path of the Jade Serpent
+	})
+
+CreateDestination(
+	"Random",
+	{
+		CreateSpell(147420),								-- One With Nature
+		CreateItem(64457), 									-- The Last Relic of Argus
+		CreateConditionalItem(136849, IsClass("DRUID")),	-- Nature's Beacon
+	})
+
+CreateDestination(
+	"Ravenholdt",
+	{
+		CreateItem(139590),		-- Scroll of Teleport: Ravenholdt
+	})
+
+CreateDestination(
+	"Shattrath",
+	{
+		CreateSpell(33690),		-- Teleport: Shattrath (Alliance)
+		CreateSpell(33691),		-- Portal: Shattrath (Alliance)
+		CreateSpell(35715),		-- Teleport: Shattrath (Horde)
+		CreateSpell(35717),		-- Portal: Shattrath (Horde)
+	})
+
+CreateDestination(
+	"Shipyard",
+	{
+		CreateItem(128353),		-- Admiral's Compass
+	})
+
+CreateDestination(
+	"Silvermoon",
+	{
+		CreateSpell(32272),		-- Teleport: Silvermoon
+		CreateSpell(32267),		-- Portal: Silvermoon
+	})
+
+CreateDestination(
+	"Stonard",
+	{
+		CreateSpell(49358),		-- Teleport: Stonard
+		CreateSpell(49361),		-- Portal: Stonard
+	})
+
+CreateDestination(
+	"Stormheim",
+	{
+		CreateConditionalItem(140493, OnDayAtContinent(DayFriday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
+	})
+
+CreateDestination(
+	"Stormwind",
+	{
+		CreateSpell(3561),		-- Teleport: Stormwind
+		CreateSpell(10059),		-- Portal: Stormwind
+		CreateItem(63206),		-- Wrap of Unity
+		CreateItem(63352),		-- Shroud of Cooperation
+		CreateItem(65360),		-- Cloak of Coordination
+	})
+
+CreateDestination(
+	"Suramar",
+	{
+		CreateItem(140324),																		-- Mobile Telemancy Beacon
+		CreateConditionalConsumable(141014, AtContinent(ContinentIdBrokenIsles)),				-- Scroll of Town Portal: Sashj'tar
+		CreateConditionalItem(140493, OnDayAtContinent(DayTuesday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
+	})
+		
+CreateDestination(
+	"Tanaan Jungle",
+	{
+		CreateConditionalItem(128502, AtZone(MapIDTanaanJungle)),	-- Hunter's Seeking Crystal
+		CreateConditionalItem(128503, AtZone(MapIDTanaanJungle)),	-- Master Hunter's Seeking Crystal
+	})
+
+CreateDestination(
+	"Tanaris",
+	{
+		CreateItem(18986),		-- Ultrasafe Transporter - Gadgetzan
+	})
+
+CreateDestination(
+	"Temple of Five Dawns",
+	{
+		CreateConditionalSpell(126892, function() return HaveUpgradedZen() end ),	-- Zen Pilgrimage
+	})
+
+CreateDestination(
+	"Theramore",
+	{
+		CreateSpell(49359),		-- Teleport: Theramore
+		CreateSpell(49360),		-- Portal: Theramore
+	})
+
+CreateDestination(
+	"Timeless Isle",
+	{
+		CreateItem(103678),		-- Time-Lost Artifact
+	})
+
+CreateDestination(
+	"Thunder Bluff",
+	{
+		CreateSpell(3566),		-- Teleport: Thunder Bluff
+		CreateSpell(11420),		-- Portal: Thunder Bluff
+	})
+
+CreateDestination(
+	"Tol Barad",
+	{
+		CreateItem(63378),		-- Hellscream's Reach Tabard
+		CreateItem(63379),		-- Baradin's Wardens Tabard
+		CreateSpell(88342),		-- Teleport: Tol Barad (Alliance)
+		CreateSpell(88344),		-- Teleport: Tol Barad (Horde)
+		CreateSpell(88345),		-- Portal: Tol Barad (Alliance)
+		CreateSpell(88346),		-- Portal: Tol Barad (Horde)
+	})
+
+CreateDestination(
+	"Undercity",
+	{
+		CreateSpell(3563),		-- Teleport: Undercity
+		CreateSpell(11418),		-- Portal: Undercity
+	})
+
+CreateDestination(
+	"Val'sharah",
+	{
+		CreateConditionalConsumable(141013, AtContinent(ContinentIdBrokenIsles)),			-- Scroll of Town Portal: Shala'nir
+		CreateConditionalConsumable(141015, AtContinent(ContinentIdBrokenIsles)),			-- Scroll of Town Portal: Kal'delar	
+		CreateConditionalItem(140493, OnDayAtContinent(DayMonday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
+	})
+
+-- I don't know why there are so many of these, not sure which is right but it's now safe to
+-- list them all.
+CreateDestination(
+	"Vale of Eternal Blossoms",
+	{
+		CreateSpell(132621),	-- Teleport: Vale of Eternal Blossoms
+		CreateSpell(132627),	-- Teleport: Vale of Eternal Blossoms
+		CreateSpell(132620),	-- Portal: Vale of Eternal Blossoms
+		CreateSpell(132622),	-- Portal: Vale of Eternal Blossoms
+		CreateSpell(132624),	-- Portal: Vale of Eternal Blossoms
+		CreateSpell(132626),	-- Portal: Vale of Eternal Blossoms
+	})
+
+CreateDestination(
+	"Winterspring",
+	{
+		CreateItem(18984),		-- Dimensional Ripper - Everlook
+	})
 
 
 ---------------------------------------------------------------
