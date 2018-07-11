@@ -1,4 +1,4 @@
-## Interface: 70300
+## Interface: 80000
 ## Title : Tome of Teleportation
 ## Notes: An interface for managing teleportation spells and items.
 ## Author: Remeen
@@ -13,3 +13,4 @@ libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 TomeQuickMenu.lua
 TomeOfTeleportation.lua
 TomeOfTeleportation.xml
+Spells.lua

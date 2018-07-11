@@ -1,7 +1,7 @@
 -- Tome of Teleportation by Remeen.
 
 -- TODO:
--- More Legion spells/items
+-- More Battle for Azeroth items
 -- Improve speed
 
 -- Low priority:
@@ -10,8 +10,9 @@
 local AddonName = "TomeOfTeleportation"
 local AddonTitle = "Tome of Teleportation"
 -- Special case strings start with number to force them to be sorted first.
-local HearthString = "0 Hearth"
-local RecallString = "1 Astral Recall"
+TeleporterHearthString = "0 Hearth"
+TeleporterRecallString = "1 Astral Recall"
+TeleporterFlightString = "2 Flight Master"
 
 local ldb = LibStub:GetLibrary("LibDataBroker-1.1")
 local icon = LibStub("LibDBIcon-1.0")
@@ -65,32 +66,10 @@ local InvTypeToSlot =
 	["INVTYPE_TABARD"] = 19
 }
 
-local MapIDAlteracValley = 401
-local MapIDIsleOfThunder = 928
-local MapIDThroneOfThunder = 930
-local MapIDDalaran = 504
-local MapIDTanaanJungle = 945
-local MapIDAzsuna = 1015
-local MapIDDalaranLegion = 1014
-local MapIDAntoranWastes = 1171
-
-local ContinentIdOutland = 3
-local ContinentIdPandaria = 6
-local ContinentIdDraenor = 7
-local ContinentIdBrokenIsles = 8
-local ContinentIdArgus = 9
 
 local ST_Item = 1
 local ST_Spell = 2
 local ST_Challenge = 3
-
--- TODO: Always look up by name, not index.
-local SpellIdIndex = 1
-local SpellTypeIndex = 2
-local SpellZoneIndex = 3
-local SpellConditionIndex = 4
-local SpellConsumableIndex = 5
-local SpellNameIndex = 6
 
 local SortByDestination = 1
 local SortByType = 2
@@ -173,350 +152,69 @@ local Themes =
 	["Flat"] = FlatTheme	
 }
 
-local function AtContinent(requiredContinent)
-	return function()
-		local oldMapID = GetCurrentMapAreaID()
-		SetMapToCurrentZone()
-		local continentID = GetCurrentMapContinent()
-		SetMapByID(oldMapID)
-		
-		return continentID == requiredContinent
-	end
-end
-
-local function AtZone(requiredZone, altZone)
-	return function()
-		local oldMapID = GetCurrentMapAreaID()
-		SetMapToCurrentZone()
-		local zoneID = GetCurrentMapAreaID()
-		SetMapByID(oldMapID)
-		
-		return zoneID == requiredZone or zoneID == altZone
-	end
-end
-
-local function IsClass(requiredClass)
-	return function()
-		local _, playerClass = UnitClass("player")
-		return playerClass == requiredClass
-	end
-end
-
-local function HaveUpgradedZen()
-	return IsQuestFlaggedCompleted(40236)
-end
-
-local DaySunday = 1
-local DayMonday = 2
-local DayTuesday = 3
-local DayWednesday = 4
-local DayThursday = 5
-local DayFriday = 6
-local DaySaturday = 7
-
-local function OnDay(day)
-	return function()
-		local today = CalendarGetDate()
-		return day == today
-	end
-end
-
-local function OnDayAtContinent(day, continent)
-	return function()
-		return OnDay(day)() and AtContinent(continent)
-	end
-end
-
-local function CreateSpell(id, dest)
+function TeleporterCreateSpell(id, dest)
 	local spell = {}
-	spell[1] = id
-	spell[2] = ST_Spell
-	spell[3] = dest
 	spell.spellId = id
 	spell.spellType = ST_Spell
 	spell.zone = dest
 	return spell
 end
 
-local function CreateItem(id, dest)
+function TeleporterCreateItem(id, dest)
 	local spell = {}
-	spell[1] = id
-	spell[2] = ST_Item
-	spell[3] = dest
 	spell.spellId = id
-	spell.spellType = ST_Spell
+	spell.spellType = ST_Item
 	spell.zone = dest
 	return spell
 end
 
--- { id, isItem, destination, condition, consumable, spellName }
--- It probably won't work if a single player has two different items
--- with the same name in their inventory, but I don't think that's possible.
--- spellName will be filled in when the addon loads.
-local TeleporterDefaultSpells = 
-{	
-	{ 93672, ST_Item, HearthString },		-- Dark Portal
-	{ 54452, ST_Item, HearthString },		-- Ethereal Portal
-	{ 6948, ST_Item, HearthString },		-- Hearthstone
-	{ 28585, ST_Item, HearthString },		-- Ruby Slippers
-	{ 37118, ST_Item, HearthString, nil, true },	-- Scroll of Recall
-	{ 44314, ST_Item, HearthString, nil, true },	-- Scroll of Recall II
-	{ 44315, ST_Item, HearthString, nil, true },	-- Scroll of Recall III
-	{ 64488, ST_Item, HearthString },		-- The Innkeeper's Daughter	
-	{ 142298, ST_Item, HearthString },		-- Astonishingly Scarlet Slippers
-	{ 142543, ST_Item, HearthString, nil, true },	-- Scroll of Town Portal
-	{ 142542, ST_Item, HearthString },		-- Tome of Town Portal
-	
-	{ 556, ST_Spell, RecallString },		-- Astral Recall
-	
-	-- Alterac Valley
-	{ 17690, ST_Item, "Alterac Valley", AtZone(MapIDAlteracValley) },	-- Frostwolf Insignia Rank 1
-	{ 17905, ST_Item, "Alterac Valley", AtZone(MapIDAlteracValley) },	-- Frostwolf Insignia Rank 2
-	{ 17906, ST_Item, "Alterac Valley", AtZone(MapIDAlteracValley) },	-- Frostwolf Insignia Rank 3
-	{ 17907, ST_Item, "Alterac Valley", AtZone(MapIDAlteracValley) },	-- Frostwolf Insignia Rank 4
-	{ 17908, ST_Item, "Alterac Valley", AtZone(MapIDAlteracValley) },	-- Frostwolf Insignia Rank 5
-	{ 17909, ST_Item, "Alterac Valley", AtZone(MapIDAlteracValley) },	-- Frostwolf Insignia Rank 6
-	{ 17691, ST_Item, "Alterac Valley", AtZone(MapIDAlteracValley) },	-- Stormpike Insignia Rank 1
-	{ 17900, ST_Item, "Alterac Valley", AtZone(MapIDAlteracValley) },	-- Stormpike Insignia Rank 2
-	{ 17901, ST_Item, "Alterac Valley", AtZone(MapIDAlteracValley) },	-- Stormpike Insignia Rank 3
-	{ 17902, ST_Item, "Alterac Valley", AtZone(MapIDAlteracValley) },	-- Stormpike Insignia Rank 4
-	{ 17903, ST_Item, "Alterac Valley", AtZone(MapIDAlteracValley) },	-- Stormpike Insignia Rank 5
-	{ 17904, ST_Item, "Alterac Valley", AtZone(MapIDAlteracValley) },	-- Stormpike Insignia Rank 6
-	
-	{ 153226, ST_Item, "Antoran Wastes", AtZone(MapIDAntoranWastes) },	-- Observer's Locus Resonator
-	
-	{ 151652, ST_Item, "Argus" },										-- Wormhole Generator: Argus
-	-- There should be a check for this, but I don't know how to determine if the whistle will work.
-	{ 141605, ST_Item, "Argus", AtContinent(ContinentIdArgus) }, 		-- Flight Master's Whistle	
-	
-	{ 116413, ST_Item, "Ashran", nil, true },	-- Scroll of Town Portal
-	{ 119183, ST_Item, "Ashran", nil, true },	-- Scroll of Risky Recall
-	{ 176246, ST_Spell, "Ashran" },			-- Portal: Stormshield
-	{ 176248, ST_Spell, "Ashran" },			-- Teleport: Stormshield
-	{ 176244, ST_Spell, "Ashran" },			-- Portal: Warspear
-	{ 176242, ST_Spell, "Ashran" },			-- Teleport: Warspear
-	
-	{ 129276, ST_Item, "Azsuna", AtZone(MapIDAzsuna) },			-- Beginner's Guide to Dimensional Rifting
-	{ 141016, ST_Item, "Azsuna", AtContinent(ContinentIdBrokenIsles), true },	-- Scroll of Town Portal: Faronaar
-	{ 140493, ST_Item, "Azsuna", OnDay(DayWednesday) },	-- Adept's Guide to Dimensional Rifting
+function TeleporterCreateChallengeSpell(id, dest)
+	local spell = {}
+	spell.spellId = id
+	spell.spellType = ST_Challenge
+	spell.zone = dest
+	return spell
+end
 
-	{ 95051, ST_Item, "Bizmo's Brawlpub" },	-- The Brassiest Knuckle
-	{ 118907, ST_Item, "Bizmo's Brawlpub" },	-- Pit Fighter's Punching Ring
-	{ 144391, ST_Item, "Bizmo's Brawlpub" },	-- Pugilist's Powerful Punching Ring
+function TeleporterCreateConditionalItem(id, condition, dest)
+	local spell = {}
+	spell.spellId = id
+	spell.spellType = ST_Item
+	spell.condition = condition
+	spell.zone = dest
+	return spell
+end
 
-	{ 32757, ST_Item, "Black Temple" },	-- Blessed Medallion of Karabor
-	{ 151016, ST_Item, "Black Temple" }, -- Fractured Necrolyte Skull
-	
-	{ 37863, ST_Item, "Blackrock Depths" },-- Direbrew's Remote
-	
-	{ 169771, ST_Challenge, "Blackrock Foundry" },		-- Teleport: Blackrock Foundry
-	
-	{ 30544, ST_Item, "Blade's Edge" },	-- Ultrasafe Transporter - Toshley's Station
-	
-	{ 118662, ST_Item, "Bladespire Fortress" }, -- Bladespire Relic
-	
-	{ 50287, ST_Item, "Booty Bay" },		-- Boots of the Bay
-	
-	{ 95050, ST_Item, "Brawl'gar Arena" },	-- The Brassiest Knuckle
-	{ 118908, ST_Item, "Brawl'gar Arena" },-- Pit Fighter's Punching Ring
-	{ 144392, ST_Item, "Brawl'gar Arena" },	-- Pugilist's Powerful Punching Ring
-	
-	{ 132523, ST_Item, "Broken Isles", nil, true }, -- Reaves Battery (can't always teleport, don't currently check).		
-	{ 141605, ST_Item, "Broken Isles", AtContinent(ContinentIdBrokenIsles) }, -- Flight Master's Whistle	
-	{ 144341, ST_Item, "Broken Isles" }, -- Rechargeable Reaves Battery
-	
-	{ 224871, ST_Spell, "Dalaran (Legion)" },		-- Portal: Dalaran - Broken Isles (UNTESTED)
-	{ 224869, ST_Spell, "Dalaran (Legion)" },		-- Teleport: Dalaran - Broken Isles	(UNTESTED)
-	{ 138448, ST_Item, "Dalaran (Legion)" },		-- Emblem of Margoss
-	{ 139599, ST_Item, "Dalaran (Legion)" },		-- Empowered Ring of the Kirin Tor
-	{ 140192, ST_Item, "Dalaran (Legion)" },		-- Dalaran Hearthstone
-	{ 43824, ST_Item, "Dalaran (Legion)", AtZone(MapIDDalaranLegion) },	-- The Schools of Arcane Magic - Mastery
-	
-	-- I've disabled this because I don't think it fits here - it's more like Blink, which also isn't listed.
-	--{ 140192, ST_Item, "Dalaran (Legion)" },		-- Intra-Dalaran Wormhole Generator
+function TeleporterCreateConditionalSpell(id, condition, dest)
+	local spell = {}
+	spell.spellId = id
+	spell.spellType = ST_Spell
+	spell.condition = condition
+	spell.zone = dest
+	return spell
+end
 
-	{ 53140, ST_Spell, "Dalaran (WotLK)" },		-- Teleport: Dalaran
-	{ 53142, ST_Spell, "Dalaran (WotLK)" },		-- Portal: Dalaran
-	-- ilvl 200 rings
-	{ 40586, ST_Item, "Dalaran (WotLK)" },			-- Band of the Kirin Tor
-	{ 44934, ST_Item, "Dalaran (WotLK)" },			-- Loop of the Kirin Tor
-	{ 44935, ST_Item, "Dalaran (WotLK)" },			-- Ring of the Kirin Tor
-	{ 40585, ST_Item, "Dalaran (WotLK)" },			-- Signet of the Kirin Tor
-	-- ilvl 213 rings
-	{ 45688, ST_Item, "Dalaran (WotLK)" },			-- Inscribed Band of the Kirin Tor
-	{ 45689, ST_Item, "Dalaran (WotLK)" },			-- Inscribed Loop of the Kirin Tor
-	{ 45690, ST_Item, "Dalaran (WotLK)" },			-- Inscribed Ring of the Kirin Tor
-	{ 45691, ST_Item, "Dalaran (WotLK)" },			-- Inscribed Signet of the Kirin Tor
-	-- ilvl 226 rings
-	{ 48954, ST_Item, "Dalaran (WotLK)" },			-- Etched Band of the Kirin Tor
-	{ 48955, ST_Item, "Dalaran (WotLK)" },			-- Etched Loop of the Kirin Tor
-	{ 48956, ST_Item, "Dalaran (WotLK)" },			-- Etched Ring of the Kirin Tor
-	{ 48957, ST_Item, "Dalaran (WotLK)" },			-- Etched Signet of the Kirin Tor
-	-- ilvl 251 rings
-	{ 51560, ST_Item, "Dalaran (WotLK)" },			-- Runed Band of the Kirin Tor
-	{ 51558, ST_Item, "Dalaran (WotLK)" },			-- Runed Loop of the Kirin Tor
-	{ 51559, ST_Item, "Dalaran (WotLK)" },			-- Runed Ring of the Kirin Tor
-	{ 51557, ST_Item, "Dalaran (WotLK)" },			-- Runed Signet of the Kirin Tor
-	
-	{ 43824, ST_Item, "Dalaran (WotLK)", AtZone(MapIDDalaran) },	-- The Schools of Arcane Magic - Mastery
-	{ 52251, ST_Item, "Dalaran (WotLK)" },			-- Jaina's Locket
-	
-	{ 120145, ST_Spell, "Dalaran Crater" },-- Ancient Teleport: Dalaran
-	{ 120146, ST_Spell, "Dalaran Crater" },-- Ancient Portal: Dalaran
+function TeleporterCreateConditionalConsumable(id, condition, dest)
+	local spell = {}
+	spell.spellId = id
+	spell.spellType = ST_Item
+	spell.condition = condition
+	spell.zone = dest
+	spell.consumable = true
+	return spell
+end
 
-	{ 3565, ST_Spell, "Darnassus" },		-- Teleport: Darnassus
-	{ 11419, ST_Spell, "Darnassus" },		-- Portal: Darnassus
-	
-	{ 58487, ST_Item, "Deepholm", nil, true },	-- Potion of Deepholm
-	
-	{ 117389, ST_Item, "Draenor", AtContinent(ContinentIdDraenor), true }, -- Draenor Archaeologist's Lodestone
-	{ 112059, ST_Item, "Draenor" },				-- Wormhole Centrifuge
-	{ 129929, ST_Item, "Draenor", AtContinent(ContinentIdOutland) },	-- Ever-Shifting Mirror
-	
-	{ 159897, ST_Challenge, "Draenor Dungeons" },	-- Teleport: Auchindoun
-	{ 159895, ST_Challenge, "Draenor Dungeons" },	-- Teleport: Bloodmaul Slag Mines
-	{ 159901, ST_Challenge, "Draenor Dungeons" },	-- Teleport: Overgrown Outpost
-	{ 159900, ST_Challenge, "Draenor Dungeons" },	-- Teleport: Grimrail Depot
-	{ 159896, ST_Challenge, "Draenor Dungeons" },	-- Teleport: Iron Docks
-	{ 159899, ST_Challenge, "Draenor Dungeons" },	-- Teleport: Shadowmoon Burial Grounds
-	{ 159898, ST_Challenge, "Draenor Dungeons" },	-- Teleport: Skyreach
-	{ 159902, ST_Challenge, "Draenor Dungeons" },	-- Teleport: Upper Blackrock Spire
+function TeleporterCreateConsumable(id, dest)
+	local spell = {}
+	spell.spellId = id
+	spell.spellType = ST_Spell
+	spell.zone = dest
+	spell.consumable = true
+	return spell
+end
 
-	{ 50977, ST_Spell, "Ebon Hold" },		-- Death Gate
+---------------------------------------------------------------
 	
-	{ 193753, ST_Spell, "Emerald Dreamway" }, -- Dreamwalk
-	
-	{ 110560, ST_Item, "Garrison" },		-- Garrison Hearthstone
-	
-	{ 32271, ST_Spell, "Exodar" },			-- Teleport: Exodar
-	{ 32266, ST_Spell, "Exodar" },			-- Portal: Exodar
-	
-	{ 201891, ST_Spell, "Fishing Pool", AtContinent(ContinentIdBrokenIsles) },	-- Undercurrent
-	
-	{ 193759, ST_Spell, "Hall of the Guardian" }, -- Teleport: Hall of the Guardian
-	
-	{ 141017, ST_Item, "Highmountain", AtContinent(ContinentIdBrokenIsles), true },	-- Scroll of Town Portal: Lian'tril
-	{ 140493, ST_Item, "Highmountain", OnDay(DayThursday) },	-- Adept's Guide to Dimensional Rifting
-	
-	{ 46874, ST_Item, "Icecrown" },		-- Argent Crusader's Tabard
-	
-	{ 3562, ST_Spell, "Ironforge" },		-- Teleport: Ironforge
-	{ 11416, ST_Spell, "Ironforge" },		-- Portal: Ironforge
-	
-	{ 95567, ST_Item, "Isle of Thunder", AtZone(MapIDIsleOfThunder, MapIDThroneOfThunder) },	-- Kirin Tor Beacon
-	{ 95568, ST_Item, "Isle of Thunder", AtZone(MapIDIsleOfThunder, MapIDThroneOfThunder) },	-- Sunreaver Beacon
-
-	{ 118663, ST_Item, "Karabor" },		-- Relic of Karabor
-	
-	{ 22589, ST_Item, "Karazhan" },		-- Atiesh, Greatstaff of the Guardian
-	{ 22630, ST_Item, "Karazhan" },		-- Atiesh, Greatstaff of the Guardian
-	{ 22631, ST_Item, "Karazhan" },		-- Atiesh, Greatstaff of the Guardian
-	{ 22632, ST_Item, "Karazhan" },		-- Atiesh, Greatstaff of the Guardian
-	{ 142469, ST_Item, "Karazhan" }, 	-- Violet Seal of the Grand Magus
-	
-	{ 126892, ST_Spell, "Kun Lai Summit", function() return not HaveUpgradedZen() end },	-- Zen Pilgrimage
-	
-	{ 18960, ST_Spell, "Moonglade" },		-- Teleport: Moonglade
-	{ 21711, ST_Item, "Moonglade" },		-- Lunar Festival Invitation
-
-	{ 30542, ST_Item, "Netherstorm" },		-- Dimensional Ripper - Area 52
-
-	{ 48933, ST_Item, "Northrend" },		-- Wormhole Generator: Northrend
-
-	{ 3567, ST_Spell, "Orgrimmar" },		-- Teleport: Orgrimmar
-	{ 11417, ST_Spell, "Orgrimmar" },		-- Portal: Orgrimmar
-	{ 63207, ST_Item, "Orgrimmar" },		-- Wrap of Unity
-	{ 63353, ST_Item, "Orgrimmar" },		-- Shroud of Cooperation
-	{ 65274, ST_Item, "Orgrimmar" },		-- Cloak of Coordination
-	
-	{ 129929, ST_Item, "Outland", AtContinent(ContinentIdDraenor) },	-- Ever-Shifting Mirror
-	
-	{ 87548, ST_Item, "Pandaria", AtContinent(ContinentIdPandaria), true }, -- Lorewalker's Lodestone
-	{ 87215, ST_Item, "Pandaria" },			-- Wormhole Generator: Pandaria
-	
-	{ 131225, ST_Challenge, "Pandaria Dungeons" },	-- Path of the Setting Sun	
-	{ 131222, ST_Challenge, "Pandaria Dungeons" },	-- Path of the Mogu King
-	{ 131231, ST_Challenge, "Pandaria Dungeons" },	-- Path of the Scarlet Blade	
-	{ 131229, ST_Challenge, "Pandaria Dungeons" },	-- Path of the Scarlet Mitre	
-	{ 131232, ST_Challenge, "Pandaria Dungeons" },	-- Path of the Necromancer
-	{ 131206, ST_Challenge, "Pandaria Dungeons" },	-- Path of the Shado-Pan
-	{ 131228, ST_Challenge, "Pandaria Dungeons" },	-- Path of the Black Ox
-	{ 131205, ST_Challenge, "Pandaria Dungeons" },	-- Path of the Stout Brew
-	{ 131204, ST_Challenge, "Pandaria Dungeons" },	-- Path of the Jade Serpent
-	
-	{ 147420, ST_Spell, "Random" },			-- One With Nature
-	{ 64457, ST_Item, "Random" }, 			-- The Last Relic of Argus
-	{ 136849, ST_Item, "Random", IsClass("DRUID") },			-- Nature's Beacon
-	
-	{ 139590, ST_Item, "Ravenholdt" },		-- Scroll of Teleport: Ravenholdt
-		
-	{ 33690, ST_Spell, "Shattrath" },		-- Teleport: Shattrath (Alliance)
-	{ 33691, ST_Spell, "Shattrath" },		-- Portal: Shattrath (Alliance)
-	{ 35715, ST_Spell, "Shattrath" },		-- Teleport: Shattrath (Horde)
-	{ 35717, ST_Spell, "Shattrath" },		-- Portal: Shattrath (Horde)
-	
-	{ 128353, ST_Item, "Shipyard" },		-- Admiral's Compass
-	
-	{ 32272, ST_Spell, "Silvermoon" },		-- Teleport: Silvermoon
-	{ 32267, ST_Spell, "Silvermoon" },		-- Portal: Silvermoon
-	
-	{ 49358, ST_Spell, "Stonard" },		-- Teleport: Stonard
-	{ 49361, ST_Spell, "Stonard" },		-- Portal: Stonard
-	
-	{ 140493, ST_Item, "Stormheim", OnDayAtContinent(DayFriday, ContinentIdBrokenIsles) },	-- Adept's Guide to Dimensional Rifting
-	
-	{ 3561, ST_Spell, "Stormwind" },		-- Teleport: Stormwind
-	{ 10059, ST_Spell, "Stormwind" },		-- Portal: Stormwind
-	{ 63206, ST_Item, "Stormwind" },		-- Wrap of Unity
-	{ 63352, ST_Item, "Stormwind" },		-- Shroud of Cooperation
-	{ 65360, ST_Item, "Stormwind" },		-- Cloak of Coordination
-	
-	{ 140324, ST_Item, "Suramar" },			-- Mobile Telemancy Beacon
-	{ 141014, ST_Item, "Suramar", AtContinent(ContinentIdBrokenIsles), true },	-- Scroll of Town Portal: Sashj'tar
-	{ 140493, ST_Item, "Suramar", OnDay(DayTuesday) },	-- Adept's Guide to Dimensional Rifting
-
-	{ 128502, ST_Item, "Tanaan Jungle", AtZone(MapIDTanaanJungle) },	-- Hunter's Seeking Crystal
-	{ 128503, ST_Item, "Tanaan Jungle", AtZone(MapIDTanaanJungle) },	-- Master Hunter's Seeking Crystal
-	
-	{ 18986, ST_Item, "Tanaris" },			-- Ultrasafe Transporter - Gadgetzan
-	
-	{ 126892, ST_Spell, "Temple of Five Dawns", function() return HaveUpgradedZen() end },	-- Zen Pilgrimage
-	
-	{ 49359, ST_Spell, "Theramore" },		-- Teleport: Theramore
-	{ 49360, ST_Spell, "Theramore" },		-- Portal: Theramore
-	
-	{ 103678, ST_Item, "Timeless Isle" },	-- Time-Lost Artifact
-
-	{ 3566, ST_Spell, "Thunder Bluff" },	-- Teleport: Thunder Bluff
-	{ 11420, ST_Spell, "Thunder Bluff" },	-- Portal: Thunder Bluff
-	
-	{ 63378, ST_Item, "Tol Barad" },		-- Hellscream's Reach Tabard
-	{ 63379, ST_Item, "Tol Barad" },		-- Baradin's Wardens Tabard
-	{ 88342, ST_Spell, "Tol Barad" },		-- Teleport: Tol Barad (Alliance)
-	{ 88344, ST_Spell, "Tol Barad" },		-- Teleport: Tol Barad (Horde)
-	{ 88345, ST_Spell, "Tol Barad" },		-- Portal: Tol Barad (Alliance)
-	{ 88346, ST_Spell, "Tol Barad" },		-- Portal: Tol Barad (Horde)
-	
-
-	{ 3563, ST_Spell, "Undercity" },		-- Teleport: Undercity
-	{ 11418, ST_Spell, "Undercity" },		-- Portal: Undercity
-	
-	{ 141013, ST_Item, "Val'sharah", AtContinent(ContinentIdBrokenIsles), true },	-- Scroll of Town Portal: Shala'nir
-	{ 141015, ST_Item, "Val'sharah", AtContinent(ContinentIdBrokenIsles), true },	-- Scroll of Town Portal: Kal'delar	
-	{ 140493, ST_Item, "Val'sharah", OnDay(DayMonday) },	-- Adept's Guide to Dimensional Rifting
-	
-	-- I don't know why there are so many of these, not sure which is right but it's now safe to
-	-- list them all.
-	{ 132621, ST_Spell, "Vale of Eternal Blossoms" },		-- Teleport: Vale of Eternal Blossoms
-	{ 132627, ST_Spell, "Vale of Eternal Blossoms" },		-- Teleport: Vale of Eternal Blossoms
-	{ 132620, ST_Spell, "Vale of Eternal Blossoms" },		-- Portal: Vale of Eternal Blossoms
-	{ 132622, ST_Spell, "Vale of Eternal Blossoms" },		-- Portal: Vale of Eternal Blossoms
-	{ 132624, ST_Spell, "Vale of Eternal Blossoms" },		-- Portal: Vale of Eternal Blossoms
-	{ 132626, ST_Spell, "Vale of Eternal Blossoms" },		-- Portal: Vale of Eternal Blossoms
-	
-	{ 18984, ST_Item, "Winterspring" },	-- Dimensional Ripper - Everlook
-}
-
 -- [Orignal spell ID] = { Alt spell ID, Buff }
 -- Currently unused
 local SpellBuffs = 
@@ -598,14 +296,16 @@ function Teleporter_OnEvent(self, event, ...)
 			Teleporter_OnAddonLoaded()			
 		end
 	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
-		local player, spell = ...
+		local player, guid, spell = ...
 		if player == "player" then
-			if spell == CastSpell then
+			if GetSpellInfo(spell) == CastSpell then
 				TeleporterClose()
 			end
 		end
 	elseif event == "UNIT_INVENTORY_CHANGED" then
-		TeleporterUpdateAllButtons()
+		if IsVisible then
+			TeleporterUpdateAllButtons()
+		end
 	elseif event == "PLAYER_REGEN_DISABLED" then
 		-- Can't close while in combat due to secure buttons, so disable Esc key
 		if TeleporterParentFrame then
@@ -643,7 +343,7 @@ local function RebuildSpellList()
 	local extraSpells = GetOption("extraSpells")
 	if extraSpells then		
 		for id,dest in pairs(extraSpells) do
-			local spell = CreateSpell(id,dest)
+			local spell = TeleporterCreateSpell(id,dest)
 			spell.isCustom = true
 			tinsert(TeleporterSpells, spell)
 		end
@@ -652,7 +352,7 @@ local function RebuildSpellList()
 	local extraItems = GetOption("extraItems")
 	if extraItems then
 		for id,dest in pairs(extraItems) do
-			local spell = CreateItem(id,dest)
+			local spell = TeleporterCreateItem(id,dest)
 			spell.isCustom = true
 			tinsert(TeleporterSpells, spell)
 		end
@@ -900,7 +600,7 @@ local function SortSpells(spell1, spell2, sortType)
 			return spellType1 < spellType2
 		end
 	end
-	
+		
 	if zone1 ~= zone2 then
 		return zone1 < zone2
 	end
@@ -910,26 +610,17 @@ end
 
 local function SetupSpells()
 	for index, spell in ipairs(TeleporterSpells) do		
-		if spell[2] == ST_Item then
-			spell[SpellNameIndex] = GetItemInfo( spell[1] )
-			spell.spellName = GetItemInfo( spell[1] )
+		if spell.spellType == ST_Item then
+			spell.spellName = GetItemInfo( spell.spellId )
 		else
-			spell[SpellNameIndex] = GetSpellInfo( spell[1] )
-			spell.spellName = GetSpellInfo( spell[1] )
+			spell.spellName = GetSpellInfo( spell.spellId)
 		end
 		
 		if not spell.spellName then
-			spell[SpellNameIndex] = "<Loading>"
 			spell.spellName = "<Loading>"
 		end
 		
-		-- The final stage of the refactor should get rid of these
-		spell.zone = spell[SpellZoneIndex]
-		spell.spellId = spell[SpellIdIndex]
-		spell.spellType = spell[SpellTypeIndex]
 		spell.isItem = spell.spellType == ST_Item
-		spell.condition = spell[SpellConditionIndex]
-		spell.consumable = spell[SpellConsumableIndex]
 	end
 end
 
@@ -1730,7 +1421,7 @@ function TeleporterOpenFrame()
 			local isValidSpell = true
 			local itemTexture = nil
 
-			if destination == HearthString or destination == RecallString then
+			if destination == TeleporterHearthString or destination == TeleporterRecallString then
 				local bindLocation = GetBindLocation()
 				if bindLocation then
 					destination = "Hearth (" .. bindLocation .. ")"
@@ -1738,6 +1429,11 @@ function TeleporterOpenFrame()
 					destination = "Hearth"
 				end
 			end
+						
+			if destination == TeleporterFlightString then
+				destination = "Flight Master"
+			end
+
 
 			if isItem then
 				_, _, _, _, _, _, _, _, _, itemTexture = GetItemInfo( spellId )
@@ -1769,7 +1465,7 @@ function TeleporterOpenFrame()
 					numColumns = numColumns + 1
 					newColumn = true
 				end		
-
+				
 				-- Title
 				if newColumn or lastDest ~= destination then
 					local destString = TeleporterCreateReusableFontString("TeleporterDL", TeleporterParentFrame, "GameFontNormalSmall")
@@ -2158,9 +1854,8 @@ function Teleporter_OnAddonLoaded()
 	RebuildSpellList()
 	
 	for index, spell in ipairs(TeleporterSpells) do		
-		-- TODO: Replace indices with names after refactor
-		local spellId = spell[SpellIdIndex]
-		local spellType = spell[SpellTypeIndex]
+		local spellId = spell.spellId
+		local spellType = spell.spellType
 		local isItem = (spellType == ST_Item)
 		if isItem then
 			-- Query this early so it will be ready when we need it.
@@ -2285,9 +1980,9 @@ function TeleporterAddTheme(name, theme)
 end
 
 function TeleporterAddSpell(id, dest)
-	TeleporterSpells[#TeleporterSpells + 1] = {id, ST_Spell, dest}
+	TeleporterSpells[#TeleporterSpells + 1] = {spellId = id, spellType = ST_Spell, zone = dest}
 end
 
 function TeleporterAddItem(id, dest)
-	TeleporterSpells[#TeleporterSpells + 1] = {id, ST_Item, dest}
+	TeleporterSpells[#TeleporterSpells + 1] = {spellId = id, spellType = ST_Item, zone = dest}
 end
