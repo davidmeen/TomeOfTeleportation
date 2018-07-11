@@ -36,6 +36,10 @@ function AllowWhistle()
 	return AtContinent(ContinentIdBrokenIsles)() or AtContinent(ContinentIdArgus)() or AtContinent(ContinentIdKulTiras)() or AtContinent(ContinentIdZandalar)()
 end
 
+function InBFAZone()
+	return AtContinent(ContinentIdKulTiras)() or AtContinent(ContinentIdZandalar)()
+end
+
 local function IsClass(requiredClass)
 	return function()
 		local _, playerClass = UnitClass("player")
@@ -207,6 +211,13 @@ CreateDestination(
 	{
 		CreateItem(50287),				-- Boots of the Bay
 	})
+	
+CreateDestination(			
+	"Boralus",	
+	{
+		CreateSpell(281403),			-- Teleport: Boralus
+		CreateSpell(281400),			-- Portal: Boralus
+	})
 
 CreateDestination(			
 	"Brawl'gar Arena",	
@@ -277,6 +288,13 @@ CreateDestination(
 		CreateSpell(3565),			-- Teleport: Darnassus
 		CreateSpell(11419),			-- Portal: Darnassus
 	})
+	
+CreateDestination(			
+	"Dazar'alor",	
+	{
+		CreateSpell(281404),		-- Teleport: Dazar'alor
+		CreateSpell(281402),		-- Portal: Dazar'alor
+	})
 
 CreateDestination(
 	"Deepholm",
@@ -327,7 +345,8 @@ CreateDestination(
 CreateDestination(
 	"Fishing Pool",
 	{	
-		CreateConditionalSpell(201891, AtContinent(ContinentIdBrokenIsles)),	-- Undercurrent
+		CreateConditionalSpell(201891, AtContinent(ContinentIdBrokenIsles)),		-- Undercurrent
+		CreateConditionalConsumable(162515, InBFAZone),	-- Midnight Salmon
 	})
 	
 CreateDestination(
@@ -390,6 +409,12 @@ CreateDestination(
 	"Kun Lai Summit",
 	{
 		CreateConditionalSpell(126892, function() return not HaveUpgradedZen() end ),	-- Zen Pilgrimage
+	})
+	
+CreateDestination(
+	"Mole Machine",
+	{
+		CreateSpell(265225),		-- Mole Machine
 	})
 
 CreateDestination(
@@ -599,3 +624,9 @@ CreateDestination(
 		CreateItem(18984),		-- Dimensional Ripper - Everlook
 	})
 
+CreateDestination(
+	"Zuldazar",
+	{
+		CreateConsumable(157542),	-- Portal Scroll of Specificity
+		CreateConsumable(160218),	-- Portal Scroll of Specificity
+	})
