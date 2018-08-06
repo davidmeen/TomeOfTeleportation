@@ -976,8 +976,13 @@ local function CanUseSpell(spell)
 	
 	local haveSpell = false
 	local haveToy = false
+	local toyUsable =  C_ToyBox.IsToyUsable(spellId)
+	-- C_ToyBox.IsToyUsable returns nil if the toy hasn't been loaded yet.
+	if toyUsable == nil then		
+		toyUsable = true
+	end
 	if isItem then
-		haveToy = PlayerHasToy(spellId) and C_ToyBox.IsToyUsable(spellId)
+		haveToy = PlayerHasToy(spellId) and toyUsable
 		haveSpell = GetItemCount( spellId ) > 0 or haveToy
 	else
 		haveSpell = IsSpellKnown( spellId )					
