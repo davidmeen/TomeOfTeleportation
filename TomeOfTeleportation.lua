@@ -1436,7 +1436,7 @@ function TeleporterOpenFrame()
 			end
 						
 			if destination == TeleporterFlightString then
-				destination = "Flight Master"
+				destination = MINIMAP_TRACKING_FLIGHTMASTER
 			end
 
 
