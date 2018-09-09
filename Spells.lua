@@ -6,6 +6,7 @@ local MapIDTanaanJungle = 534
 local MapIDAzsuna = 627
 local MapIDDalaranLegion = 1014
 local MapIDAntoranWastes = 885
+local MapIDAlterac = 943
 
 local ContinentIdOutland = 101
 local ContinentIdPandaria = 424
@@ -33,7 +34,7 @@ local function AtContinent(requiredContinent)
 end
 
 function AllowWhistle()
-	return AtContinent(ContinentIdBrokenIsles)() or AtContinent(ContinentIdArgus)() or AtContinent(ContinentIdKulTiras)() or AtContinent(ContinentIdZandalar)()
+	return AtContinent(ContinentIdBrokenIsles)() or AtContinent(ContinentIdArgus)() or AtContinent(ContinentIdKulTiras)() or AtContinent(ContinentIdZandalar)() or AtZone(MapIdAlterac)
 end
 
 function InBFAZone()
