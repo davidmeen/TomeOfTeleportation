@@ -142,7 +142,8 @@ CreateDestination(
 		CreateItem(142298),				-- Astonishingly Scarlet Slippers
 		CreateConsumable(142543),		-- Scroll of Town Portal
 		CreateItem(142542),				-- Tome of Town Portal
-		CreateItem(162973)				-- Greatfather Winter's Hearthstone
+		CreateItem(162973),				-- Greatfather Winter's Hearthstone
+		CreateItem(163045)				-- Headless Horseman's Hearthstone
 	})
 	
 CreateDestination(
