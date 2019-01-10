@@ -34,7 +34,9 @@ local function AtContinent(requiredContinent)
 end
 
 function AllowWhistle()
-	return AtContinent(ContinentIdBrokenIsles)() or AtContinent(ContinentIdArgus)() or AtContinent(ContinentIdKulTiras)() or AtContinent(ContinentIdZandalar)() or AtZone(MapIdAlterac)
+	--return AtContinent(ContinentIdBrokenIsles)() or AtContinent(ContinentIdArgus)() or AtContinent(ContinentIdKulTiras)() or AtContinent(ContinentIdZandalar)() or AtZone(MapIdAlterac)
+	-- This is getting complicated - until I find a better way, always allow it.
+	return true
 end
 
 function InBFAZone()
@@ -143,7 +145,10 @@ CreateDestination(
 		CreateConsumable(142543),		-- Scroll of Town Portal
 		CreateItem(142542),				-- Tome of Town Portal
 		CreateItem(162973),				-- Greatfather Winter's Hearthstone
-		CreateItem(163045)				-- Headless Horseman's Hearthstone
+		CreateItem(163045),				-- Headless Horseman's Hearthstone
+		CreateItem(166747),				-- Brewfest Reveler's Hearthstone
+		CreateItem(166746),				-- Fire Eater's Hearthstone
+		CreateItem(165802),				-- Noble Gardener's Hearthstone
 	})
 	
 CreateDestination(
@@ -256,6 +261,7 @@ CreateDestination(
 	{
 		CreateSpell(281403),			-- Teleport: Boralus
 		CreateSpell(281400),			-- Portal: Boralus
+		CreateItem(166560),				-- Captain's Signet of Command
 	})
 
 CreateDestination(			
@@ -333,6 +339,7 @@ CreateDestination(
 	{
 		CreateSpell(281404),		-- Teleport: Dazar'alor
 		CreateSpell(281402),		-- Portal: Dazar'alor
+		CreateItem(166559),			-- Commander's Signet of Battle
 	})
 
 CreateDestination(
