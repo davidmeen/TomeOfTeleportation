@@ -340,6 +340,7 @@ CreateDestination(
 		CreateSpell(281404),		-- Teleport: Dazar'alor
 		CreateSpell(281402),		-- Portal: Dazar'alor
 		CreateItem(166559),			-- Commander's Signet of Battle
+		CreateConditionalItem(165581, AtZone(1163)), -- Crest of Pa'ku
 	})
 
 CreateDestination(
