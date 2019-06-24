@@ -450,6 +450,12 @@ CreateDestination(
 		CreateItem(22632),		-- Atiesh, Greatstaff of the Guardian
 		CreateItem(142469), 	-- Violet Seal of the Grand Magus
 	})
+	
+CreateDestination(
+	LocZone("Kul Tiras", 876),
+	{
+		CreateItem(168807)		-- Wormhole Generator: Kul Tiras
+	})
 
 CreateDestination(
 	LocZone("Kun-Lai Summit", 379),
@@ -668,6 +674,12 @@ CreateDestination(
 	LocZone("Winterspring", 83),
 	{
 		CreateItem(18984),		-- Dimensional Ripper - Everlook
+	})
+	
+CreateDestination(
+	LocZone("Zandalar", 875),
+	{
+		CreateItem(168808)		-- Wormhole Generator: Zandalar
 	})
 
 CreateDestination(
