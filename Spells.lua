@@ -468,6 +468,12 @@ CreateDestination(
 	})
 	
 CreateDestination(
+	LocZone("Mechagon", 1490),
+	{
+		CreateConsumable(167075),	-- Ultrasafe Transporter: Mechagon
+	})
+	
+CreateDestination(
 	"Mole Machine",					-- No localization.
 	{
 		CreateSpell(265225),		-- Mole Machine
