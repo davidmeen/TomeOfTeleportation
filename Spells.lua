@@ -149,6 +149,9 @@ CreateDestination(
 		CreateItem(166747),				-- Brewfest Reveler's Hearthstone
 		CreateItem(166746),				-- Fire Eater's Hearthstone
 		CreateItem(165802),				-- Noble Gardener's Hearthstone
+		CreateItem(168907),				-- Holographic Digitalization Hearthstone
+		CreateItem(165669),				-- Lunar Elder's Hearthstone
+		CreateItem(165670),				-- Peddlefeet's Lovely Hearthstone
 	})
 	
 CreateDestination(
