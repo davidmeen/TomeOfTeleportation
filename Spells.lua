@@ -1,5 +1,5 @@
 
-local MapIDAlteracValley = 91
+local MapIDAlteracValley = 1537
 local MapIDIsleOfThunder = 504
 local MapIDDalaran = 125
 local MapIDTanaanJungle = 534
@@ -181,6 +181,8 @@ CreateDestination(
 		CreateConditionalItem(17902, AtZone(MapIDAlteracValley) ),	-- Stormpike Insignia Rank 4
 		CreateConditionalItem(17903, AtZone(MapIDAlteracValley) ),	-- Stormpike Insignia Rank 5
 		CreateConditionalItem(17904, AtZone(MapIDAlteracValley) ),	-- Stormpike Insignia Rank 6
+		CreateConditionalItem(18149, AtZone(MapIDAlteracValley) ), -- Rune of Recall6
+		CreateConditionalItem(18150, AtZone(MapIDAlteracValley) ), -- Rune of Recall6
 	})
 
 CreateDestination(
