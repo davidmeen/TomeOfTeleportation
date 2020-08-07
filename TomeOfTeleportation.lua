@@ -125,7 +125,7 @@ local DefaultOptions =
 	["removeButtonIcon"] = "Interface/Icons/INV_Misc_Bone_Skull_03"
 }
 
--- Themes. For now there aren't many of these. Message me on curse.com
+-- Themes. For now there aren't many of these. Message me on curseforge.com
 -- if you create a theme that you'd like to be included. Also let me know
 -- if you need to change a parameter that isn't exposed.
 -- Note that every value is enclosed in {}.
@@ -207,7 +207,7 @@ end
 function TeleporterCreateConsumable(id, dest)
 	local spell = {}
 	spell.spellId = id
-	spell.spellType = ST_Spell
+	spell.spellType = ST_Item
 	spell.zone = dest
 	spell.consumable = true
 	return spell
@@ -445,6 +445,7 @@ local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 		AddHideOptionMenu(2, "Hide Challenge Mode Spells", "hideChallenge", frame, level)
 		AddHideOptionMenu(3, "Hide Spells", "hideSpells", frame, level)
 		AddHideOptionMenu(4, "Hide Consumables", "hideConsumable", frame, level)
+		AddHideOptionMenu(10, "Random Hearthstone", "randomHearth", frame, level)
 				
 		info.text = "Sort"
 		info.hasArrow = true
@@ -976,8 +977,13 @@ local function CanUseSpell(spell)
 	
 	local haveSpell = false
 	local haveToy = false
+	local toyUsable =  C_ToyBox.IsToyUsable(spellId)
+	-- C_ToyBox.IsToyUsable returns nil if the toy hasn't been loaded yet.
+	if toyUsable == nil then		
+		toyUsable = true
+	end
 	if isItem then
-		haveToy = PlayerHasToy(spellId) and C_ToyBox.IsToyUsable(spellId)
+		haveToy = PlayerHasToy(spellId) and toyUsable
 		haveSpell = GetItemCount( spellId ) > 0 or haveToy
 	else
 		haveSpell = IsSpellKnown( spellId )					
@@ -1328,6 +1334,70 @@ local function CreateMainFrame()
 	AddSpellButton:SetScript( "OnClick", function() ShowAddItemUI(false) end )
 end
 
+local function GetRandomHearth(validSpells)
+	local hearthSpells = {}
+	for index, spell in ipairs(validSpells) do
+		if spell.zone == TeleporterHearthString then
+			tinsert(hearthSpells, spell.spellName)
+		end
+	end
+	return hearthSpells[math.random(#hearthSpells)]
+end
+
+local function FindValidSpells()
+	local validSpells = {}
+	
+	for index, spell in ipairs(TeleporterSpells) do		
+		local spellId = spell.spellId
+		local spellType = spell.spellType
+		local isItem = (spellType == ST_Item)
+		local spellName = spell.spellName
+		local isValidSpell = true
+		
+		spell.displayDestination = spell.zone
+		if spell.zone == TeleporterHearthString or spell.zone == TeleporterRecallString then
+			local bindLocation = GetBindLocation()
+			if bindLocation then
+				spell.displayDestination = "Hearth (" .. bindLocation .. ")"
+			else
+				spell.displayDestination = "Hearth"
+			end
+		end
+					
+		if spell.zone == TeleporterFlightString then
+			spell.displayDestination = MINIMAP_TRACKING_FLIGHTMASTER
+		end
+
+
+		if isItem then
+			_, _, _, _, _, _, _, _, _, spell.itemTexture = GetItemInfo( spellId )
+			if not spellName then
+				isValidSpell = false
+			end
+		else
+			_,_,spell.itemTexture = GetSpellInfo( spellId )
+			if not spellName then
+				isValidSpell = false
+			end
+		end
+		
+		local haveSpell = isValidSpell and CanUseSpell(spell)	
+
+		spell.toySpell = nil
+		if isItem then
+			if PlayerHasToy(spellId) then
+				spell.toySpell = GetItemSpell(spellId)
+			end			
+		end
+		
+		if haveSpell then
+			tinsert(validSpells, spell)
+		end
+	end
+	
+	return validSpells
+end
+
 function TeleporterOpenFrame()
 
 	if UnitAffectingCombat("player") then
@@ -1409,51 +1479,27 @@ function TeleporterOpenFrame()
 			SortType = SortCustom
 		end
 		table.sort(TeleporterSpells, function(a,b) return SortSpells(a, b, SortType) end)
-
-		for index, spell in ipairs(TeleporterSpells) do		
+		
+		local validSpells = FindValidSpells()
+		
+		local onlyHearth = GetRandomHearth(validSpells)
+		
+		for index, spell in ipairs(validSpells) do
 			local spellId = spell.spellId
 			local spellType = spell.spellType
 			local isItem = (spellType == ST_Item)
-			local destination = spell.zone
+			local destination = spell.displayDestination
 			local consumable = spell.consumable
 			local spellName = spell.spellName
 			local displaySpellName = spellName
-			local isValidSpell = true
-			local itemTexture = nil
-
-			if destination == TeleporterHearthString or destination == TeleporterRecallString then
-				local bindLocation = GetBindLocation()
-				if bindLocation then
-					destination = "Hearth (" .. bindLocation .. ")"
-				else
-					destination = "Hearth"
-				end
-			end
-						
-			if destination == TeleporterFlightString then
-				destination = "Flight Master"
-			end
-
-
-			if isItem then
-				_, _, _, _, _, _, _, _, _, itemTexture = GetItemInfo( spellId )
-				if not spellName then
-					isValidSpell = false
-				end
-			else
-				_,_,itemTexture = GetSpellInfo( spellId )
-				if not spellName then
-					isValidSpell = false
-				end
-			end
+			local itemTexture = spell.itemTexture
+			local toySpell = spell.toySpell
 			
-			local haveSpell = isValidSpell and CanUseSpell(spell)	
-
-			local toySpell = nil
-			if isItem then
-				if PlayerHasToy(spellId) then
-					toySpell = GetItemSpell(spellId)
-				end			
+			local haveSpell = true
+			if spell.zone == TeleporterHearthString and GetOption("randomHearth") then
+				if spellName ~= onlyHearth and not CustomizeSpells then
+					haveSpell = false
+				end
 			end
 			
 			if haveSpell then
@@ -1608,7 +1654,7 @@ function TeleporterOpenFrame()
 				buttonSetting.spell = spell
 				buttonSetting.spellType = spellType
 				ButtonSettings[buttonFrame] = buttonSetting
-			end	
+			end
 		end
 		
 		local helpTextHeight		

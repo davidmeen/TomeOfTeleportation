@@ -1,11 +1,12 @@
-
 local MapIDAlteracValley = 91
+local MapIDAlteracValleyKorrak = 1537
 local MapIDIsleOfThunder = 504
 local MapIDDalaran = 125
 local MapIDTanaanJungle = 534
 local MapIDAzsuna = 627
 local MapIDDalaranLegion = 1014
 local MapIDAntoranWastes = 885
+local MapIDAlterac = 943
 
 local ContinentIdOutland = 101
 local ContinentIdPandaria = 424
@@ -32,8 +33,18 @@ local function AtContinent(requiredContinent)
 	return AtZone(requiredContinent)
 end
 
-function AllowWhistle()
-	return AtContinent(ContinentIdBrokenIsles)() or AtContinent(ContinentIdArgus)() or AtContinent(ContinentIdKulTiras)() or AtContinent(ContinentIdZandalar)()
+local function AllowWhistle()
+	--return AtContinent(ContinentIdBrokenIsles)() or AtContinent(ContinentIdArgus)() or AtContinent(ContinentIdKulTiras)() or AtContinent(ContinentIdZandalar)() or AtZone(MapIdAlterac)
+	-- This is getting complicated - until I find a better way, always allow it.
+	return true
+end
+
+local function InBFAZone()
+	return AtContinent(ContinentIdKulTiras)() or AtContinent(ContinentIdZandalar)()
+end
+
+local function IsInAlteracValley()
+	return AtZone(MapIDAlteracValley)() or AtZone(MapIDAlteracValleyKorrak)()
 end
 
 local function IsClass(requiredClass)
@@ -68,11 +79,47 @@ local function OnDayAtContinent(day, continent)
 	end
 end
 
-local function CreateDestination(zone, spells)
+local function CreateDestination(zone, spells)	
 	for i, spell in ipairs(spells) do
 		spell.zone = zone
 		tinsert(TeleporterDefaultSpells, spell)
 	end
+end
+
+local function LocZone(name, mapID)
+	if mapID == 0 then
+		for i = 1, 10000 do
+			local info = C_Map.GetMapInfo(i)
+			if info and info.name == name then
+				print(name .. " should be zone " .. i)
+			end
+		end
+		return name
+	else
+		local locName = C_Map.GetMapInfo(mapID).name
+		--if locName ~= name then
+		--	print("Incorrect localization of " .. name)
+		--end
+		return locName
+	end
+end
+
+local function LocArea(name, areaID)
+	local locName
+	if areaID == 0 then
+		for i = 1, 10000 do
+			if C_Map.GetAreaInfo(i) == name then
+				print(name .. " should be area " .. i)
+			end
+		end
+		return name
+	else
+		locName = C_Map.GetAreaInfo(areaID)
+		--if locName ~= name then
+		--	print("Incorrect localization of " .. name .. ", got " .. locName)		
+		--end
+	end
+	return locName
 end
 
 local CreateSpell = TeleporterCreateSpell
@@ -101,6 +148,15 @@ CreateDestination(
 		CreateItem(142298),				-- Astonishingly Scarlet Slippers
 		CreateConsumable(142543),		-- Scroll of Town Portal
 		CreateItem(142542),				-- Tome of Town Portal
+		CreateItem(162973),				-- Greatfather Winter's Hearthstone
+		CreateItem(163045),				-- Headless Horseman's Hearthstone
+		CreateItem(166747),				-- Brewfest Reveler's Hearthstone
+		CreateItem(166746),				-- Fire Eater's Hearthstone
+		CreateItem(165802),				-- Noble Gardener's Hearthstone
+		CreateItem(168907),				-- Holographic Digitalization Hearthstone
+		CreateItem(165669),				-- Lunar Elder's Hearthstone
+		CreateItem(165670),				-- Peddlefeet's Lovely Hearthstone
+		CreateItem(172179),				-- Eternal Traveler's Hearthstone
 	})
 	
 CreateDestination(
@@ -116,36 +172,38 @@ CreateDestination(
 	})
 	
 CreateDestination(
-	"Alterac Valley",
+	LocZone("Alterac Valley", 91),
 	{
-		CreateConditionalItem(17690, AtZone(MapIDAlteracValley) ),	-- Frostwolf Insignia Rank 1
-		CreateConditionalItem(17905, AtZone(MapIDAlteracValley) ),	-- Frostwolf Insignia Rank 2
-		CreateConditionalItem(17906, AtZone(MapIDAlteracValley) ),	-- Frostwolf Insignia Rank 3
-		CreateConditionalItem(17907, AtZone(MapIDAlteracValley) ),	-- Frostwolf Insignia Rank 4
-		CreateConditionalItem(17908, AtZone(MapIDAlteracValley) ),	-- Frostwolf Insignia Rank 5
-		CreateConditionalItem(17909, AtZone(MapIDAlteracValley) ),	-- Frostwolf Insignia Rank 6
-		CreateConditionalItem(17691, AtZone(MapIDAlteracValley) ),	-- Stormpike Insignia Rank 1
-		CreateConditionalItem(17900, AtZone(MapIDAlteracValley) ),	-- Stormpike Insignia Rank 2
-		CreateConditionalItem(17901, AtZone(MapIDAlteracValley) ),	-- Stormpike Insignia Rank 3
-		CreateConditionalItem(17902, AtZone(MapIDAlteracValley) ),	-- Stormpike Insignia Rank 4
-		CreateConditionalItem(17903, AtZone(MapIDAlteracValley) ),	-- Stormpike Insignia Rank 5
-		CreateConditionalItem(17904, AtZone(MapIDAlteracValley) ),	-- Stormpike Insignia Rank 6
+		CreateConditionalItem(17690, IsInAlteracValley ),	-- Frostwolf Insignia Rank 1
+		CreateConditionalItem(17905, IsInAlteracValley ),	-- Frostwolf Insignia Rank 2
+		CreateConditionalItem(17906, IsInAlteracValley ),	-- Frostwolf Insignia Rank 3
+		CreateConditionalItem(17907, IsInAlteracValley ),	-- Frostwolf Insignia Rank 4
+		CreateConditionalItem(17908, IsInAlteracValley ),	-- Frostwolf Insignia Rank 5
+		CreateConditionalItem(17909, IsInAlteracValley ),	-- Frostwolf Insignia Rank 6
+		CreateConditionalItem(17691, IsInAlteracValley ),	-- Stormpike Insignia Rank 1
+		CreateConditionalItem(17900, IsInAlteracValley ),	-- Stormpike Insignia Rank 2
+		CreateConditionalItem(17901, IsInAlteracValley ),	-- Stormpike Insignia Rank 3
+		CreateConditionalItem(17902, IsInAlteracValley ),	-- Stormpike Insignia Rank 4
+		CreateConditionalItem(17903, IsInAlteracValley ),	-- Stormpike Insignia Rank 5
+		CreateConditionalItem(17904, IsInAlteracValley ),	-- Stormpike Insignia Rank 6
+		CreateConditionalItem(18149, IsInAlteracValley ), -- Rune of Recall6
+		CreateConditionalItem(18150, IsInAlteracValley ), -- Rune of Recall6
 	})
 
 CreateDestination(
-	"Antoran Wastes",
+	LocZone("Antoran Wastes", 885),
 	{
 		CreateConditionalItem(153226, AtZone(MapIDAntoranWastes))	-- Observer's Locus Resonator
 	})
 
 CreateDestination(
-	"Argus",
+	LocZone("Argus", 905),
 	{
 		CreateItem(151652)				-- Wormhole Generator: Argus
 	})
 
 CreateDestination(
-	"Ashran",
+	LocZone("Ashran", 588),
 	{
 		CreateConsumable(116413),		-- Scroll of Town Portal
 		CreateConsumable(119183),		-- Scroll of Risky Recall
@@ -156,15 +214,15 @@ CreateDestination(
 	})
 
 CreateDestination(
-	"Azsuna",
+	LocZone("Azsuna", 630),
 	{
 		CreateConditionalItem(129276, AtZone(MapIDAzsuna)),	-- Beginner's Guide to Dimensional Rifting
 		CreateConditionalConsumable(141016, AtContinent(ContinentIdBrokenIsles)),	-- Scroll of Town Portal: Faronaar
 		CreateConditionalItem(140493, OnDayAtContinent(DayWednesday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
-	})
+	}, 630)
 
 CreateDestination(
-	"Bizmo's Brawlpub",
+	LocArea("Bizmo's Brawlpub", 6618),
 	{
 		CreateItem(95051),				-- The Brassiest Knuckle
 		CreateItem(118907),				-- Pit Fighter's Punching Ring
@@ -172,59 +230,67 @@ CreateDestination(
 	})			
 			
 CreateDestination(			
-	"Black Temple",			
+	LocZone("Black Temple", 490),
 	{			
 		CreateItem(32757),				-- Blessed Medallion of Karabor
 		CreateItem(151016), 			-- Fractured Necrolyte Skull
-	})			
+	})
 				
 CreateDestination(			
-	"Blackrock Depths",			
+	LocZone("Blackrock Depths", 242),
 	{			
 		CreateItem(37863)				-- Direbrew's Remote
 	})
 
 CreateDestination(			
-	"Blackrock Foundry",			
+	LocZone("Blackrock Foundry", 596),
 	{	
 		CreateChallengeSpell(169771)	-- Teleport: Blackrock Foundry
 	})
 
 CreateDestination(			
-	"Blackrock Foundry",	
+	LocZone("Blade's Edge Mountains", 105),	
 	{
 		CreateItem(30544),				-- Ultrasafe Transporter - Toshley's Station
 	})
 
 CreateDestination(			
-	"Bladespire Fortress",	
+	LocArea("Bladespire Citadel", 6864),
 	{
 		CreateItem(118662), 			-- Bladespire Relic
 	})
 
 CreateDestination(			
-	"Booty Bay",	
+	LocArea("Booty Bay", 35),	
 	{
 		CreateItem(50287),				-- Boots of the Bay
 	})
+	
+CreateDestination(			
+	LocZone("Boralus", 1161),
+	{
+		CreateSpell(281403),			-- Teleport: Boralus
+		CreateSpell(281400),			-- Portal: Boralus
+		CreateItem(166560),				-- Captain's Signet of Command
+	})
 
 CreateDestination(			
-	"Brawl'gar Arena",	
+	LocZone("Brawl'gar Arena", 503),	
 	{
 		CreateItem(95050),				-- The Brassiest Knuckle
 		CreateItem(118908),				-- Pit Fighter's Punching Ring
 		CreateItem(144392),				-- Pugilist's Powerful Punching Ring
-	})
+	}, 503)
 	
 CreateDestination(			
-	"Broken Isles",	
+	LocZone("Broken Isles",	619),
 	{
 		CreateConsumable(132523), 		-- Reaves Battery (can't always teleport, don't currently check).	
 		CreateItem(144341), 			-- Rechargeable Reaves Battery
 	})
 
 CreateDestination(			
-	"Dalaran (Legion)",	
+	LocZone("Dalaran", 625) .. " (Legion)",	
 	{
 		CreateSpell(224871),		-- Portal: Dalaran - Broken Isles (UNTESTED)
 		CreateSpell(224869),		-- Teleport: Dalaran - Broken Isles	(UNTESTED)
@@ -235,7 +301,7 @@ CreateDestination(
 	})
 
 CreateDestination(			
-	"Dalaran (WotLK)",	
+	LocZone("Dalaran", 625) .. " (WotLK)",	
 	{
 		CreateSpell(53140),			-- Teleport: Dalaran
 		CreateSpell(53142),			-- Portal: Dalaran
@@ -265,27 +331,36 @@ CreateDestination(
 	})
 	
 CreateDestination(			
-	"Dalaran Crater",	
+	LocArea("Dalaran Crater", 279),
 	{
 		CreateSpell(120145),		-- Ancient Teleport: Dalaran
 		CreateSpell(120146),		-- Ancient Portal: Dalaran
 	})
 
 CreateDestination(			
-	"Darnassus",	
+	LocZone("Darnassus", 89),
 	{
 		CreateSpell(3565),			-- Teleport: Darnassus
 		CreateSpell(11419),			-- Portal: Darnassus
 	})
+	
+CreateDestination(			
+	LocZone("Dazar'alor", 1163),
+	{
+		CreateSpell(281404),		-- Teleport: Dazar'alor
+		CreateSpell(281402),		-- Portal: Dazar'alor
+		CreateItem(166559),			-- Commander's Signet of Battle
+		CreateConditionalItem(165581, AtZone(1163)), -- Crest of Pa'ku
+	})
 
 CreateDestination(
-	"Deepholm",
+	LocZone("Deepholm", 207),
 	{
 		CreateConsumable(58487),	-- Potion of Deepholm
 	})
 
 CreateDestination(
-	"Draenor",
+	LocZone("Draenor", 572),
 	{
 		CreateConditionalConsumable(117389, AtContinent(ContinentIdDraenor)), -- Draenor Archaeologist's Lodestone
 		CreateItem(112059),			-- Wormhole Centrifuge
@@ -293,7 +368,7 @@ CreateDestination(
 	})
 	
 CreateDestination(
-	"Draenor Dungeons",
+	"Draenor Dungeons",					-- No localization
 	{
 		CreateChallengeSpell(159897),	-- Teleport: Auchindoun
 		CreateChallengeSpell(159895),	-- Teleport: Bloodmaul Slag Mines
@@ -306,78 +381,79 @@ CreateDestination(
 	})
 
 CreateDestination(
-	"Ebon Hold",
+	LocZone("Acherus: The Ebon Hold", 647),
 	{
 		CreateSpell(50977),			-- Death Gate
 	})
 
 CreateDestination(
-	"Emerald Dreamway",
+	LocZone("Emerald Dreamway", 715),
 	{
 		CreateSpell(193753), 		-- Dreamwalk
 	})
 
 CreateDestination(
-	"Exodar",
+	LocZone("The Exodar", 103),
 	{
 		CreateSpell(32271),			-- Teleport: Exodar
 		CreateSpell(32266),			-- Portal: Exodar
 	})
 
 CreateDestination(
-	"Fishing Pool",
+	"Fishing Pool",					-- No localization.
 	{	
-		CreateConditionalSpell(201891, AtContinent(ContinentIdBrokenIsles)),	-- Undercurrent
+		CreateConditionalSpell(201891, AtContinent(ContinentIdBrokenIsles)),		-- Undercurrent
+		CreateConditionalConsumable(162515, InBFAZone),	-- Midnight Salmon
 	})
 	
 CreateDestination(
-	"Garrison",
+	GARRISON_LOCATION_TOOLTIP,
 	{
 		CreateItem(110560),				-- Garrison Hearthstone
 	})
 
 	
 CreateDestination(
-	"Hall of the Guardian",
+	LocZone("Hall of the Guardian", 734),
 	{
 		CreateChallengeSpell(193759), 	-- Teleport: Hall of the Guardian
 	})
 --	
 CreateDestination(
-	"Highmountain",
+	LocZone("Highmountain", 869),
 	{
 		CreateConditionalConsumable(141017, AtContinent(ContinentIdBrokenIsles)),				-- Scroll of Town Portal: Lian'tril
 		CreateConditionalItem(140493, OnDayAtContinent(DayThursday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
 	})
 
 CreateDestination(
-	"Icecrown",
+	LocZone("Icecrown", 118),
 	{
 		CreateItem(46874),				-- Argent Crusader's Tabard
 	})
 
 CreateDestination(
-	"Ironforge",
+	LocZone("Ironforge", 87),
 	{
 		CreateSpell(3562),				-- Teleport: Ironforge
 		CreateSpell(11416)				-- Portal: Ironforge
 	})
 
 CreateDestination(
-	"Isle of Thunder",
+	LocZone("Isle of Thunder", 504),
 	{
 		CreateConditionalItem(95567, AtZone(MapIDIsleOfThunder )),	-- Kirin Tor Beacon
 		CreateConditionalItem(95568, AtZone(MapIDIsleOfThunder )),	-- Sunreaver Beacon
 	})
 
 CreateDestination(
-	"Karabor",
+	LocArea("Karabor", 6930),
 	{
 		CreateItem(118663),				-- Relic of Karabor
 	})
 
 CreateDestination(
-	"Karazhan",
+	LocZone("Karazhan", 794),
 	{
 		CreateItem(22589),		-- Atiesh, Greatstaff of the Guardian
 		CreateItem(22630),		-- Atiesh, Greatstaff of the Guardian
@@ -385,34 +461,52 @@ CreateDestination(
 		CreateItem(22632),		-- Atiesh, Greatstaff of the Guardian
 		CreateItem(142469), 	-- Violet Seal of the Grand Magus
 	})
-
+	
 CreateDestination(
-	"Kun Lai Summit",
+	LocZone("Kul Tiras", 876),
 	{
-		CreateConditionalSpell(126892, function() return not HaveUpgradedZen() end ),	-- Zen Pilgrimage
+		CreateItem(168807)		-- Wormhole Generator: Kul Tiras
 	})
 
 CreateDestination(
-	"Moonglade",
+	LocZone("Kun-Lai Summit", 379),
+	{
+		CreateConditionalSpell(126892, function() return not HaveUpgradedZen() end ),	-- Zen Pilgrimage
+	})
+	
+CreateDestination(
+	LocZone("Mechagon", 1490),
+	{
+		CreateConsumable(167075),	-- Ultrasafe Transporter: Mechagon
+	})
+	
+CreateDestination(
+	"Mole Machine",					-- No localization.
+	{
+		CreateSpell(265225),		-- Mole Machine
+	})
+
+CreateDestination(
+	LocZone("Moonglade", 80),
 	{
 		CreateSpell(18960),		-- Teleport: Moonglade
 		CreateItem(21711),		-- Lunar Festival Invitation
 	})
 
 CreateDestination(
-	"Netherstorm",
+	LocZone("Netherstorm", 109),
 	{
 		CreateItem(30542),		-- Dimensional Ripper - Area 52
 	})
 
 CreateDestination(
-	"Northrend",
+	LocZone("Northrend", 113),
 	{
 		CreateItem(48933),		-- Wormhole Generator: Northrend
 	})
 
 CreateDestination(
-	"Orgrimmar",
+	LocZone("Orgrimmar", 85),
 	{
 		CreateSpell(3567),		-- Teleport: Orgrimmar
 		CreateSpell(11417),		-- Portal: Orgrimmar
@@ -422,20 +516,20 @@ CreateDestination(
 	})
 
 CreateDestination(
-	"Outland",
+	LocZone("Outland", 101),
 	{
 		CreateConditionalItem(129929, AtContinent(ContinentIdDraenor) ),	-- Ever-Shifting Mirror
 	})
 
 CreateDestination(
-	"Pandaria",
+	LocZone("Pandaria", 424),
 	{
 		CreateConditionalConsumable(87548, AtContinent(ContinentIdPandaria)), 	-- Lorewalker's Lodestone
 		CreateItem(87215),														-- Wormhole Generator: Pandaria
 	})
 
 CreateDestination(
-	"Pandaria Dungeons",
+	"Pandaria Dungeons",		-- No localization.
 	{
 		CreateChallengeSpell(131225),	-- Path of the Setting Sun	
 		CreateChallengeSpell(131222),	-- Path of the Mogu King
@@ -449,7 +543,7 @@ CreateDestination(
 	})
 
 CreateDestination(
-	"Random",
+	"Random",		-- No localization.
 	{
 		CreateSpell(147420),								-- One With Nature
 		CreateItem(64457), 									-- The Last Relic of Argus
@@ -457,13 +551,13 @@ CreateDestination(
 	})
 
 CreateDestination(
-	"Ravenholdt",
+	LocArea("Ravenholdt", 0),
 	{
 		CreateItem(139590),		-- Scroll of Teleport: Ravenholdt
 	})
 
 CreateDestination(
-	"Shattrath",
+	LocZone("Shattrath City", 111),
 	{
 		CreateSpell(33690),		-- Teleport: Shattrath (Alliance)
 		CreateSpell(33691),		-- Portal: Shattrath (Alliance)
@@ -472,33 +566,33 @@ CreateDestination(
 	})
 
 CreateDestination(
-	"Shipyard",
+	LocArea("Shipyard", 6668),
 	{
 		CreateItem(128353),		-- Admiral's Compass
 	})
 
 CreateDestination(
-	"Silvermoon",
+	LocZone("Silvermoon City", 110),
 	{
 		CreateSpell(32272),		-- Teleport: Silvermoon
 		CreateSpell(32267),		-- Portal: Silvermoon
 	})
 
 CreateDestination(
-	"Stonard",
+	LocArea("Stonard", 75),
 	{
 		CreateSpell(49358),		-- Teleport: Stonard
 		CreateSpell(49361),		-- Portal: Stonard
 	})
 
 CreateDestination(
-	"Stormheim",
+	LocZone("Stormheim", 634),
 	{
 		CreateConditionalItem(140493, OnDayAtContinent(DayFriday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
 	})
 
 CreateDestination(
-	"Stormwind",
+	LocZone("Stormwind City", 84),
 	{
 		CreateSpell(3561),		-- Teleport: Stormwind
 		CreateSpell(10059),		-- Portal: Stormwind
@@ -508,7 +602,7 @@ CreateDestination(
 	})
 
 CreateDestination(
-	"Suramar",
+	LocZone("Suramar", 680),
 	{
 		CreateItem(140324),																		-- Mobile Telemancy Beacon
 		CreateConditionalConsumable(141014, AtContinent(ContinentIdBrokenIsles)),				-- Scroll of Town Portal: Sashj'tar
@@ -516,46 +610,46 @@ CreateDestination(
 	})
 		
 CreateDestination(
-	"Tanaan Jungle",
+	LocZone("Tanaan Jungle", 534),
 	{
 		CreateConditionalItem(128502, AtZone(MapIDTanaanJungle)),	-- Hunter's Seeking Crystal
 		CreateConditionalItem(128503, AtZone(MapIDTanaanJungle)),	-- Master Hunter's Seeking Crystal
 	})
 
 CreateDestination(
-	"Tanaris",
+	LocZone("Tanaris", 71),
 	{
 		CreateItem(18986),		-- Ultrasafe Transporter - Gadgetzan
 	})
 
 CreateDestination(
-	"Temple of Five Dawns",
+	LocArea("Temple of Five Dawns", 5820),
 	{
 		CreateConditionalSpell(126892, function() return HaveUpgradedZen() end ),	-- Zen Pilgrimage
 	})
 
 CreateDestination(
-	"Theramore",
+	LocArea("Theramore Isle", 513),
 	{
 		CreateSpell(49359),		-- Teleport: Theramore
 		CreateSpell(49360),		-- Portal: Theramore
 	})
 
 CreateDestination(
-	"Timeless Isle",
+	LocZone("Timeless Isle", 554),
 	{
 		CreateItem(103678),		-- Time-Lost Artifact
 	})
 
 CreateDestination(
-	"Thunder Bluff",
+	LocZone("Thunder Bluff", 88),
 	{
 		CreateSpell(3566),		-- Teleport: Thunder Bluff
 		CreateSpell(11420),		-- Portal: Thunder Bluff
 	})
 
 CreateDestination(
-	"Tol Barad",
+	LocZone("Tol Barad", 773),
 	{
 		CreateItem(63378),		-- Hellscream's Reach Tabard
 		CreateItem(63379),		-- Baradin's Wardens Tabard
@@ -566,14 +660,14 @@ CreateDestination(
 	})
 
 CreateDestination(
-	"Undercity",
+	LocZone("Undercity", 90),
 	{
 		CreateSpell(3563),		-- Teleport: Undercity
 		CreateSpell(11418),		-- Portal: Undercity
 	})
 
 CreateDestination(
-	"Val'sharah",
+	LocZone("Val'sharah", 641),
 	{
 		CreateConditionalConsumable(141013, AtContinent(ContinentIdBrokenIsles)),			-- Scroll of Town Portal: Shala'nir
 		CreateConditionalConsumable(141015, AtContinent(ContinentIdBrokenIsles)),			-- Scroll of Town Portal: Kal'delar	
@@ -583,7 +677,7 @@ CreateDestination(
 -- I don't know why there are so many of these, not sure which is right but it's now safe to
 -- list them all.
 CreateDestination(
-	"Vale of Eternal Blossoms",
+	LocZone("Vale of Eternal Blossoms", 390),
 	{
 		CreateSpell(132621),	-- Teleport: Vale of Eternal Blossoms
 		CreateSpell(132627),	-- Teleport: Vale of Eternal Blossoms
@@ -594,8 +688,20 @@ CreateDestination(
 	})
 
 CreateDestination(
-	"Winterspring",
+	LocZone("Winterspring", 83),
 	{
 		CreateItem(18984),		-- Dimensional Ripper - Everlook
 	})
+	
+CreateDestination(
+	LocZone("Zandalar", 875),
+	{
+		CreateItem(168808)		-- Wormhole Generator: Zandalar
+	})
 
+CreateDestination(
+	LocZone("Zuldazar", 862),
+	{
+		CreateConsumable(157542),	-- Portal Scroll of Specificity
+		CreateConsumable(160218),	-- Portal Scroll of Specificity
+	})
