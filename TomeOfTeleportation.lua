@@ -866,25 +866,25 @@ function TeleporterUpdateButton(button)
 			if not IsSpellVisible(spell) then
 				alpha = 0.5
 			end
-			button:SetBackdropColor(GetOption("disabledColourR"), GetOption("disabledColourG"), GetOption("disabledColourB"), alpha)
+			button.backdrop:SetBackdropColor(GetOption("disabledColourR"), GetOption("disabledColourG"), GetOption("disabledColourB"), alpha)
 			button:SetAttribute("macrotext1", nil)
 		elseif isItem and TeleporterItemMustBeEquipped( item ) then 
-			button:SetBackdropColor(GetOption("unequipedColourR"), GetOption("unequipedColourG"), GetOption("unequipedColourB"), 1)
+			button.backdrop:SetBackdropColor(GetOption("unequipedColourR"), GetOption("unequipedColourG"), GetOption("unequipedColourB"), 1)
 
 			button:SetAttribute(
 				"macrotext1",
 				"/teleporterequip " .. item)
 		elseif onCooldown then
 			if cooldownDuration >2 then
-				button:SetBackdropColor(GetOption("cooldownColourR"), GetOption("cooldownColourG"), GetOption("cooldownColourB"), 1)
+				button.backdrop:SetBackdropColor(GetOption("cooldownColourR"), GetOption("cooldownColourG"), GetOption("cooldownColourB"), 1)
 			else
-				button:SetBackdropColor(GetOption("readyColourR"), GetOption("readyColourG"), GetOption("readyColourB"), 1)
+				button.backdrop:SetBackdropColor(GetOption("readyColourR"), GetOption("readyColourG"), GetOption("readyColourB"), 1)
 			end
 			button:SetAttribute(
 				"macrotext1",
 				"/script print( \"" .. item .. " is currently on cooldown.\")")
 		else
-			button:SetBackdropColor(GetOption("readyColourR"), GetOption("readyColourG"), GetOption("readyColourB"), 1)
+			button.backdrop:SetBackdropColor(GetOption("readyColourR"), GetOption("readyColourG"), GetOption("readyColourB"), 1)
 			
 			if toySpell then		
 				button:SetAttribute(
@@ -1436,10 +1436,12 @@ function TeleporterOpenFrame()
 			TeleporterTitleFrame:Hide()
 		end
 		
-		TeleporterParentFrame:SetBackdrop({bgFile = GetOption("background"), 
-											edgeFile = GetOption("edge"), 
-											tile = false, edgeSize = frameEdgeSize, 
-											insets = { left = buttonInset, right = buttonInset, top = buttonInset, bottom = buttonInset }});
+		TeleporterParentFrame.backdropInfo = 
+			{bgFile = GetOption("background"), 
+			edgeFile = GetOption("edge"), 
+			tile = false, edgeSize = frameEdgeSize, 
+			insets = { left = buttonInset, right = buttonInset, top = buttonInset, bottom = buttonInset }};
+		TeleporterParentFrame:ApplyBackdrop();
 		TeleporterParentFrame:SetBackdropColor(
 				GetOption("backgroundR"),
 				GetOption("backgroundG"),
@@ -1531,14 +1533,20 @@ function TeleporterOpenFrame()
 				buttonFrame:SetPoint("TOPLEFT",TeleporterParentFrame,"TOPLEFT",xoffset,yoffset)
 				yoffset = yoffset - buttonHeight
 				
+				buttonFrame.backdrop = TeleporterCreateReusableFrame("Frame","TeleporterBD", buttonFrame,"BackdropTemplate")
+				buttonFrame.backdrop:SetPoint("TOPLEFT",buttonFrame,"TOPLEFT",0,0)
+				buttonFrame.backdrop:SetPoint("BOTTOMRIGHT",buttonFrame,"BOTTOMRIGHT",0,0)
+				
 				local buttonBorder = 4 * GetScale()
 		
-				buttonFrame:SetBackdrop({bgFile = GetOption("buttonBackground"), 
-													edgeFile = GetOption("buttonEdge"), 
-													tile = true, tileSize = GetOption("buttonTileSize"), 
-													edgeSize = GetScaledOption("buttonEdgeSize"), 
-													insets = { left = buttonBorder, right = buttonBorder, top = buttonBorder, bottom = buttonBorder }});
-											
+				buttonFrame.backdrop.backdropInfo = 
+					{bgFile = GetOption("buttonBackground"), 
+					edgeFile = GetOption("buttonEdge"), 
+					tile = true, tileSize = GetOption("buttonTileSize"), 
+					edgeSize = GetScaledOption("buttonEdgeSize"), 
+					insets = { left = buttonBorder, right = buttonBorder, top = buttonBorder, bottom = buttonBorder }}
+				buttonFrame.backdrop:ApplyBackdrop();
+				
 				buttonFrame:SetAttribute("type", "macro")
 				buttonFrame:Show()
 
@@ -1570,7 +1578,7 @@ function TeleporterOpenFrame()
 				
 				local teleicon = buttonFrame.TeleporterIcon
 				if not teleicon then
-					teleicon = buttonFrame:CreateTexture(frameName)
+					teleicon = buttonFrame.backdrop:CreateTexture(frameName)
 					buttonFrame.TeleporterIcon = teleicon
 				end
 				
@@ -1587,12 +1595,13 @@ function TeleporterOpenFrame()
 				end
 
 				-- Cooldown bar
-				local cooldownbar = TeleporterCreateReusableFrame( "Frame", "TeleporterCB", buttonFrame, nil )
+				local cooldownbar = TeleporterCreateReusableFrame( "Frame", "TeleporterCB", buttonFrame.backdrop, "BackdropTemplate" )
 				--cooldownbar:SetFrameStrata("MEDIUM")
 				cooldownbar:SetWidth(64)
 				cooldownbar:SetHeight(buttonHeight)
 				cooldownbar:SetPoint("TOPLEFT",buttonFrame,"TOPLEFT",0,0)
-				cooldownbar:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background",insets = { left = 4, right = 4, top = 3, bottom = 3 }})
+				cooldownbar.backdropInfo = {bgFile = "Interface/Tooltips/UI-Tooltip-Background",insets = { left = 4, right = 4, top = 3, bottom = 3 }}
+				cooldownbar:ApplyBackdrop()
 
 				-- Cooldown label
 				local cooldownString = TeleporterCreateReusableFontString("TeleporterCL", cooldownbar, "GameFontNormalSmall")
