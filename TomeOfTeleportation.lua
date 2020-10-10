@@ -1341,7 +1341,11 @@ local function GetRandomHearth(validSpells)
 			tinsert(hearthSpells, spell.spellName)
 		end
 	end
-	return hearthSpells[math.random(#hearthSpells)]
+	if  #hearthSpells > 0 then
+		return hearthSpells[math.random(#hearthSpells)]
+	else
+		return nil
+	end
 end
 
 local function FindValidSpells()
