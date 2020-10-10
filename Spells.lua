@@ -484,6 +484,12 @@ CreateDestination(
 	})
 	
 CreateDestination(
+	LocZone("Maldraxxus", 1536),
+	{
+		CreateItem(181163),		-- Scroll of Teleport: Theater of Pain
+	})
+	
+CreateDestination(
 	LocZone("Mechagon", 1490),
 	{
 		CreateConsumable(167075),	-- Ultrasafe Transporter: Mechagon
@@ -522,6 +528,13 @@ CreateDestination(
 		CreateItem(63207),		-- Wrap of Unity
 		CreateItem(63353),		-- Shroud of Cooperation
 		CreateItem(65274),		-- Cloak of Coordination
+	})
+	
+CreateDestination(
+	LocZone("Oribos", 1670),
+	{
+		CreateSpell(344587),	-- Teleport: Oribos
+		CreateSpell(344597),	-- Portal: Oribos
 	})
 
 CreateDestination(
@@ -635,6 +648,12 @@ CreateDestination(
 	LocArea("Temple of Five Dawns", 5820),
 	{
 		CreateConditionalSpell(126892, function() return HaveUpgradedZen() end ),	-- Zen Pilgrimage
+	})
+	
+CreateDestination(
+	LocZone("The Maw", 1543),
+	{
+		CreateConsumable(180817),		-- Cypher of Relocation
 	})
 
 CreateDestination(
