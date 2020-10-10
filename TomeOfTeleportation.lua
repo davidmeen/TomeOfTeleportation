@@ -1337,11 +1337,16 @@ end
 local function GetRandomHearth(validSpells)
 	local hearthSpells = {}
 	for index, spell in ipairs(validSpells) do
+		print(spell.spellName)
 		if spell.zone == TeleporterHearthString then
 			tinsert(hearthSpells, spell.spellName)
 		end
 	end
-	return hearthSpells[math.random(#hearthSpells)]
+	if  #hearthSpells > 0 then
+		return hearthSpells[math.random(#hearthSpells)]
+	else
+		return nil
+	end
 end
 
 local function FindValidSpells()
