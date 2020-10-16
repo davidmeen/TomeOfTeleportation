@@ -23,8 +23,6 @@ function TeleToggleQuickMenu(favourites, size)
 		QuickMenuFrame = TeleporterQuickMenuFrame
 		QuickMenuFrame:SetFrameStrata("HIGH")
 		tinsert(UISpecialFrames,TeleporterQuickMenuFrame:GetName());
-		
-		QuickMenuFrame:SetBackdropColor(1, 1, 1, 1);	
 	end
 	
 	if QuickMenuVisible then
