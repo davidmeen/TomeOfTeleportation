@@ -69,23 +69,25 @@ function TeleToggleQuickMenu(favourites, size)
 			
 			if isItem then
 				name, _, _, _, _, _, _, _, _, texture = GetItemInfo( spellId )
-			
-				button:SetScript(
-					"OnEnter",
-					function()
-						TeleporterShowItemTooltip( name, button )
-					end )
 				
-				if PlayerHasToy(spellId) then			
-					button:SetAttribute(
-						"macrotext1",
-						"/teleportercastspell " .. GetItemSpell(spellId) .. "\n" ..
-						"/cast " .. name .. "\n" )
-				else
-					button:SetAttribute(
-						"macrotext1",
-						"/teleporteruseitem " .. name .. "\n" ..
-						"/use " .. name .. "\n" )
+				if name then				
+					button:SetScript(
+						"OnEnter",
+						function()
+							TeleporterShowItemTooltip( name, button )
+						end )
+					
+					if PlayerHasToy(spellId) then			
+						button:SetAttribute(
+							"macrotext1",
+							"/teleportercastspell " .. GetItemSpell(spellId) .. "\n" ..
+							"/cast " .. name .. "\n" )
+					else
+						button:SetAttribute(
+							"macrotext1",
+							"/teleporteruseitem " .. name .. "\n" ..
+							"/use " .. name .. "\n" )
+					end
 				end
 			else				
 				name,_,texture = GetSpellInfo( spellId )				
@@ -101,14 +103,16 @@ function TeleToggleQuickMenu(favourites, size)
 					"/teleportercastspell " .. name .. "\n" ..
 					"/cast " .. name .. "\n" )
 			end
-								
-			QuickMenuTextures[index]:SetTexture(texture)
-			
-			QuickMenuButtons[index]:Show()
-			
-			QuickMenuButtons[index]:SetScript("OnMouseUp", TeleQuickMenuOnClick)
-			
-			index = index + 1
+				
+			if name then
+				QuickMenuTextures[index]:SetTexture(texture)
+				
+				QuickMenuButtons[index]:Show()
+				
+				QuickMenuButtons[index]:SetScript("OnMouseUp", TeleQuickMenuOnClick)
+				
+				index = index + 1
+			end
 		end
 		
 		while index <= #QuickMenuButtons do
