@@ -577,7 +577,7 @@ CreateDestination(
 	{
 		CreateItem(139590),		-- Scroll of Teleport: Ravenholdt
 	})
-
+	
 CreateDestination(
 	LocZone("Shattrath City", 111),
 	{
@@ -654,6 +654,12 @@ CreateDestination(
 	LocZone("The Maw", 1543),
 	{
 		CreateConsumable(180817),		-- Cypher of Relocation
+	})
+	
+CreateDestination(
+	LocZone("The Shadowlands", 1550),
+	{
+		CreateItem(172924),		-- Wormhole Generator: Shadowlands
 	})
 
 CreateDestination(
