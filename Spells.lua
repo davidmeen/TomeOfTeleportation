@@ -207,6 +207,12 @@ CreateDestination(
 	{
 		CreateConditionalItem(153226, AtZone(MapIDAntoranWastes))	-- Observer's Locus Resonator
 	})
+	
+CreateDestination(
+	LocZone("Ardenweald", 1565),
+	{
+		CreateConsumable(184503),	-- Attendant's Pocket Portal: Ardenweald
+	})
 
 CreateDestination(
 	LocZone("Argus", 905),
@@ -232,6 +238,13 @@ CreateDestination(
 		CreateConditionalConsumable(141016, AtContinent(ContinentIdBrokenIsles)),	-- Scroll of Town Portal: Faronaar
 		CreateConditionalItem(140493, OnDayAtContinent(DayWednesday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
 	}, 630)
+	
+CreateDestination(
+	LocZone("Bastion", 1533),
+	{
+		CreateConsumable(184500),	-- Attendant's Pocket Portal: Bastion
+	})
+
 
 CreateDestination(
 	LocArea("Bizmo's Brawlpub", 6618),
@@ -489,7 +502,8 @@ CreateDestination(
 CreateDestination(
 	LocZone("Maldraxxus", 1536),
 	{
-		CreateItem(181163),		-- Scroll of Teleport: Theater of Pain
+		CreateItem(181163),			-- Scroll of Teleport: Theater of Pain
+		CreateConsumable(184502),	-- Attendant's Pocket Portal: Maldraxxus
 	})
 	
 CreateDestination(
@@ -538,6 +552,7 @@ CreateDestination(
 	{
 		CreateSpell(344587),	-- Teleport: Oribos
 		CreateSpell(344597),	-- Portal: Oribos
+		CreateConsumable(184504),	-- Attendant's Pocket Portal: Oribos
 	})
 
 CreateDestination(
@@ -579,6 +594,12 @@ CreateDestination(
 	LocArea("Ravenholdt", 0),
 	{
 		CreateItem(139590),		-- Scroll of Teleport: Ravenholdt
+	})
+	
+CreateDestination(
+	LocZone("Revendreth", 1525),
+	{
+		CreateItem(184501),		-- 184501
 	})
 	
 CreateDestination(
