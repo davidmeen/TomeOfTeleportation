@@ -166,6 +166,9 @@ CreateDestination(
 		CreateItem(165669),				-- Lunar Elder's Hearthstone
 		CreateItem(165670),				-- Peddlefeet's Lovely Hearthstone
 		CreateItem(172179),				-- Eternal Traveler's Hearthstone
+		CreateItem(180290),				-- Night Fae Hearthstone
+		CreateItem(182773),				-- Necrolord Hearthstone
+		CreateItem(184353),				-- Kyrian Hearthstone
 	})
 	
 CreateDestination(

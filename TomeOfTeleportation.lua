@@ -215,29 +215,19 @@ end
 
 ---------------------------------------------------------------
 
-local NameToIdCache = nil
+local ItemsFound = {}
+local EmulateSlowServer = false
 
-local function BuildNameToIdCache()
-	NameToIdCache = {}
-	for id, t in pairs(TomeOfTele_Cache) do
-		NameToIdCache[t[1]] = id
-	end
-end
-
+-- Emulating slow server.
 local function GetCachedItemInfo(itemId)
-	if NameToIdCache == nil then
-		BuildNameToIdCache()
-	end
-	
-	if NameToIdCache[itemId] ~= nil then
-		itemId = NameToIdCache[itemId]
-	end
-
-	if TomeOfTele_Cache[itemId] then
-		local t = TomeOfTele_Cache[itemId]
-		return t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8], t[9], t[10], t[11], t[12], t[13], t[14], t[15], t[16], t[17]
+	if EmulateSlowServer then	
+		if ItemsFound[itemId] == nil then
+			ItemsFound[itemId] = true
+			return nil
+		else
+			return GetItemInfo(itemId)
+		end
 	else
-		print("Tome of Teleportation: item " .. itemId .. " is missing from the cache. Report a bug.")
 		return GetItemInfo(itemId)
 	end
 end
@@ -637,6 +627,7 @@ local function SortSpells(spell1, spell2, sortType)
 end
 
 local function SetupSpells()
+	local loaded = true
 	for index, spell in ipairs(TeleporterSpells) do		
 		if spell.spellType == ST_Item then
 			spell.spellName = GetCachedItemInfo( spell.spellId )
@@ -646,10 +637,13 @@ local function SetupSpells()
 		
 		if not spell.spellName then
 			spell.spellName = "<Loading>"
+			loaded = false
 		end
 		
 		spell.isItem = spell.spellType == ST_Item
 	end
+	
+	return loaded
 end
 
 local function GetSortedFavourites(favourites)
@@ -1347,7 +1341,7 @@ local function GetRandomHearth(validSpells)
 	local hearthSpells = {}
 	for index, spell in ipairs(validSpells) do
 		if spell.zone == TeleporterHearthString then
-			tinsert(hearthSpells, spell.spellName)
+			tinsert(hearthSpells, spell.spellId)
 		end
 	end
 	if  #hearthSpells > 0 then
@@ -1435,9 +1429,7 @@ function TeleporterOpenFrame()
 		local titleHeight = GetScaledOption("titleHeight")
 		local buttonInset = GetOption("buttonInset")		
 		
-		IsVisible = true
-		NeedUpdate = true
-		OpenTime = GetTime()
+		IsVisible = true		
 
 		if TeleporterParentFrame == nil then
 			CreateMainFrame()			
@@ -1488,7 +1480,11 @@ function TeleporterOpenFrame()
 
 		ButtonSettings = {}
 		
-		SetupSpells()
+		if not SetupSpells() then
+			NeedUpdate = true
+			OpenTime = GetTime()
+		end
+		
 		local SortType = GetOption("sort")
 		if CustomizeSpells then
 			SortType = SortCustom
@@ -1512,7 +1508,7 @@ function TeleporterOpenFrame()
 			
 			local haveSpell = true
 			if spell.zone == TeleporterHearthString and GetOption("randomHearth") then
-				if spellName ~= onlyHearth and not CustomizeSpells then
+				if spellId ~= onlyHearth and not CustomizeSpells then
 					haveSpell = false
 				end
 			end
@@ -1567,7 +1563,7 @@ function TeleporterOpenFrame()
 					buttonFrame:SetScript(
 						"OnEnter",
 						function()
-							TeleporterShowItemTooltip( spellName, buttonFrame )
+							TeleporterShowItemTooltip( spellId, buttonFrame )
 						end )
 				else
 					buttonFrame:SetScript(
@@ -1946,15 +1942,14 @@ function Teleporter_OnAddonLoaded()
 	end
 end
 
-function Teleporter_OnUpdate()
-	if IsVisible then	
+function Teleporter_OnUpdate()	
+	if IsVisible then		
 		-- The first time the UI is opened toy ownership may be incorrect. Reopen once it's correct.
-		if NeedUpdate then			
-			-- Assume it's ready after 1 second.
-			if GetTime() > OpenTime + 1 then
-				--TeleporterClose()
-				TeleporterOpenFrame()
+		if NeedUpdate then		
+			-- If it's still wrong then will try again later.
+			if GetTime() > OpenTime + 0.5 then
 				NeedUpdate = false
+				Refresh()			
 			end
 		end
 		TeleporterUpdateAllButtons()		
@@ -2054,7 +2049,6 @@ function dataobj:OnClick(button)
 	elseif button == "RightButton" then
 		ShowMenu()
 	end
-	NeedUpdate = false
 end
 
 function TeleporterAddTheme(name, theme)

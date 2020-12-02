@@ -3,7 +3,7 @@
 ## Notes: An interface for managing teleportation spells and items.
 ## Author: Remeen
 ## SavedVariablesPerCharacter: TomeOfTele_Icon, TomeOfTele_Options, TomeOfTele_ShareOptions
-## SavedVariables: TomeOfTele_OptionsGlobal, TomeOfTele_DevCache
+## SavedVariables: TomeOfTele_OptionsGlobal
 
 
 libs\LibStub\LibStub.lua
@@ -14,4 +14,3 @@ TomeQuickMenu.lua
 TomeOfTeleportation.lua
 TomeOfTeleportation.xml
 Spells.lua
-TomeCache.lua
