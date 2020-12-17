@@ -168,6 +168,7 @@ CreateDestination(
 		CreateItem(172179),				-- Eternal Traveler's Hearthstone
 		CreateItem(180290),				-- Night Fae Hearthstone
 		CreateItem(182773),				-- Necrolord Hearthstone
+		CreateItem(183716),				-- Venthyr Sinstone
 		CreateItem(184353),				-- Kyrian Hearthstone
 	})
 	
@@ -443,7 +444,14 @@ CreateDestination(
 	{
 		CreateChallengeSpell(193759), 	-- Teleport: Hall of the Guardian
 	})
---	
+	
+-- TODO: Include destination in name
+CreateDestination(
+	"Hearth (Necrolord)",
+	{
+		CreateSpell(324547)		-- Hearth Kidneystone
+	})
+
 CreateDestination(
 	LocZone("Highmountain", 869),
 	{
