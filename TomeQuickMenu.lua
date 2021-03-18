@@ -3,7 +3,7 @@ local QuickMenuButtons = {}
 local QuickMenuTextures = {}
 local QuickMenuVisible = false
 
-local function HideQuickMenu()
+function TeleHideQuickMenu()
 	QuickMenuFrame:Hide()
 	QuickMenuVisible = false
 end

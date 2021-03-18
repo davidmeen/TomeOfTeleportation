@@ -7,6 +7,7 @@ local MapIDAzsuna = 627
 local MapIDDalaranLegion = 1014
 local MapIDAntoranWastes = 885
 local MapIDAlterac = 943
+local MapIDMaw = 1543
 
 local ContinentIdOutland = 101
 local ContinentIdPandaria = 424
@@ -31,6 +32,12 @@ end
 
 local function AtContinent(requiredContinent)
 	return AtZone(requiredContinent)
+end
+
+local function IsInCovenant(covenant)
+	return function()
+		return C_Covenants.GetActiveCovenantID() == covenant
+	end
 end
 
 local function AllowWhistle()
@@ -166,10 +173,10 @@ CreateDestination(
 		CreateItem(165669),				-- Lunar Elder's Hearthstone
 		CreateItem(165670),				-- Peddlefeet's Lovely Hearthstone
 		CreateItem(172179),				-- Eternal Traveler's Hearthstone
-		CreateItem(180290),				-- Night Fae Hearthstone
-		CreateItem(182773),				-- Necrolord Hearthstone
-		CreateItem(183716),				-- Venthyr Sinstone
-		CreateItem(184353),				-- Kyrian Hearthstone
+		CreateConditionalItem(180290, IsInCovenant(3)),	-- Night Fae Hearthstone
+		CreateConditionalItem(182773, IsInCovenant(4)),	-- Necrolord Hearthstone
+		CreateConditionalItem(183716, IsInCovenant(2)),	-- Venthyr Sinstone
+		CreateConditionalItem(184353, IsInCovenant(1)),	-- Kyrian Hearthstone
 	})
 	
 CreateDestination(
@@ -685,7 +692,7 @@ CreateDestination(
 CreateDestination(
 	LocZone("The Maw", 1543),
 	{
-		CreateConsumable(180817),		-- Cypher of Relocation
+		CreateConditionalConsumable(180817, AtZone(MapIDMaw)),	-- Cypher of Relocation
 	})
 	
 CreateDestination(

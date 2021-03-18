@@ -1880,6 +1880,7 @@ end
 
 function TeleporterCastSpellSlashCmdFunction( spell )
 	CastSpell = spell
+	TeleHideQuickMenu()
 end
 
 function TeleporterCreateMacroSlashCmdFunction( spell )
