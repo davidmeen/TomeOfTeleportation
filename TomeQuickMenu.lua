@@ -4,8 +4,10 @@ local QuickMenuTextures = {}
 local QuickMenuVisible = false
 
 function TeleHideQuickMenu()
-	QuickMenuFrame:Hide()
-	QuickMenuVisible = false
+	if QuickMenuFrame then
+		QuickMenuFrame:Hide()
+		QuickMenuVisible = false
+	end
 end
 
 function TeleQuickMenu_OnHide()
