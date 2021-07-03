@@ -8,6 +8,7 @@ local MapIDDalaranLegion = 1014
 local MapIDAntoranWastes = 885
 local MapIDAlterac = 943
 local MapIDMaw = 1543
+local MapIDKorthia = 1961
 
 local ContinentIdOutland = 101
 local ContinentIdPandaria = 424
@@ -692,7 +693,7 @@ CreateDestination(
 CreateDestination(
 	LocZone("The Maw", 1543),
 	{
-		CreateConditionalConsumable(180817, AtZone(MapIDMaw)),	-- Cypher of Relocation
+		CreateConditionalConsumable(180817, function() return AtZone(MapIDMaw)() and not AtZone(MapIDKorthia)() end),	-- Cypher of Relocation
 	})
 	
 CreateDestination(

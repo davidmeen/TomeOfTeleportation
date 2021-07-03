@@ -1,10 +1,11 @@
 -- Tome of Teleportation by Remeen.
 
 -- TODO:
--- More Battle for Azeroth items
 -- Improve speed
+-- Mythic dungeon teleports (Spell IDs not yet known)
 
 -- Low priority:
+-- Better UI
 -- Proper options dialog
 
 local AddonName = "TomeOfTeleportation"

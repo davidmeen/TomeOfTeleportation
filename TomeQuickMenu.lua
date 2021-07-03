@@ -28,7 +28,7 @@ function TeleToggleQuickMenu(favourites, size)
 	end
 	
 	if QuickMenuVisible then
-		HideQuickMenu()
+		TeleHideQuickMenu()
 	else
 		local favCount = 0
 		for spellId, isItem in pairs(favourites) do
