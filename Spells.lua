@@ -404,14 +404,14 @@ CreateDestination(
 CreateDestination(
 	"Draenor Dungeons",					-- No localization
 	{
-		CreateChallengeSpell(159897),	-- Teleport: Auchindoun
-		CreateChallengeSpell(159895),	-- Teleport: Bloodmaul Slag Mines
-		CreateChallengeSpell(159901),	-- Teleport: Overgrown Outpost
-		CreateChallengeSpell(159900),	-- Teleport: Grimrail Depot
-		CreateChallengeSpell(159896),	-- Teleport: Iron Docks
-		CreateChallengeSpell(159899),	-- Teleport: Shadowmoon Burial Grounds
-		CreateChallengeSpell(159898),	-- Teleport: Skyreach
-		CreateChallengeSpell(159902),	-- Teleport: Upper Blackrock Spire
+		CreateChallengeSpell(159897),	-- Path of the Vigilant
+		CreateChallengeSpell(159895),	-- Path of the Bloodmaul
+		CreateChallengeSpell(159901),	-- Path of the Verdant
+		CreateChallengeSpell(159900),	-- Path of the Dark Rail
+		CreateChallengeSpell(159896),	-- Path of the Iron Prow
+		CreateChallengeSpell(159899),	-- Path of the Crescent Moon
+		CreateChallengeSpell(159898),	-- Path of the Skies
+		CreateChallengeSpell(159902),	-- Path of the Burning Mountain
 	})
 
 CreateDestination(
@@ -621,14 +621,14 @@ CreateDestination(
 CreateDestination(
 	"Shadowlands Dungeons",					-- No localization
 	{
-		CreateChallengeSpell(354462),	-- Hero's Path: Necrotic Wake
-		CreateChallengeSpell(354363),	-- Hero's Path: Plaguefall
-		CreateChallengeSpell(354464),	-- Hero's Path: Mists of Tirna Scithe
-		CreateChallengeSpell(354465),	-- Hero's Path: Halls of Atonement
-		CreateChallengeSpell(354466),	-- Hero's Path: Spires  of Ascension
-		CreateChallengeSpell(354467),	-- Hero's Path: Theater of Pain
-		CreateChallengeSpell(354468),	-- Hero's Path: De Other Side
-		CreateChallengeSpell(354469),	-- Hero's Path: Sanguine Depths
+		CreateChallengeSpell(354462),	-- Path of the Courageous
+		CreateChallengeSpell(354463),	-- Path of the Plagued
+		CreateChallengeSpell(354464),	-- Path of the Misty Forest
+		CreateChallengeSpell(354465),	-- Path of the Sinful Soul
+		CreateChallengeSpell(354466),	-- Path of the Ascendant
+		CreateChallengeSpell(354467),	-- Path of the Undefeated
+		CreateChallengeSpell(354468),	-- Path of the Scheming Loa
+		CreateChallengeSpell(354469),	-- Path of the Stone Warden
 	})
 	
 CreateDestination(
