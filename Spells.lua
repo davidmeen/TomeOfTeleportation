@@ -322,6 +322,12 @@ CreateDestination(
 		CreateConsumable(132523), 		-- Reaves Battery (can't always teleport, don't currently check).	
 		CreateItem(144341), 			-- Rechargeable Reaves Battery
 	})
+	
+CreateDestination(			
+	"Camp",
+	{
+		CreateSpell(312372),		-- Portal: Dalaran - Broken Isles (UNTESTED)
+	})
 
 CreateDestination(			
 	LocZone("Dalaran", 41) .. " (Legion)",	
