@@ -635,6 +635,7 @@ CreateDestination(
 		CreateChallengeSpell(354467),	-- Path of the Undefeated
 		CreateChallengeSpell(354468),	-- Path of the Scheming Loa
 		CreateChallengeSpell(354469),	-- Path of the Stone Warden
+		CreateChallengeSpell(367416),	-- Path of the Streetwise Merchant
 	})
 	
 CreateDestination(
@@ -719,6 +720,7 @@ CreateDestination(
 	LocZone("The Shadowlands", 1550),
 	{
 		CreateItem(172924),		-- Wormhole Generator: Shadowlands
+		CreateItem(189827)		-- Cartel Xy's Proof of Initiation	(Might be in the wrong category)
 	})
 
 CreateDestination(
