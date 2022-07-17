@@ -178,6 +178,7 @@ CreateDestination(
 		CreateConditionalItem(182773, IsInCovenant(4)),	-- Necrolord Hearthstone
 		CreateConditionalItem(183716, IsInCovenant(2)),	-- Venthyr Sinstone
 		CreateConditionalItem(184353, IsInCovenant(1)),	-- Kyrian Hearthstone
+		CreateItem(193588),				-- Timewalker's Hearthstone
 	})
 	
 CreateDestination(
