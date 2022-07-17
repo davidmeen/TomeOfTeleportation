@@ -507,6 +507,7 @@ CreateDestination(
 		CreateItem(22631),		-- Atiesh, Greatstaff of the Guardian
 		CreateItem(22632),		-- Atiesh, Greatstaff of the Guardian
 		CreateItem(142469), 	-- Violet Seal of the Grand Magus
+		CreateChallengeSpell(373262), -- Path of the Fallen Guardian
 	})
 	
 CreateDestination(
@@ -532,6 +533,7 @@ CreateDestination(
 	LocZone("Mechagon", 1490),
 	{
 		CreateConsumable(167075),	-- Ultrasafe Transporter: Mechagon
+		CreateChallengeSpell(373274)	-- Path of the Scrappy Prince
 	})
 	
 CreateDestination(
@@ -610,6 +612,7 @@ CreateDestination(
 		CreateSpell(147420),								-- One With Nature
 		CreateItem(64457), 									-- The Last Relic of Argus
 		CreateConditionalItem(136849, IsClass("DRUID")),	-- Nature's Beacon
+		CreateItem(189827)									-- Cartel Xy's Proof of Initiation
 	})
 
 CreateDestination(
@@ -636,6 +639,9 @@ CreateDestination(
 		CreateChallengeSpell(354468),	-- Path of the Scheming Loa
 		CreateChallengeSpell(354469),	-- Path of the Stone Warden
 		CreateChallengeSpell(367416),	-- Path of the Streetwise Merchant
+		CreateChallengeSpell(373190),	-- Path of the Sire
+		CreateChallengeSpell(373191),	-- Path of the Tormented Soul
+		CreateChallengeSpell(373192)	-- Path of the First Ones
 	})
 	
 CreateDestination(
@@ -719,8 +725,7 @@ CreateDestination(
 CreateDestination(
 	LocZone("The Shadowlands", 1550),
 	{
-		CreateItem(172924),		-- Wormhole Generator: Shadowlands
-		CreateItem(189827)		-- Cartel Xy's Proof of Initiation	(Might be in the wrong category)
+		CreateItem(172924),		-- Wormhole Generator: Shadowlands		
 	})
 
 CreateDestination(

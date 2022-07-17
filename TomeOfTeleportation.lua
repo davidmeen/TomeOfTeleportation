@@ -42,6 +42,39 @@ local SortUpIconOffset = 0
 local SortDownIconOffset = 0
 local AddItemButton = nil
 local AddSpellButton = nil
+local DebugMode = nil
+
+-- I'm not going to attempt any prefixes with different character sets. I may have missed some variations.
+-- Some of these are odd - inconsistent translations in-game?
+local HiddenPrefixes = 
+{
+	-- German
+	"Pfad der ",
+	"Pfad des ",
+	-- English
+	"Path of the ",
+	-- Spanish
+	"Camino de los  ",
+	"Senda de ",
+	"Senda de las ",
+	"Senda de los ",
+	"Senda del ",
+	-- French
+	"Chemin du ",
+	"Voie de ",
+	"Voie des ",
+	"Voie du ",
+	-- Italian
+	"Sentiero del ",
+	"Via degli ",
+	"Via dei ",
+	"Via del ",
+	"Via dell'",
+	-- Brazilian Portugese
+	"Caminho da ",
+	"Caminho do ",
+	"Caminho dos ",
+}
 
 _G["BINDING_HEADER_TOMEOFTELEPORTATION"] = "Tome of Teleportation"
 
@@ -122,7 +155,8 @@ local DefaultOptions =
 	["sortUpIcon"] = "Interface/Icons/misc_arrowlup",
 	["sortDownIcon"] = "Interface/Icons/misc_arrowdown",
 	["showButtonIcon"] = "Interface/Icons/levelupicon-lfd",
-	["removeButtonIcon"] = "Interface/Icons/INV_Misc_Bone_Skull_03"
+	["removeButtonIcon"] = "Interface/Icons/INV_Misc_Bone_Skull_03",
+	["hidePrefixes"] = 1,
 }
 
 -- Themes. For now there aren't many of these. Message me on curseforge.com
@@ -1016,8 +1050,9 @@ local function CanUseSpell(spell)
 		end
 	end
 	
-	-- Uncomment this to test all items.
-	--haveSpell = true
+	if DebugMode then
+		haveSpell = true
+	end
 	
 	if GetOption("hideItems") and spellType == ST_Item then
 		haveSpell = false
@@ -1405,6 +1440,19 @@ local function FindValidSpells()
 	return validSpells
 end
 
+local function CleanupName(name)
+	local hide = GetOption("hidePrefixes")
+	if hide == 1 or hide == "1" then
+		for index, prefix in pairs(HiddenPrefixes) do
+			local foundIndex = strfind(name, prefix)
+			if foundIndex == 1 then
+				name = "…" .. strsub(name, strlen(prefix))
+			end
+		end
+	end
+	return name
+end
+
 function TeleporterOpenFrame()
 
 	if UnitAffectingCombat("player") then
@@ -1502,7 +1550,7 @@ function TeleporterOpenFrame()
 			local destination = spell.displayDestination
 			local consumable = spell.consumable
 			local spellName = spell.spellName
-			local displaySpellName = spellName
+			local displaySpellName = CleanupName(spellName)
 			local itemTexture = spell.itemTexture
 			local toySpell = spell.toySpell
 			
@@ -1802,6 +1850,8 @@ function TeleporterSlashCmdFunction(args)
 		SetOption(splitArgs[2], splitArgs[3])
 	elseif splitArgs[1] == "cache" then
 		CacheItems()
+	elseif splitArgs[1] == "debug" then
+		DebugMode = 1
 	elseif splitArgs[1] == nil then
 		if IsVisible then
 			TeleporterClose()
