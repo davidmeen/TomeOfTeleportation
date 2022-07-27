@@ -190,7 +190,8 @@ CreateDestination(
 CreateDestination(
 	TeleporterFlightString,
 	{ 
-		CreateConditionalItem(141605, AllowWhistle) 	-- Flight Master's Whistle
+		CreateConditionalItem(141605, AllowWhistle), 	-- Flight Master's Whistle
+		CreateConditionalItem(168862, AllowWhistle), 	-- G.E.A.R. Tracking Beacon
 	})
 	
 CreateDestination(
