@@ -173,12 +173,13 @@ CreateDestination(
 		CreateItem(168907),				-- Holographic Digitalization Hearthstone
 		CreateItem(165669),				-- Lunar Elder's Hearthstone
 		CreateItem(165670),				-- Peddlefeet's Lovely Hearthstone
+		CreateItem(169064),				-- Mountebank's Colorful Cloak
 		CreateItem(172179),				-- Eternal Traveler's Hearthstone
 		CreateConditionalItem(180290, IsInCovenant(3)),	-- Night Fae Hearthstone
 		CreateConditionalItem(182773, IsInCovenant(4)),	-- Necrolord Hearthstone
 		CreateConditionalItem(183716, IsInCovenant(2)),	-- Venthyr Sinstone
 		CreateConditionalItem(184353, IsInCovenant(1)),	-- Kyrian Hearthstone
-		CreateItem(193588),				-- Timewalker's Hearthstone
+		CreateItem(193588),				-- Timewalker's Hearthstone		
 	})
 	
 CreateDestination(
