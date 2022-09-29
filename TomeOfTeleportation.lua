@@ -1846,10 +1846,10 @@ function TeleporterSlashCmdFunction(args)
 			TeleporterParentFrame:SetPoint("CENTER", "UIParent", "CENTER", 0, 0)
 		end
 	elseif splitArgs[1] == "showicon" then
-		TomeOfTele_Icon.hide = false
+		TomeOfTele_IconGlobal.hide = false
 		icon:Show("TomeTele")
 	elseif splitArgs[1] == "hideicon" then
-		TomeOfTele_Icon.hide = true
+		TomeOfTele_IconGlobal.hide = true
 		icon:Hide("TomeTele")
 	elseif splitArgs[1] == "set" then
 		SetOption(splitArgs[2], splitArgs[3])
@@ -1979,11 +1979,11 @@ function TeleporterCreateMacroSlashCmdFunction( spell )
 end
 
 function Teleporter_OnAddonLoaded()
-	if TomeOfTele_Icon == nil then
-		TomeOfTele_Icon = {}
+	if TomeOfTele_IconGlobal == nil then
+		TomeOfTele_IconGlobal = {}
 	end
 	
-	icon:Register("TomeTele", dataobj, TomeOfTele_Icon)		
+	icon:Register("TomeTeleGlobal", dataobj, TomeOfTele_IconGlobal)		
 	
 	RebuildSpellList()
 	
