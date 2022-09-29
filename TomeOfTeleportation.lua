@@ -1032,13 +1032,18 @@ local function CanUseSpell(spell)
 	
 	local haveSpell = false
 	local haveToy = false
-	local toyUsable =  C_ToyBox.IsToyUsable(spellId)
+	local toyUsable =  false
+	if C_ToyBox then
+		toyUsable = C_ToyBox.IsToyUsable(spellId)
+	end
 	-- C_ToyBox.IsToyUsable returns nil if the toy hasn't been loaded yet.
 	if toyUsable == nil then		
 		toyUsable = true
 	end
 	if isItem then
-		haveToy = PlayerHasToy(spellId) and toyUsable
+		if toyUsable then
+			haveToy = PlayerHasToy(spellId) and toyUsable
+		end
 		haveSpell = GetItemCount( spellId ) > 0 or haveToy
 	else
 		haveSpell = IsSpellKnown( spellId )
@@ -1427,7 +1432,7 @@ local function FindValidSpells()
 
 		spell.toySpell = nil
 		if isItem then
-			if PlayerHasToy(spellId) then
+			if C_ToyBox and PlayerHasToy(spellId) then
 				spell.toySpell = GetItemSpell(spellId)
 			end			
 		end
@@ -1986,7 +1991,7 @@ function Teleporter_OnAddonLoaded()
 		local spellId = spell.spellId
 		local spellType = spell.spellType
 		local isItem = (spellType == ST_Item)
-		if isItem then
+		if isItem and C_ToyBox then
 			-- Query this early so it will be ready when we need it.
 			C_ToyBox.IsToyUsable(spellId)			
 		end
@@ -2107,9 +2112,13 @@ function TeleporterAddTheme(name, theme)
 end
 
 function TeleporterAddSpell(id, dest)
-	TeleporterSpells[#TeleporterSpells + 1] = {spellId = id, spellType = ST_Spell, zone = dest}
+	if dest then
+		TeleporterSpells[#TeleporterSpells + 1] = {spellId = id, spellType = ST_Spell, zone = dest}
+	end
 end
 
 function TeleporterAddItem(id, dest)
-	TeleporterSpells[#TeleporterSpells + 1] = {spellId = id, spellType = ST_Item, zone = dest}
+	if dest then
+		TeleporterSpells[#TeleporterSpells + 1] = {spellId = id, spellType = ST_Item, zone = dest}
+	end
 end

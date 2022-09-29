@@ -37,7 +37,7 @@ end
 
 local function IsInCovenant(covenant)
 	return function()
-		return C_Covenants.GetActiveCovenantID() == covenant
+		return C_Covenants and C_Covenants.GetActiveCovenantID() == covenant
 	end
 end
 
@@ -88,9 +88,11 @@ local function OnDayAtContinent(day, continent)
 end
 
 local function CreateDestination(zone, spells)	
-	for i, spell in ipairs(spells) do
-		spell.zone = zone
-		tinsert(TeleporterDefaultSpells, spell)
+	if zone then
+		for i, spell in ipairs(spells) do
+			spell.zone = zone
+			tinsert(TeleporterDefaultSpells, spell)
+		end
 	end
 end
 
@@ -108,12 +110,12 @@ end
 
 local function LocZone(name, mapID)
 	if mapID == 0 then
-		PrintZoneIndex(name)		
+		--PrintZoneIndex(name)		
 		return name
 	else
 		local mapInfo =	C_Map.GetMapInfo(mapID)
 		if not mapInfo then
-			PrintZoneIndex(name)	
+			--PrintZoneIndex(name)	
 			return name
 		end
 		local locName = mapInfo.name
