@@ -16,7 +16,7 @@ TeleporterFlightString = "2 Flight Master"
 
 local ldb = LibStub:GetLibrary("LibDataBroker-1.1")
 local icon = LibStub("LibDBIcon-1.0")
-local dataobj = ldb:NewDataObject("TomeTele", {
+local dataobj = ldb:NewDataObject("TomeTeleGlobal", {
 	label = "TomeOfTeleportation", 
 	type = "data source", 
 	icon = "Interface\\Icons\\Spell_Arcane_TeleportDalaran", 
@@ -1847,10 +1847,10 @@ function TeleporterSlashCmdFunction(args)
 		end
 	elseif splitArgs[1] == "showicon" then
 		TomeOfTele_IconGlobal.hide = false
-		icon:Show("TomeTele")
+		icon:Show("TomeTeleGlobal")
 	elseif splitArgs[1] == "hideicon" then
 		TomeOfTele_IconGlobal.hide = true
-		icon:Hide("TomeTele")
+		icon:Hide("TomeTeleGlobal")
 	elseif splitArgs[1] == "set" then
 		SetOption(splitArgs[2], splitArgs[3])
 	elseif splitArgs[1] == "cache" then
