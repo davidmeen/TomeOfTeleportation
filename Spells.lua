@@ -90,12 +90,13 @@ end
 local function CreateDestination(zone, spells)	
 	if zone then
 		for i, spell in ipairs(spells) do
-			spell.zone = zone
-			tinsert(TeleporterDefaultSpells, spell)
+			if TeleporterIsUnsupportedItem(spell) ~= 1 then
+				spell.zone = zone
+				tinsert(TeleporterDefaultSpells, spell)
+			end
 		end
 	end
 end
-
 
 local function PrintZoneIndex(name)
 	for i = 1, 10000 do
@@ -182,7 +183,9 @@ CreateDestination(
 		CreateConditionalItem(183716, IsInCovenant(2)),	-- Venthyr Sinstone
 		CreateConditionalItem(184353, IsInCovenant(1)),	-- Kyrian Hearthstone
 		CreateItem(188952),				-- Dominated Hearthstone
+		CreateItem(190237),				-- Broker Translocation Matrix
 		CreateItem(193588),				-- Timewalker's Hearthstone
+		CreateItem(200630),				-- Ohn'ir Windsage's Hearthstone
 	})
 	
 CreateDestination(

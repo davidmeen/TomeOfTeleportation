@@ -43,6 +43,7 @@ local SortDownIconOffset = 0
 local AddItemButton = nil
 local AddSpellButton = nil
 local DebugMode = nil
+local DebugUnsupported = nil
 
 -- I'm not going to attempt any prefixes with different character sets. I may have missed some variations.
 -- Some of these are odd - inconsistent translations in-game?
@@ -670,6 +671,9 @@ local function SetupSpells()
 		end
 		
 		if not spell.spellName then
+			if DebugUnsupported then
+				print(spell.spellType .. " " .. spell.spellId)
+			end
 			spell.spellName = "<Loading>"
 			loaded = false
 		end
@@ -1040,7 +1044,7 @@ local function CanUseSpell(spell)
 	if toyUsable == nil then		
 		toyUsable = true
 	end
-	if isItem then
+	if isItem then		
 		if toyUsable then
 			haveToy = PlayerHasToy(spellId) and toyUsable
 		end
@@ -1857,6 +1861,8 @@ function TeleporterSlashCmdFunction(args)
 		CacheItems()
 	elseif splitArgs[1] == "debug" then
 		DebugMode = 1
+	elseif splitArgs[1] == "debugunsupported" then
+		DebugUnsupported = 1
 	elseif splitArgs[1] == nil then
 		if IsVisible then
 			TeleporterClose()
@@ -2120,5 +2126,53 @@ end
 function TeleporterAddItem(id, dest)
 	if dest then
 		TeleporterSpells[#TeleporterSpells + 1] = {spellId = id, spellType = ST_Item, zone = dest}
+	end
+end
+
+-- These values aren't accurate, but are good enough for this addon.
+local HighestItemNumber = nil
+local HighestSpellNumber = nil
+
+local function GetHighestItem()
+	if not HighestItemNumber then
+		local _,_,_,version = GetBuildInfo()
+		if version > 100000 then
+			-- Dragonflight
+			HighestItemNumber = 999999
+		elseif version > 90000 then
+			-- Shadowlands
+			HighestItemNumber = 195000
+		else
+			-- Classic
+			HighestItemNumber = 58480
+		end
+	end
+	return HighestItemNumber
+end
+
+local function GetHighestSpell()
+	if not HighestSpellNumber then
+		local _,_,_,version = GetBuildInfo()
+		if version > 100000 then
+			-- Dragonflight
+			HighestSpellNumber = 999999
+		elseif version > 90000 then
+			-- Shadowlands
+			HighestSpellNumber = 999999	-- Don't need to set this until I add some Dragonflight spells
+		else
+			-- Classic
+			HighestSpellNumber = 88340
+		end
+	end
+	return HighestSpellNumber
+end
+
+function TeleporterIsUnsupportedItem(spell)
+	if spell.spellType == ST_Item and spell.spellId > GetHighestItem() then
+		return 1
+	elseif (spell.spellType == ST_Spell or spell.spellType == ST_Challenge) and spell.spellId > GetHighestSpell() then
+		return 1
+	else
+		return 0
 	end
 end
