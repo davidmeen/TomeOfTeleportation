@@ -56,12 +56,6 @@ Show the minimap icon.
 /tele hideicon
 Show the minimap icon.
 
-Known Issues
-------------
-
-It is not possible to open or close Tome of Teleportation while in combat due 
-to restrictions in the way addons work.
-
 Credits
 -------
 
