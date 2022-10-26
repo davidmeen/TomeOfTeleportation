@@ -926,12 +926,12 @@ function TeleporterUpdateButton(button)
 				alpha = 0.5
 			end
 			button.backdrop:SetBackdropColor(GetOption("disabledColourR"), GetOption("disabledColourG"), GetOption("disabledColourB"), alpha)
-			button:SetAttribute("macrotext1", nil)
+			button:SetAttribute("macrotext", nil)
 		elseif isItem and TeleporterItemMustBeEquipped( item ) then 
 			button.backdrop:SetBackdropColor(GetOption("unequipedColourR"), GetOption("unequipedColourG"), GetOption("unequipedColourB"), 1)
 
 			button:SetAttribute(
-				"macrotext1",
+				"macrotext",
 				"/teleporterequip " .. item)
 		elseif onCooldown then
 			if cooldownDuration >2 then
@@ -940,33 +940,33 @@ function TeleporterUpdateButton(button)
 				button.backdrop:SetBackdropColor(GetOption("readyColourR"), GetOption("readyColourG"), GetOption("readyColourB"), 1)
 			end
 			button:SetAttribute(
-				"macrotext1",
+				"macrotext",
 				"/script print( \"" .. item .. " is currently on cooldown.\")")
 		else
 			button.backdrop:SetBackdropColor(GetOption("readyColourR"), GetOption("readyColourG"), GetOption("readyColourB"), 1)
 			
 			if toySpell then		
 				button:SetAttribute(
-					"macrotext1",
+					"macrotext",
 					"/teleportercastspell " .. toySpell .. "\n" ..
 					"/cast " .. item .. "\n" )
 			elseif isItem then
 				button:SetAttribute(
-					"macrotext1",
+					"macrotext",
 					"/teleporteruseitem " .. item .. "\n" ..
 					"/use " .. item .. "\n" )
 			else
 				button:SetAttribute(
-					"macrotext1",
+					"macrotext",
 					"/teleportercastspell " .. item .. "\n" ..
 					"/cast " .. item .. "\n" )
 			end
 		end
 
 		button:SetAttribute(
-			"ctrl-macrotext1",
+			"ctrl-macrotext",
 			"/teleportercreatemacro " .. item )
-	end
+	end	
 end
 
 function TeleporterUpdateAllButtons()	
@@ -1592,11 +1592,12 @@ function TeleporterOpenFrame()
 				lastDest = destination	
 
 				-- Main button
-				local buttonFrame = TeleporterCreateReusableFrame("Button","TeleporterB",TeleporterParentFrame,"SecureActionButtonTemplate")
+				local buttonFrame = TeleporterCreateReusableFrame("Button","TeleporterB",TeleporterParentFrame,"InsecureActionButtonTemplate")
 				--buttonFrame:SetFrameStrata("MEDIUM")
 				buttonFrame:SetWidth(buttonWidth)
 				buttonFrame:SetHeight(buttonHeight)
 				buttonFrame:SetPoint("TOPLEFT",TeleporterParentFrame,"TOPLEFT",xoffset,yoffset)
+				buttonFrame:RegisterForClicks("AnyUp", "AnyDown")
 				yoffset = yoffset - buttonHeight
 				
 				buttonFrame.backdrop = TeleporterCreateReusableFrame("Frame","TeleporterBD", buttonFrame,"BackdropTemplate")
@@ -1801,9 +1802,9 @@ function TeleporterCheckItemsWereEquiped()
 end
 
 function TeleporterClose()
-	if IsVisible and UnitAffectingCombat("player") then
-		print( "Sorry, cannot close " .. AddonTitle .. " while in combat." )
-	else
+	--if IsVisible and UnitAffectingCombat("player") then
+	--	print( "Sorry, cannot close " .. AddonTitle .. " while in combat." )
+	--else
 		if TeleporterParentFrame then
 			TeleporterParentFrame:Hide()
 			IsVisible = false
@@ -1811,7 +1812,7 @@ function TeleporterClose()
 		if TeleporterQuickMenuFrame then
 			TeleporterQuickMenuFrame:Hide()
 		end
-	end
+	--end
 end
 
 local function CacheItems()

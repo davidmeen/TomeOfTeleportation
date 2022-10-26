@@ -1,4 +1,4 @@
-## Interface: 90207
+## Interface: 100000
 ## Title : Tome of Teleportation
 ## Notes: An interface for managing teleportation spells and items.
 ## Author: Remeen
