@@ -1486,6 +1486,8 @@ function TeleporterOpenFrame()
 		local titleHeight = GetScaledOption("titleHeight")
 		local buttonInset = GetOption("buttonInset")		
 		
+		local _,_,_,version = GetBuildInfo()
+		
 		IsVisible = true		
 
 		if TeleporterParentFrame == nil then
@@ -1597,7 +1599,9 @@ function TeleporterOpenFrame()
 				buttonFrame:SetWidth(buttonWidth)
 				buttonFrame:SetHeight(buttonHeight)
 				buttonFrame:SetPoint("TOPLEFT",TeleporterParentFrame,"TOPLEFT",xoffset,yoffset)
-				buttonFrame:RegisterForClicks("AnyUp", "AnyDown")
+				if version >= 100000 then
+					buttonFrame:RegisterForClicks("AnyUp", "AnyDown")
+				end
 				yoffset = yoffset - buttonHeight
 				
 				buttonFrame.backdrop = TeleporterCreateReusableFrame("Frame","TeleporterBD", buttonFrame,"BackdropTemplate")
