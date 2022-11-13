@@ -77,7 +77,7 @@ local HiddenPrefixes =
 	"Caminho dos ",
 }
 
-_G["BINDING_HEADER_TOMEOFTELEPORTATION"] = "Tome of Teleportation"
+BINDING_NAME_TOMEOFTELEPORTATION = "Tome of Teleportation"
 
 local InvTypeToSlot = 
 {	

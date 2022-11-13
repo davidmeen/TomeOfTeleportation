@@ -1,5 +1,5 @@
 <Bindings>
- <Binding name="Show" header="TOMEOFTELEPORTATION" >
+ <Binding name="TOMEOFTELEPORTATION" category="ADDONS">
    TeleporterSlashCmdFunction()
  </Binding>
 </Bindings>
