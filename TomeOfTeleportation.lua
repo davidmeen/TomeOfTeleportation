@@ -1161,7 +1161,7 @@ local function AddCustomizationIcon(existingIcon, buttonFrame, showAboveFrame, x
 	local iconObject = existingIcon
 	if not iconObject then		
 		iconObject = {}
-		iconObject.icon = showAboveFrame:CreateTexture(frameName)
+		iconObject.icon = showAboveFrame:CreateTexture()
 		-- Invisible frame use for button notifications
 		iconObject.frame = TeleporterCreateReusableFrame("Frame","TeleporterIconFrame",showAboveFrame)	
 	end
@@ -1649,7 +1649,7 @@ function TeleporterOpenFrame()
 				
 				local teleicon = buttonFrame.TeleporterIcon
 				if not teleicon then
-					teleicon = buttonFrame.backdrop:CreateTexture(frameName)
+					teleicon = buttonFrame.backdrop:CreateTexture()
 					buttonFrame.TeleporterIcon = teleicon
 				end
 				
