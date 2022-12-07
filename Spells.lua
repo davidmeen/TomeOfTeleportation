@@ -111,7 +111,7 @@ end
 
 local function LocZone(name, mapID)
 	if mapID == 0 then
-		--PrintZoneIndex(name)		
+		PrintZoneIndex(name)		
 		return name
 	else
 		local mapInfo =	C_Map.GetMapInfo(mapID)
@@ -430,6 +430,12 @@ CreateDestination(
 	})
 
 CreateDestination(
+	LocZone("Dragon Isles", 1978),
+	{
+		CreateItem(198156), -- Wyrmhole Generator
+	})
+
+CreateDestination(
 	LocZone("Acherus: The Ebon Hold", 647),
 	{
 		CreateSpell(50977),			-- Death Gate
@@ -568,6 +574,12 @@ CreateDestination(
 	LocZone("Northrend", 113),
 	{
 		CreateItem(48933),		-- Wormhole Generator: Northrend
+	})
+
+CreateDestination(
+	LocZone("Ohn'ahran Plains", 2023),
+	{
+		CreateConsumable(200613), -- Aylaag Windstone Fragment
 	})
 
 CreateDestination(
@@ -773,6 +785,13 @@ CreateDestination(
 	{
 		CreateSpell(3563),		-- Teleport: Undercity
 		CreateSpell(11418),		-- Portal: Undercity
+	})
+
+CreateDestination(
+	LocZone("Valdrakken", 2112),
+	{
+		CreateSpell(395277),		-- Teleport: Valdrakken
+		CreateSpell(395289),		-- Portal: Valdrakken
 	})
 
 CreateDestination(
