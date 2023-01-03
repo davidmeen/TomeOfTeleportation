@@ -178,10 +178,10 @@ CreateDestination(
 		CreateItem(165670),				-- Peddlefeet's Lovely Hearthstone
 		CreateItem(169064),				-- Mountebank's Colorful Cloak
 		CreateItem(172179),				-- Eternal Traveler's Hearthstone
-		CreateConditionalItem(180290, IsInCovenant(3)),	-- Night Fae Hearthstone
-		CreateConditionalItem(182773, IsInCovenant(4)),	-- Necrolord Hearthstone
-		CreateConditionalItem(183716, IsInCovenant(2)),	-- Venthyr Sinstone
-		CreateConditionalItem(184353, IsInCovenant(1)),	-- Kyrian Hearthstone
+		CreateItem(180290),                     	-- Night Fae Hearthstone; no longer covenant locked
+		CreateItem(182773),	                        -- Necrolord Hearthstone; no longer covenant locked
+		CreateItem(183716),	                        -- Venthyr Sinstone; no longer covenant locked
+		CreateItem(184353),	                        -- Kyrian Hearthstone; no longer covenant locked
 		CreateItem(188952),				-- Dominated Hearthstone
 		CreateItem(190237),				-- Broker Translocation Matrix
 		CreateItem(193588),				-- Timewalker's Hearthstone
