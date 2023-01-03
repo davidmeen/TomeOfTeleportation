@@ -2,6 +2,7 @@
 
 -- TODO:
 -- Improve speed
+-- Optional compact UI
 
 -- Low priority:
 -- Better UI
@@ -203,11 +204,11 @@ function TeleporterCreateItem(id, dest)
 	return spell
 end
 
-function TeleporterCreateChallengeSpell(id, dest)
+function TeleporterCreateChallengeSpell(id, dungeon)
 	local spell = {}
 	spell.spellId = id
 	spell.spellType = ST_Challenge
-	spell.zone = dest
+	spell.dungeon = dungeon
 	return spell
 end
 
@@ -494,9 +495,10 @@ local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 		info.owner = frame
 		
 		AddHideOptionMenu(1, "Hide Items", "hideItems", frame, level)
-		AddHideOptionMenu(2, "Hide Challenge Mode Spells", "hideChallenge", frame, level)
+		AddHideOptionMenu(2, "Hide Dungeon Spells", "hideChallenge", frame, level)		
 		AddHideOptionMenu(3, "Hide Spells", "hideSpells", frame, level)
 		AddHideOptionMenu(4, "Hide Consumables", "hideConsumable", frame, level)
+		AddHideOptionMenu(11, "Show Dungeon Names", "showDungeonNames", frame, level)
 		AddHideOptionMenu(10, "Random Hearthstone", "randomHearth", frame, level)
 				
 		info.text = "Sort"
@@ -1553,6 +1555,8 @@ function TeleporterOpenFrame()
 		local validSpells = FindValidSpells()
 		
 		local onlyHearth = GetRandomHearth(validSpells)
+
+		local ShowDungeonNames = GetOption("showDungeonNames")
 		
 		for index, spell in ipairs(validSpells) do
 			local spellId = spell.spellId
@@ -1580,14 +1584,18 @@ function TeleporterOpenFrame()
 					xoffset = xoffset + buttonWidth
 					numColumns = numColumns + 1
 					newColumn = true
-				end		
+				end
+
+				if spellType == ST_Challenge and ShowDungeonNames and spell.dungeon then
+					displaySpellName = spell.dungeon
+				end
 				
 				-- Title
 				if newColumn or lastDest ~= destination then
 					local destString = TeleporterCreateReusableFontString("TeleporterDL", TeleporterParentFrame, "GameFontNormalSmall")
 					destString:SetFont(fontFile, fontHeight, fontFlags)
 					destString:SetPoint("TOPLEFT", TeleporterParentFrame, "TOPLEFT", xoffset, yoffset)
-					destString:SetPoint("BOTTOMRIGHT", TeleporterParentFrame, "TOPLEFT", buttonWidth + xoffset, yoffset - labelHeight)
+					destString:SetPoint("BOTTOMRIGHT", TeleporterParentFrame, "TOPLEFT", buttonWidth + xoffset, yoffset - labelHeight)					
 					destString:SetText(destination)
 					yoffset = yoffset - labelHeight
 				end

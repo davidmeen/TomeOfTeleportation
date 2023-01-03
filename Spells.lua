@@ -419,14 +419,14 @@ CreateDestination(
 CreateDestination(
 	"Draenor Dungeons",					-- No localization
 	{
-		CreateChallengeSpell(159897),	-- Path of the Vigilant
-		CreateChallengeSpell(159895),	-- Path of the Bloodmaul
-		CreateChallengeSpell(159901),	-- Path of the Verdant
-		CreateChallengeSpell(159900),	-- Path of the Dark Rail
-		CreateChallengeSpell(159896),	-- Path of the Iron Prow
-		CreateChallengeSpell(159899),	-- Path of the Crescent Moon
-		CreateChallengeSpell(159898),	-- Path of the Skies
-		CreateChallengeSpell(159902),	-- Path of the Burning Mountain
+		CreateChallengeSpell(159897, "Auchindoun"),					-- Path of the Vigilant
+		CreateChallengeSpell(159895, "Bloodmaul Slag Mines"),		-- Path of the Bloodmaul
+		CreateChallengeSpell(159901, "The Everbloom"),				-- Path of the Verdant
+		CreateChallengeSpell(159900, "Grimrail Depot"),				-- Path of the Dark Rail
+		CreateChallengeSpell(159896, "Iron Docks"),					-- Path of the Iron Prow
+		CreateChallengeSpell(159899, "Shadowmoon Burial Grounds"),	-- Path of the Crescent Moon
+		CreateChallengeSpell(159898, "Skyreach"),					-- Path of the Skies
+		CreateChallengeSpell(159902, "Upper Blackrock Spire"),		-- Path of the Burning Mountain
 	})
 
 CreateDestination(
@@ -548,7 +548,7 @@ CreateDestination(
 	LocZone("Mechagon", 1490),
 	{
 		CreateConsumable(167075),	-- Ultrasafe Transporter: Mechagon
-		CreateChallengeSpell(373274)	-- Path of the Scrappy Prince
+		CreateChallengeSpell(373274, "Operation: Mechagon")	-- Path of the Scrappy Prince
 	})
 	
 CreateDestination(
@@ -616,15 +616,13 @@ CreateDestination(
 CreateDestination(
 	"Pandaria Dungeons",		-- No localization.
 	{
-		CreateChallengeSpell(131225),	-- Path of the Setting Sun	
-		CreateChallengeSpell(131222),	-- Path of the Mogu King
-		CreateChallengeSpell(131231),	-- Path of the Scarlet Blade	
-		CreateChallengeSpell(131229),	-- Path of the Scarlet Mitre	
-		CreateChallengeSpell(131232),	-- Path of the Necromancer
-		CreateChallengeSpell(131206),	-- Path of the Shado-Pan
-		CreateChallengeSpell(131228),	-- Path of the Black Ox
-		CreateChallengeSpell(131205),	-- Path of the Stout Brew
-		CreateChallengeSpell(131204),	-- Path of the Jade Serpent
+		CreateChallengeSpell(131225, "Gate of the Setting Sun"),	-- Path of the Setting Sun	
+		CreateChallengeSpell(131222, "Mogu'shan Palace"),			-- Path of the Mogu King		
+		CreateChallengeSpell(131232, "Scholomance"),				-- Path of the Necromancer
+		CreateChallengeSpell(131206, "Shado-Pan Monastery"),		-- Path of the Shado-Pan
+		CreateChallengeSpell(131228, "Siege of Niuzao"),			-- Path of the Black Ox
+		CreateChallengeSpell(131205, "Stormstout Brewery"),			-- Path of the Stout Brew
+		CreateChallengeSpell(131204, "Temple of the Jade Serpent"),	-- Path of the Jade Serpent
 	})
 
 CreateDestination(
@@ -647,22 +645,29 @@ CreateDestination(
 	{
 		CreateItem(184501),		-- 184501
 	})
+
+CreateDestination(
+	LocZone("Scarlet Monastery", 302),
+	{
+		CreateChallengeSpell(131231, "Scarlet Halls"),		-- Path of the Scarlet Blade
+		CreateChallengeSpell(131229, "Scarlet Monastery"),	-- Path of the Scarlet Mitre
+	})
 	
 CreateDestination(
 	"Shadowlands Dungeons",					-- No localization
 	{
-		CreateChallengeSpell(354462),	-- Path of the Courageous
-		CreateChallengeSpell(354463),	-- Path of the Plagued
-		CreateChallengeSpell(354464),	-- Path of the Misty Forest
-		CreateChallengeSpell(354465),	-- Path of the Sinful Soul
-		CreateChallengeSpell(354466),	-- Path of the Ascendant
-		CreateChallengeSpell(354467),	-- Path of the Undefeated
-		CreateChallengeSpell(354468),	-- Path of the Scheming Loa
-		CreateChallengeSpell(354469),	-- Path of the Stone Warden
-		CreateChallengeSpell(367416),	-- Path of the Streetwise Merchant
-		CreateChallengeSpell(373190),	-- Path of the Sire
-		CreateChallengeSpell(373191),	-- Path of the Tormented Soul
-		CreateChallengeSpell(373192)	-- Path of the First Ones
+		CreateChallengeSpell(354462, "The Necrotic Wake"),			-- Path of the Courageous
+		CreateChallengeSpell(354463, "Plaguefall"),					-- Path of the Plagued
+		CreateChallengeSpell(354464, "Mists of Tirna Scithe"),		-- Path of the Misty Forest
+		CreateChallengeSpell(354465, "Halls of Atonement"),			-- Path of the Sinful Soul
+		CreateChallengeSpell(354466, "Spires of Ascension"),		-- Path of the Ascendant
+		CreateChallengeSpell(354467, "Theater of Pain"),			-- Path of the Undefeated
+		CreateChallengeSpell(354468, "De Other Side"),				-- Path of the Scheming Loa
+		CreateChallengeSpell(354469, "Sanguine Depths"),			-- Path of the Stone Warden
+		CreateChallengeSpell(367416, "Tazavesh, the Veiled Market"),-- Path of the Streetwise Merchant
+		CreateChallengeSpell(373190, "Castle Nathria"),				-- Path of the Sire
+		CreateChallengeSpell(373191, "Sanctum of Domination"),		-- Path of the Tormented Soul
+		CreateChallengeSpell(373192, "Sepulcher of the First Ones")	-- Path of the First Ones
 	})
 	
 CreateDestination(
@@ -760,6 +765,12 @@ CreateDestination(
 	LocZone("Timeless Isle", 554),
 	{
 		CreateItem(103678),		-- Time-Lost Artifact
+	})
+
+CreateDestination(
+	LocZone("The Waking Shores", 2022),
+	{
+		CreateItem(202046)		-- Lucky Tortollan Charm
 	})
 
 CreateDestination(
