@@ -178,10 +178,10 @@ CreateDestination(
 		CreateItem(165670),				-- Peddlefeet's Lovely Hearthstone
 		CreateItem(169064),				-- Mountebank's Colorful Cloak
 		CreateItem(172179),				-- Eternal Traveler's Hearthstone
-		CreateItem(180290),                     	-- Night Fae Hearthstone; no longer covenant locked
-		CreateItem(182773),	                        -- Necrolord Hearthstone; no longer covenant locked
-		CreateItem(183716),	                        -- Venthyr Sinstone; no longer covenant locked
-		CreateItem(184353),	                        -- Kyrian Hearthstone; no longer covenant locked
+		CreateItem(180290),				-- Night Fae Hearthstone
+		CreateItem(182773),				-- Necrolord Hearthstone
+		CreateItem(183716),				-- Venthyr Sinstone
+		CreateItem(184353),				-- Kyrian Hearthstone
 		CreateItem(188952),				-- Dominated Hearthstone
 		CreateItem(190237),				-- Broker Translocation Matrix
 		CreateItem(193588),				-- Timewalker's Hearthstone
@@ -256,6 +256,12 @@ CreateDestination(
 		CreateConditionalConsumable(141016, AtContinent(ContinentIdBrokenIsles)),	-- Scroll of Town Portal: Faronaar
 		CreateConditionalItem(140493, OnDayAtContinent(DayWednesday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
 	}, 630)
+
+CreateDestination(
+	LocZone("Badlands",	15),
+	{
+		CreateChallengeSpell(393222, "Uldaman: Legacy of Tyr."),	-- Path of the Watcher's Legacy
+	})
 	
 CreateDestination(
 	LocZone("Bastion", 1533),
@@ -433,6 +439,18 @@ CreateDestination(
 	LocZone("Dragon Isles", 1978),
 	{
 		CreateItem(198156), -- Wyrmhole Generator
+	})
+
+CreateDestination(
+	"Dragon Isles Dungeons",		-- No localization.
+	{
+		CreateChallengeSpell(393279, "The Azure Vault"),		-- Path of Arcane Secrets
+		CreateChallengeSpell(393273, "Algeth'ar Academy"),		-- Path of the Draconic Diploma
+		CreateChallengeSpell(393262, "The Nokhud Offensive."),	-- Path of the Windswept Plains
+		CreateChallengeSpell(393256, "Ruby Life Pools"),		-- Path of the Clutch Defender
+		CreateChallengeSpell(393276, "Neltharus"),				-- Path of the Obsidian Hoard
+		CreateChallengeSpell(393283, "Halls of Infusion"),		-- Path of the Titanic Reservoir
+		CreateChallengeSpell(393267, "Brackenhide Hollow"),		-- Path of the Rotting Woods
 	})
 
 CreateDestination(
@@ -703,6 +721,7 @@ CreateDestination(
 	LocZone("Stormheim", 634),
 	{
 		CreateConditionalItem(140493, OnDayAtContinent(DayFriday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
+		CreateChallengeSpell(393764, "Halls of Valor"),										-- Path of Proven Worth
 	})
 
 CreateDestination(
@@ -721,6 +740,7 @@ CreateDestination(
 		CreateItem(140324),																		-- Mobile Telemancy Beacon
 		CreateConditionalConsumable(141014, AtContinent(ContinentIdBrokenIsles)),				-- Scroll of Town Portal: Sashj'tar
 		CreateConditionalItem(140493, OnDayAtContinent(DayTuesday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
+		CreateChallengeSpell(393766, "Court of Stars")											-- Path of the Grand Magistrix
 	})
 		
 CreateDestination(
@@ -778,6 +798,12 @@ CreateDestination(
 	{
 		CreateSpell(3566),		-- Teleport: Thunder Bluff
 		CreateSpell(11420),		-- Portal: Thunder Bluff
+	})
+
+CreateDestination(
+	LocZone("Tirisfal Glades", 18),
+	{
+		CreateItem(173523),		-- Tirisfal Camp Scroll
 	})
 
 CreateDestination(
