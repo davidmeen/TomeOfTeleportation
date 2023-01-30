@@ -20,6 +20,9 @@ local ContinentIdKulTiras = 876
 
 local function AtZone(requiredZone)
 	return function()
+		if TeleporterGetOption("showInWrongZone") then
+			return true
+		end
 		local mapID = C_Map.GetBestMapForUnit("player")
 		while mapID ~= 0 do
 			if mapID == requiredZone then

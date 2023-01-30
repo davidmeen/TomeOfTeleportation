@@ -317,6 +317,9 @@ local function GetOption(option)
 	end
 end
 
+function TeleporterGetOption(option)
+	return GetOption(option)
+end
 
 local function GetScale()
 	return GetOption("scale") * UIParent:GetEffectiveScale()
@@ -500,6 +503,7 @@ local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 		AddHideOptionMenu(4, "Hide Consumables", "hideConsumable", frame, level)
 		AddHideOptionMenu(11, "Show Dungeon Names", "showDungeonNames", frame, level)
 		AddHideOptionMenu(10, "Random Hearthstone", "randomHearth", frame, level)
+		AddHideOptionMenu(12, "Show Spells When In Wrong Zone", "showInWrongZone", frame, level)
 				
 		info.text = "Sort"
 		info.hasArrow = true
