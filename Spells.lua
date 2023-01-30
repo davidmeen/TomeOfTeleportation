@@ -35,12 +35,6 @@ local function AtContinent(requiredContinent)
 	return AtZone(requiredContinent)
 end
 
-local function IsInCovenant(covenant)
-	return function()
-		return C_Covenants and C_Covenants.GetActiveCovenantID() == covenant
-	end
-end
-
 local function AllowWhistle()
 	--return AtContinent(ContinentIdBrokenIsles)() or AtContinent(ContinentIdArgus)() or AtContinent(ContinentIdKulTiras)() or AtContinent(ContinentIdZandalar)() or AtZone(MapIdAlterac)
 	-- This is getting complicated - until I find a better way, always allow it.
@@ -178,10 +172,13 @@ CreateDestination(
 		CreateItem(165670),				-- Peddlefeet's Lovely Hearthstone
 		CreateItem(169064),				-- Mountebank's Colorful Cloak
 		CreateItem(172179),				-- Eternal Traveler's Hearthstone
-		CreateItem(180290),				-- Night Fae Hearthstone
-		CreateItem(182773),				-- Necrolord Hearthstone
-		CreateItem(183716),				-- Venthyr Sinstone
-		CreateItem(184353),				-- Kyrian Hearthstone
+		-- I don't know how to check if a covenant hearthstone can be used. To work
+		-- around this, only make them available for other covenants when not using
+		-- the random hearthstone option.
+		CreateConditionalItem(180290, TeleporterCanUseCovenantHearthstone(3)),	-- Night Fae Hearthstone
+		CreateConditionalItem(182773, TeleporterCanUseCovenantHearthstone(4)),	-- Necrolord Hearthstone
+		CreateConditionalItem(183716, TeleporterCanUseCovenantHearthstone(2)),	-- Venthyr Sinstone
+		CreateConditionalItem(184353, TeleporterCanUseCovenantHearthstone(1)),	-- Kyrian Hearthstone
 		CreateItem(188952),				-- Dominated Hearthstone
 		CreateItem(190237),				-- Broker Translocation Matrix
 		CreateItem(193588),				-- Timewalker's Hearthstone
