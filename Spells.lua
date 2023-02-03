@@ -649,7 +649,8 @@ CreateDestination(
 		CreateSpell(147420),								-- One With Nature
 		CreateItem(64457), 									-- The Last Relic of Argus
 		CreateConditionalItem(136849, IsClass("DRUID")),	-- Nature's Beacon
-		CreateItem(189827)									-- Cartel Xy's Proof of Initiation
+		CreateItem(189827),									-- Cartel Xy's Proof of Initiation
+		CreateItem(192443)									-- Element-Infused Rocket Helmet
 	})
 
 CreateDestination(
@@ -724,6 +725,13 @@ CreateDestination(
 		CreateChallengeSpell(393764, "Halls of Valor"),										-- Path of Proven Worth
 	})
 
+
+	CreateDestination(
+		LocZone("Stormsong Valley", 942),
+		{
+			CreateItem(202046)		-- Lucky Tortollan Charm
+		})
+
 CreateDestination(
 	LocZone("Stormwind City", 84),
 	{
@@ -785,12 +793,6 @@ CreateDestination(
 	LocZone("Timeless Isle", 554),
 	{
 		CreateItem(103678),		-- Time-Lost Artifact
-	})
-
-CreateDestination(
-	LocZone("The Waking Shores", 2022),
-	{
-		CreateItem(202046)		-- Lucky Tortollan Charm
 	})
 
 CreateDestination(
