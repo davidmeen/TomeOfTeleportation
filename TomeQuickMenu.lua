@@ -81,12 +81,12 @@ function TeleToggleQuickMenu(favourites, size)
 					
 					if PlayerHasToy(spellId) then			
 						button:SetAttribute(
-							"macrotext1",
+							"macrotext",
 							"/teleportercastspell " .. GetItemSpell(spellId) .. "\n" ..
 							"/cast " .. name .. "\n" )
 					else
 						button:SetAttribute(
-							"macrotext1",
+							"macrotext",
 							"/teleporteruseitem " .. name .. "\n" ..
 							"/use " .. name .. "\n" )
 					end
@@ -101,10 +101,12 @@ function TeleToggleQuickMenu(favourites, size)
 					end )
 					
 				button:SetAttribute(
-					"macrotext1",
+					"macrotext",
 					"/teleportercastspell " .. name .. "\n" ..
 					"/cast " .. name .. "\n" )
 			end
+
+			button:RegisterForClicks("AnyUp", "AnyDown")
 				
 			if name then
 				QuickMenuTextures[index]:SetTexture(texture)

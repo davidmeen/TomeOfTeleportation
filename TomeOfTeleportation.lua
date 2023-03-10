@@ -1612,7 +1612,7 @@ function TeleporterOpenFrame()
 				buttonFrame:SetHeight(buttonHeight)
 				buttonFrame:SetPoint("TOPLEFT",TeleporterParentFrame,"TOPLEFT",xoffset,yoffset)
 				if version >= 100000 then
-					buttonFrame:RegisterForClicks("AnyUp", "AnyDown")
+					buttonFrame:RegisterForClicks("LeftButtonUp", "LeftButtonDown")
 				end
 				yoffset = yoffset - buttonHeight
 				
@@ -1902,8 +1902,8 @@ local function PrepareUnequippedSlot(item, itemSlot)
 	
 	local inBag = 0
 	for bagIdx = 1,NUM_BAG_SLOTS,1 do
-		for slotIdx = 1, GetContainerNumSlots(bagIdx), 1 do
-			local itemInBag = GetContainerItemID(bagIdx, slotIdx)
+		for slotIdx = 1, C_Container.GetContainerNumSlots(bagIdx), 1 do
+			local itemInBag = C_Container.GetContainerItemID(bagIdx, slotIdx)
 			if itemInBag then
 				local bagItemName = GetCachedItemInfo(itemInBag)
 				if bagItemName == item or itemInBag == item then
@@ -1912,16 +1912,16 @@ local function PrepareUnequippedSlot(item, itemSlot)
 			end
 		end
 	end
-	
+
 	if inBag == 0 then
 		RemoveItem[itemSlot] = function(newItem)
 			PickupInventoryItem(itemSlot)
 			PutItemInBackpack()
 		end
-	else
+	else		
 		RemoveItem[itemSlot] = function(newItem)
 			PickupInventoryItem(itemSlot)
-			PutItemInBag(inBag + 19)
+			PutItemInBag(inBag + 30)
 		end
 	end
 end
