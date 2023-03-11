@@ -984,10 +984,6 @@ function TeleporterUpdateButton(button)
 					"/cast " .. item .. "\n" )
 			end
 		end
-
-		button:SetAttribute(
-			"ctrl-macrotext",
-			"/teleportercreatemacro " .. item )
 	end	
 end
 

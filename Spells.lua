@@ -139,6 +139,13 @@ local function LocArea(name, areaID)
 	return locName
 end
 
+local function CreatePortalSpell(spell)
+	return TeleporterCreateConditionalSpell(spell, 
+		function()
+			return TeleporterGetOption("showInWrongZone") or IsInGroup()
+		end)
+end
+
 local CreateSpell = TeleporterCreateSpell
 local CreateItem = TeleporterCreateItem
 local CreateChallengeSpell = TeleporterCreateChallengeSpell
@@ -243,9 +250,9 @@ CreateDestination(
 	{
 		CreateConsumable(116413),		-- Scroll of Town Portal
 		CreateConsumable(119183),		-- Scroll of Risky Recall
-		CreateSpell(176246),			-- Portal: Stormshield
+		CreatePortalSpell(176246),		-- Portal: Stormshield
 		CreateSpell(176248),			-- Teleport: Stormshield
-		CreateSpell(176244),			-- Portal: Warspear
+		CreatePortalSpell(176244),		-- Portal: Warspear
 		CreateSpell(176242),			-- Teleport: Warspear
 	})
 
@@ -319,7 +326,7 @@ CreateDestination(
 	LocZone("Boralus", 1161),
 	{
 		CreateSpell(281403),			-- Teleport: Boralus
-		CreateSpell(281400),			-- Portal: Boralus
+		CreatePortalSpell(281400),		-- Portal: Boralus
 		CreateItem(166560),				-- Captain's Signet of Command
 	})
 
@@ -341,14 +348,14 @@ CreateDestination(
 CreateDestination(			
 	"Camp",
 	{
-		CreateSpell(312372),		-- Portal: Dalaran - Broken Isles (UNTESTED)
+		CreateSpell(312372),
 	})
 
 CreateDestination(			
 	LocZone("Dalaran", 41) .. " (Legion)",	
 	{
-		CreateSpell(224871),		-- Portal: Dalaran - Broken Isles (UNTESTED)
-		CreateSpell(224869),		-- Teleport: Dalaran - Broken Isles	(UNTESTED)
+		CreatePortalSpell(224871),	-- Portal: Dalaran - Broken Isles
+		CreateSpell(224869),		-- Teleport: Dalaran - Broken Isles
 		CreateItem(138448),			-- Emblem of Margoss
 		CreateItem(139599),			-- Empowered Ring of the Kirin Tor
 		CreateItem(140192),			-- Dalaran Hearthstone
@@ -359,7 +366,7 @@ CreateDestination(
 	LocZone("Dalaran", 41) .. " (WotLK)",	
 	{
 		CreateSpell(53140),			-- Teleport: Dalaran
-		CreateSpell(53142),			-- Portal: Dalaran
+		CreatePortalSpell(53142),	-- Portal: Dalaran
 	-- ilvl 200 rings
 		CreateItem(40586),			-- Band of the Kirin Tor
 		CreateItem(44934),			-- Loop of the Kirin Tor
@@ -396,14 +403,14 @@ CreateDestination(
 	LocZone("Darnassus", 89),
 	{
 		CreateSpell(3565),			-- Teleport: Darnassus
-		CreateSpell(11419),			-- Portal: Darnassus
+		CreatePortalSpell(11419),	-- Portal: Darnassus
 	})
 	
 CreateDestination(			
 	LocZone("Dazar'alor", 1163),
 	{
 		CreateSpell(281404),		-- Teleport: Dazar'alor
-		CreateSpell(281402),		-- Portal: Dazar'alor
+		CreatePortalSpell(281402),	-- Portal: Dazar'alor
 		CreateItem(166559),			-- Commander's Signet of Battle
 		CreateConditionalItem(165581, AtZone(1163)), -- Crest of Pa'ku
 	})
@@ -469,7 +476,7 @@ CreateDestination(
 	LocZone("The Exodar", 103),
 	{
 		CreateSpell(32271),			-- Teleport: Exodar
-		CreateSpell(32266),			-- Portal: Exodar
+		CreatePortalSpell(32266),	-- Portal: Exodar
 	})
 
 CreateDestination(
@@ -516,7 +523,7 @@ CreateDestination(
 	LocZone("Ironforge", 87),
 	{
 		CreateSpell(3562),				-- Teleport: Ironforge
-		CreateSpell(11416)				-- Portal: Ironforge
+		CreatePortalSpell(11416)		-- Portal: Ironforge
 	})
 
 CreateDestination(
@@ -603,18 +610,18 @@ CreateDestination(
 CreateDestination(
 	LocZone("Orgrimmar", 85),
 	{
-		CreateSpell(3567),		-- Teleport: Orgrimmar
-		CreateSpell(11417),		-- Portal: Orgrimmar
-		CreateItem(63207),		-- Wrap of Unity
-		CreateItem(63353),		-- Shroud of Cooperation
-		CreateItem(65274),		-- Cloak of Coordination
+		CreateSpell(3567),			-- Teleport: Orgrimmar
+		CreatePortalSpell(11417),	-- Portal: Orgrimmar
+		CreateItem(63207),			-- Wrap of Unity
+		CreateItem(63353),			-- Shroud of Cooperation
+		CreateItem(65274),			-- Cloak of Coordination
 	})
 	
 CreateDestination(
 	LocZone("Oribos", 1670),
 	{
-		CreateSpell(344587),	-- Teleport: Oribos
-		CreateSpell(344597),	-- Portal: Oribos
+		CreateSpell(344587),		-- Teleport: Oribos
+		CreatePortalSpell(344597),	-- Portal: Oribos
 		CreateConsumable(184504),	-- Attendant's Pocket Portal: Oribos
 	})
 
@@ -692,10 +699,10 @@ CreateDestination(
 CreateDestination(
 	LocZone("Shattrath City", 111),
 	{
-		CreateSpell(33690),		-- Teleport: Shattrath (Alliance)
-		CreateSpell(33691),		-- Portal: Shattrath (Alliance)
-		CreateSpell(35715),		-- Teleport: Shattrath (Horde)
-		CreateSpell(35717),		-- Portal: Shattrath (Horde)
+		CreateSpell(33690),			-- Teleport: Shattrath (Alliance)
+		CreatePortalSpell(33691),	-- Portal: Shattrath (Alliance)
+		CreateSpell(35715),			-- Teleport: Shattrath (Horde)
+		CreatePortalSpell(35717),	-- Portal: Shattrath (Horde)
 	})
 
 CreateDestination(
@@ -707,15 +714,15 @@ CreateDestination(
 CreateDestination(
 	LocZone("Silvermoon City", 110),
 	{
-		CreateSpell(32272),		-- Teleport: Silvermoon
-		CreateSpell(32267),		-- Portal: Silvermoon
+		CreateSpell(32272),			-- Teleport: Silvermoon
+		CreatePortalSpell(32267),	-- Portal: Silvermoon
 	})
 
 CreateDestination(
 	LocArea("Stonard", 75),
 	{
-		CreateSpell(49358),		-- Teleport: Stonard
-		CreateSpell(49361),		-- Portal: Stonard
+		CreateSpell(49358),			-- Teleport: Stonard
+		CreatePortalSpell(49361),	-- Portal: Stonard
 	})
 
 CreateDestination(
@@ -735,11 +742,11 @@ CreateDestination(
 CreateDestination(
 	LocZone("Stormwind City", 84),
 	{
-		CreateSpell(3561),		-- Teleport: Stormwind
-		CreateSpell(10059),		-- Portal: Stormwind
-		CreateItem(63206),		-- Wrap of Unity
-		CreateItem(63352),		-- Shroud of Cooperation
-		CreateItem(65360),		-- Cloak of Coordination
+		CreateSpell(3561),			-- Teleport: Stormwind
+		CreatePortalSpell(10059),	-- Portal: Stormwind
+		CreateItem(63206),			-- Wrap of Unity
+		CreateItem(63352),			-- Shroud of Cooperation
+		CreateItem(65360),			-- Cloak of Coordination
 	})
 
 CreateDestination(
@@ -785,8 +792,8 @@ CreateDestination(
 CreateDestination(
 	LocArea("Theramore Isle", 513),
 	{
-		CreateSpell(49359),		-- Teleport: Theramore
-		CreateSpell(49360),		-- Portal: Theramore
+		CreateSpell(49359),			-- Teleport: Theramore
+		CreatePortalSpell(49360),	-- Portal: Theramore
 	})
 
 CreateDestination(
@@ -798,8 +805,8 @@ CreateDestination(
 CreateDestination(
 	LocZone("Thunder Bluff", 88),
 	{
-		CreateSpell(3566),		-- Teleport: Thunder Bluff
-		CreateSpell(11420),		-- Portal: Thunder Bluff
+		CreateSpell(3566),			-- Teleport: Thunder Bluff
+		CreatePortalSpell(11420),	-- Portal: Thunder Bluff
 	})
 
 CreateDestination(
@@ -811,26 +818,26 @@ CreateDestination(
 CreateDestination(
 	LocZone("Tol Barad", 773),
 	{
-		CreateItem(63378),		-- Hellscream's Reach Tabard
-		CreateItem(63379),		-- Baradin's Wardens Tabard
-		CreateSpell(88342),		-- Teleport: Tol Barad (Alliance)
-		CreateSpell(88344),		-- Teleport: Tol Barad (Horde)
-		CreateSpell(88345),		-- Portal: Tol Barad (Alliance)
-		CreateSpell(88346),		-- Portal: Tol Barad (Horde)
+		CreateItem(63378),			-- Hellscream's Reach Tabard
+		CreateItem(63379),			-- Baradin's Wardens Tabard
+		CreateSpell(88342),			-- Teleport: Tol Barad (Alliance)
+		CreateSpell(88344),			-- Teleport: Tol Barad (Horde)
+		CreatePortalSpell(88345),	-- Portal: Tol Barad (Alliance)
+		CreatePortalSpell(88346),	-- Portal: Tol Barad (Horde)
 	})
 
 CreateDestination(
 	LocZone("Undercity", 90),
 	{
-		CreateSpell(3563),		-- Teleport: Undercity
-		CreateSpell(11418),		-- Portal: Undercity
+		CreateSpell(3563),			-- Teleport: Undercity
+		CreatePortalSpell(11418),	-- Portal: Undercity
 	})
 
 CreateDestination(
 	LocZone("Valdrakken", 2112),
 	{
 		CreateSpell(395277),		-- Teleport: Valdrakken
-		CreateSpell(395289),		-- Portal: Valdrakken
+		CreatePortalSpell(395289),	-- Portal: Valdrakken
 	})
 
 CreateDestination(
@@ -846,12 +853,12 @@ CreateDestination(
 CreateDestination(
 	LocZone("Vale of Eternal Blossoms", 390),
 	{
-		CreateSpell(132621),	-- Teleport: Vale of Eternal Blossoms
-		CreateSpell(132627),	-- Teleport: Vale of Eternal Blossoms
-		CreateSpell(132620),	-- Portal: Vale of Eternal Blossoms
-		CreateSpell(132622),	-- Portal: Vale of Eternal Blossoms
-		CreateSpell(132624),	-- Portal: Vale of Eternal Blossoms
-		CreateSpell(132626),	-- Portal: Vale of Eternal Blossoms
+		CreateSpell(132621),		-- Teleport: Vale of Eternal Blossoms
+		CreateSpell(132627),		-- Teleport: Vale of Eternal Blossoms
+		CreatePortalSpell(132620),	-- Portal: Vale of Eternal Blossoms
+		CreatePortalSpell(132622),	-- Portal: Vale of Eternal Blossoms
+		CreatePortalSpell(132624),	-- Portal: Vale of Eternal Blossoms
+		CreatePortalSpell(132626),	-- Portal: Vale of Eternal Blossoms
 	})
 
 CreateDestination(
