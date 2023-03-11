@@ -754,8 +754,9 @@ local function InitTeleporterMenu(frame, level, menuList)
 	UIDropDownMenu_AddButton(info, level)
 end
 
-local FavouriteToAddRemove = nil
-local FavouriteToAddRemoveIsItem
+local RightClickMenuSpell = nil
+local RightClickMenuSpellIsItem
+local RightClickMenuSpellName = nil
 local AddFavouriteMenu = nil
 local RemoveFavouriteMenu = nil
 local CantAddFavouriteMenu = nil
@@ -777,7 +778,7 @@ local function CreateAddFavouriteMenu()
 				info.text = "Add favourite"
 				info.func = function()
 					local favourites = GetOption("favourites")
-					favourites[FavouriteToAddRemove] = FavouriteToAddRemoveIsItem
+					favourites[RightClickMenuSpell] = RightClickMenuSpellIsItem
 				end
 		
 				UIDropDownMenu_AddButton(info, level)
@@ -803,7 +804,7 @@ local function CreateRemoveFavouriteMenu()
 				info.text = "Remove favourite"
 				info.func = function()
 					local favourites = GetOption("favourites")
-					favourites[FavouriteToAddRemove] = nil
+					favourites[RightClickMenuSpell] = nil
 				end
 				UIDropDownMenu_AddButton(info, level)
 			end, 
@@ -811,7 +812,7 @@ local function CreateRemoveFavouriteMenu()
 	end
 end
 
-local function CreateCantAddFavouriteMenu()
+local function CreateEquipableItemRightClickMenu()
 	if not RemoveFavouriteMenu then
 		CantAddFavouriteMenu = CreateFrame("Frame", "TomeOfTeleCantAddFavouriteMenu", UIParent, "UIDropDownMenuTemplate")
 		
@@ -828,6 +829,20 @@ local function CreateCantAddFavouriteMenu()
 				info.text = "This item can not be added to favourites"
 				info.func = nil
 				UIDropDownMenu_AddButton(info, level)
+
+				-- The macros this creates crash the game!
+				-- info = UIDropDownMenu_CreateInfo()
+				
+				-- info.owner = frame
+				-- info.hasArrow = false
+				-- info.value = 1003
+				-- info.checked = nil
+				
+				-- info.text = "Create macro"
+				-- info.func = function()
+				-- 	TeleporterCreateMacroSlashCmdFunction(RightClickMenuSpellName)
+				-- end
+				-- UIDropDownMenu_AddButton(info, level)
 			end, 
 			"MENU")
 	end
@@ -845,13 +860,14 @@ local function OnClickTeleButton(frame,button)
 			SetOption("favourites", favourites)
 		end
 		
-		FavouriteToAddRemove = spellId
-		FavouriteToAddRemoveIsItem = isItem
+		RightClickMenuSpell = spellId
+		RightClickMenuSpellName = ButtonSettings[frame].spellName
+		RightClickMenuSpellIsItem = isItem
 		
 		local isFavourite = favourites[spellId] ~= nil
 		
 		if isItem and IsEquippableItem(spellId) then
-			CreateCantAddFavouriteMenu()
+			CreateEquipableItemRightClickMenu()
 			ToggleDropDownMenu(1, nil, CantAddFavouriteMenu, "cursor", 3, -3)
 		elseif not isFavourite then
 			CreateAddFavouriteMenu()
@@ -1966,7 +1982,7 @@ function TeleporterCreateMacroSlashCmdFunction( spell )
 		local macro
 		local printEquipInfo = false
 
-		if GetCachedItemInfo( spell ) then
+		if GetCachedItemInfo( spell ) then			
 			if IsEquippableItem( spell ) then
 				macro =
 					"#showtooltip " .. spell .. "\n" ..

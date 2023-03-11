@@ -15,11 +15,6 @@ The buttons in the Tome of Teleportation will each be one of three colours:
   button once to equip it.  If this doesn't start a cooldown, then click again
   to teleport.  Once the summon is successful or you close the Tome the item
   will be unequipped.
-  
-You can create a macro for a teleportation item by Ctrl + clicking the button.
-The macro will be placed on your cursor and it can be dragged onto an action 
-bar. This macro acts like the buttons in the Tome, with the first click 
-equipping the item and the second click using it.
 
 Right clicking the minimap icon will bring up a quick list of your favourite
 spells. To add a spell to this list right click on it in the main window.
