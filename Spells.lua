@@ -776,6 +776,12 @@ CreateDestination(
 	{
 		CreateConditionalSpell(126892, function() return HaveUpgradedZen() end ),	-- Zen Pilgrimage
 	})
+
+CreateDestination(
+	LocZone("The Forbidden Reach", 2151),
+	{
+		CreateConditionalConsumable(204481, AtZone(2151)),		-- Morqut Hearth Totem
+	})
 	
 CreateDestination(
 	LocZone("The Maw", 1543),
