@@ -779,8 +779,9 @@ CreateDestination(
 
 CreateDestination(
 	LocZone("The Forbidden Reach", 2151),
-	{
+	{		
 		CreateConditionalConsumable(204481, AtZone(2151)),		-- Morqut Hearth Totem
+		CreateConsumable(204802),								-- Scroll of Teleport: Zskera Vaults
 	})
 	
 CreateDestination(
