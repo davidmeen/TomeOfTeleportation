@@ -881,6 +881,12 @@ CreateDestination(
 	})
 
 CreateDestination(
+	LocZone("Zaralek Cavern", 2133),
+	{
+		CreateConditionalItem(205255, AtZone(2133))		-- Niffen Diggin' Mitts
+	})
+
+CreateDestination(
 	LocZone("Zuldazar", 862),
 	{
 		CreateConsumable(157542),	-- Portal Scroll of Specificity
