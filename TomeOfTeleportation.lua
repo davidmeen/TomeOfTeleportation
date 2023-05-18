@@ -56,10 +56,6 @@ local HiddenPrefixes =
 	-- English
 	"Path of the ",
 	"Path of ",
-	"Wormhole Generator: ",
-	"Wyrmhole Generator: ",
-	"Ultrasafe Transporter: ",
-	"Dimensional Ripper: ",
 	-- Spanish
 	"Camino de los  ",
 	"Senda de ",
@@ -164,6 +160,7 @@ local DefaultOptions =
 	["showButtonIcon"] = "Interface/Icons/levelupicon-lfd",
 	["removeButtonIcon"] = "Interface/Icons/INV_Misc_Bone_Skull_03",
 	["hidePrefixes"] = 1,
+	["showDungeonNames"] = 1
 }
 
 -- Themes. For now there aren't many of these. Message me on curseforge.com
