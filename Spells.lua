@@ -267,7 +267,7 @@ CreateDestination(
 CreateDestination(
 	LocZone("Badlands",	15),
 	{
-		CreateChallengeSpell(393222, "Uldaman: Legacy of Tyr."),	-- Path of the Watcher's Legacy
+		CreateChallengeSpell(393222, "Uldaman: Legacy of Tyr"),	-- Path of the Watcher's Legacy
 	})
 	
 CreateDestination(
