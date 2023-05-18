@@ -55,6 +55,11 @@ local HiddenPrefixes =
 	"Pfad des ",
 	-- English
 	"Path of the ",
+	"Path of ",
+	"Wormhole Generator: ",
+	"Wyrmhole Generator: ",
+	"Ultrasafe Transporter: ",
+	"Dimensional Ripper: ",
 	-- Spanish
 	"Camino de los  ",
 	"Senda de ",
@@ -117,9 +122,9 @@ local DefaultOptions =
 	["theme"] = "Default",
 	["scale"] = 1, 
 	["buttonHeight"] = 26,
-	["buttonWidth"] = 128,
+	["buttonWidth"] = 190,
 	["labelHeight"] = 16,
-	["maximumHeight"] = 200,
+	["maximumHeight"] = 280,
 	["fontHeight"] = 10,
 	["buttonInset"] = 6,
 	["showHelp"] = false,
@@ -1473,7 +1478,7 @@ local function CleanupName(name)
 		for index, prefix in pairs(HiddenPrefixes) do
 			local foundIndex = strfind(name, prefix)
 			if foundIndex == 1 then
-				name = "…" .. strsub(name, strlen(prefix))
+				name = strsub(name, strlen(prefix))
 			end
 		end
 	end
