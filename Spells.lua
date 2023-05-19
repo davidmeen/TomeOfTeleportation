@@ -591,6 +591,12 @@ CreateDestination(
 	})
 
 CreateDestination(
+		LocZone("Nazmir", 863),
+		{
+			CreateChallengeSpell(410074, "The Underrot"),
+		})
+
+CreateDestination(
 	LocZone("Netherstorm", 109),
 	{
 		CreateItem(30542),		-- Dimensional Ripper - Area 52
