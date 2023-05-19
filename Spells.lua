@@ -511,6 +511,7 @@ CreateDestination(
 	{
 		CreateConditionalConsumable(141017, AtContinent(ContinentIdBrokenIsles)),				-- Scroll of Town Portal: Lian'tril
 		CreateConditionalItem(140493, OnDayAtContinent(DayThursday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
+		CreateChallengeSpell(410078, "Neltharion's Lair"),
 	})
 
 CreateDestination(
