@@ -46,6 +46,8 @@ local AddSpellButton = nil
 local DebugMode = nil
 local DebugUnsupported = nil
 
+TomeOfTele_ShareOptions = true
+
 -- I'm not going to attempt any prefixes with different character sets. I may have missed some variations.
 -- Some of these are odd - inconsistent translations in-game?
 local HiddenPrefixes = 
@@ -55,6 +57,7 @@ local HiddenPrefixes =
 	"Pfad des ",
 	-- English
 	"Path of the ",
+	"Path of ",
 	-- Spanish
 	"Camino de los  ",
 	"Senda de ",
@@ -158,7 +161,7 @@ local DefaultOptions =
 	["sortDownIcon"] = "Interface/Icons/misc_arrowdown",
 	["showButtonIcon"] = "Interface/Icons/levelupicon-lfd",
 	["removeButtonIcon"] = "Interface/Icons/INV_Misc_Bone_Skull_03",
-	["hidePrefixes"] = 1,
+	["hidePrefixes"] = 1
 }
 
 -- Themes. For now there aren't many of these. Message me on curseforge.com
@@ -182,10 +185,17 @@ local FlatTheme =
 	["titleOffset"] = {5},
 }
 
+local WideTheme = 
+{
+	["buttonWidth"] = {225},
+	["maximumHeight"] = {320}
+}
+
 local Themes = 
 {
 	["Default"] = DefaultTheme,
-	["Flat"] = FlatTheme	
+	["Flat"] = FlatTheme,
+	["Wide Buttons"] = WideTheme
 }
 
 function TeleporterCreateSpell(id, dest)
@@ -1473,7 +1483,7 @@ local function CleanupName(name)
 		for index, prefix in pairs(HiddenPrefixes) do
 			local foundIndex = strfind(name, prefix)
 			if foundIndex == 1 then
-				name = "…" .. strsub(name, strlen(prefix))
+				name = strsub(name, strlen(prefix))
 			end
 		end
 	end

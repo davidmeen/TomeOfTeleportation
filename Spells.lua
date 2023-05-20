@@ -396,7 +396,7 @@ CreateDestination(
 	LocArea("Dalaran Crater", 279),
 	{
 		CreateSpell(120145),		-- Ancient Teleport: Dalaran
-		CreateSpell(120146),		-- Ancient Portal: Dalaran
+		CreatePortalSpell(120146),	-- Ancient Portal: Dalaran
 	})
 
 CreateDestination(			
@@ -511,6 +511,7 @@ CreateDestination(
 	{
 		CreateConditionalConsumable(141017, AtContinent(ContinentIdBrokenIsles)),				-- Scroll of Town Portal: Lian'tril
 		CreateConditionalItem(140493, OnDayAtContinent(DayThursday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
+		CreateChallengeSpell(410078, "Neltharion's Lair"),										-- Path of the Earth-Warder
 	})
 
 CreateDestination(
@@ -587,6 +588,12 @@ CreateDestination(
 	{
 		CreateSpell(18960),		-- Teleport: Moonglade
 		CreateItem(21711),		-- Lunar Festival Invitation
+	})
+
+CreateDestination(
+	LocZone("Nazmir", 863),
+	{
+		CreateChallengeSpell(410074, "The Underrot"),	-- Path of Festering Rot
 	})
 
 CreateDestination(
@@ -817,6 +824,12 @@ CreateDestination(
 	})
 
 CreateDestination(
+	LocZone("Tiragarde Sound", 8567),
+	{
+		CreateChallengeSpell(410071, "Freehold")	-- Path of the Freebooter
+	})
+
+CreateDestination(
 	LocZone("Tirisfal Glades", 18),
 	{
 		CreateItem(173523),		-- Tirisfal Camp Scroll
@@ -831,6 +844,12 @@ CreateDestination(
 		CreateSpell(88344),			-- Teleport: Tol Barad (Horde)
 		CreatePortalSpell(88345),	-- Portal: Tol Barad (Alliance)
 		CreatePortalSpell(88346),	-- Portal: Tol Barad (Horde)
+	})
+
+CreateDestination(
+	LocZone("Uldum", 5034),
+	{
+		CreateChallengeSpell(410080, "Vortex Pinnacle")	-- Path of the Freebooter
 	})
 
 CreateDestination(
