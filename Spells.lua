@@ -9,6 +9,7 @@ local MapIDAntoranWastes = 885
 local MapIDAlterac = 943
 local MapIDMaw = 1543
 local MapIDKorthia = 1961
+local MapIDMechagon = 1462
 
 local ContinentIdOutland = 101
 local ContinentIdPandaria = 424
@@ -17,6 +18,7 @@ local ContinentIdBrokenIsles = 619
 local ContinentIdArgus = 905
 local ContinentIdZandalar = 875
 local ContinentIdKulTiras = 876
+local ContinentIdNazjatar = 1355
 
 local function AtZone(requiredZone)
 	return function()
@@ -573,8 +575,9 @@ CreateDestination(
 CreateDestination(
 	LocZone("Mechagon", 1490),
 	{
-		CreateConsumable(167075),	-- Ultrasafe Transporter: Mechagon
-		CreateChallengeSpell(373274, "Operation: Mechagon")	-- Path of the Scrappy Prince
+		CreateConsumable(167075),									-- Ultrasafe Transporter: Mechagon
+		CreateChallengeSpell(373274, "Operation: Mechagon"),		-- Path of the Scrappy Prince
+		CreateConditionalConsumable(169114, AtZone(MapIDMechagon))	-- Personal Time Displacer
 	})
 	
 CreateDestination(
@@ -664,7 +667,9 @@ CreateDestination(
 		CreateItem(64457), 									-- The Last Relic of Argus
 		CreateConditionalItem(136849, IsClass("DRUID")),	-- Nature's Beacon
 		CreateItem(189827),									-- Cartel Xy's Proof of Initiation
-		CreateItem(192443)									-- Element-Infused Rocket Helmet
+		CreateItem(192443),									-- Element-Infused Rocket Helmet
+		CreateItem(193000),									-- Ring-Bound Hourglass
+		CreateConditionalItem(163073, function() return AtContinent(ContinentIdKulTiras)() or AtContinent(ContinentIdZandalar)() or AtContinent(ContinentIdNazjatar)() end),	-- Conch of Wa'mundi
 	})
 
 CreateDestination(
