@@ -123,6 +123,7 @@ local DefaultOptions =
 	["buttonWidth"] = 128,
 	["labelHeight"] = 16,
 	["maximumHeight"] = 200,
+	["heightScalePercent"] = 100,
 	["fontHeight"] = 10,
 	["buttonInset"] = 6,
 	["showHelp"] = false,
@@ -484,6 +485,14 @@ local function TomeOfTele_SetScale(scale)
 	end	
 end
 
+local function TomeOfTele_SetHeightScale(scale)
+	SetOption("heightScalePercent", scale)
+	if IsVisible then		
+		TeleporterClose()
+		TeleporterOpenFrame()
+	end	
+end
+
 local function TomeOfTele_SetTheme(scale)
 	SetOption("theme", scale)
 	if IsVisible then		
@@ -527,7 +536,14 @@ local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 		info.hasArrow = true
 		info.menuList = "Scale"
 		info.value = 6
-		info.checked =nil
+		info.checked = nil
+		UIDropDownMenu_AddButton(info, level)	
+
+		info.text = "Height"
+		info.hasArrow = true
+		info.menuList = "Height"
+		info.value = 10
+		info.checked = nil
 		UIDropDownMenu_AddButton(info, level)	
 		
 		info.text = "Theme"
@@ -559,11 +575,22 @@ local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 		local scales = { 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200 }
 		for i,s in ipairs(scales) do
 			local info = UIDropDownMenu_CreateInfo()
-			info.text = s
+			info.text = s .. "%"
 			info.value = s / 10 + 20
 			info.func = function(info) TomeOfTele_SetScale(s / 100) end
 			info.owner = frame
 			info.checked = function(info) return GetOption("scale") == s / 100 end
+			UIDropDownMenu_AddButton(info, level)	
+		end
+	elseif menuList == "Height" then
+		local scales = { 100, 150, 200, 250, 300 }
+		for i,s in ipairs(scales) do
+			local info = UIDropDownMenu_CreateInfo()
+			info.text = s .. "%"
+			info.value = s / 50 + 50
+			info.func = function(info) TomeOfTele_SetHeightScale(s) end
+			info.owner = frame
+			info.checked = function(info) return GetOption("heightScalePercent") == s end
 			UIDropDownMenu_AddButton(info, level)	
 		end
 	elseif menuList == "Theme" then
@@ -1329,6 +1356,10 @@ local function ShowAddItemUI(isItem)
 	StaticPopup_Show("TELEPORTER_ADDITEM")
 end
 
+local function GetMaximumHeight()
+	return GetScaledOption("maximumHeight") * GetOption("heightScalePercent") / 100
+end
+
 local function CreateMainFrame()
 	TeleporterParentFrame = TeleporterFrame
 	TeleporterParentFrame:SetFrameStrata("HIGH")		
@@ -1338,7 +1369,6 @@ local function CreateMainFrame()
 	local labelHeight = GetScaledOption("labelHeight")
 	local numColumns = 1
 	local lastDest = nil
-	local maximumHeight = GetScaledOption("maximumHeight")
 	local fontHeight = GetScaledOption("fontHeight")
 	local frameEdgeSize = GetOption("frameEdgeSize")
 	local fontFile = GetOption("buttonFont")
@@ -1505,7 +1535,7 @@ function TeleporterOpenFrame()
 		local labelHeight = GetScaledOption("labelHeight")
 		local numColumns = 1
 		local lastDest = nil
-		local maximumHeight = GetScaledOption("maximumHeight")
+		local maximumHeight = GetMaximumHeight()
 		local fontHeight = GetScaledOption("fontHeight")
 		local frameEdgeSize = GetOption("frameEdgeSize")
 		local fontFile = GetOption("buttonFont")
