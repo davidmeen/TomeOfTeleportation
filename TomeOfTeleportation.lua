@@ -1926,6 +1926,8 @@ function TeleporterSlashCmdFunction(args)
 		icon:Hide("TomeTeleGlobal")
 	elseif splitArgs[1] == "set" then
 		SetOption(splitArgs[2], splitArgs[3])
+	elseif splitArgs[1] == "setnum" then
+		SetOption(splitArgs[2], tonumber(splitArgs[3]))
 	elseif splitArgs[1] == "cache" then
 		CacheItems()
 	elseif splitArgs[1] == "debug" then
