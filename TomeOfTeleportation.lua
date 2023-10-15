@@ -916,6 +916,14 @@ local function OnClickTeleButton(frame,button)
 	end
 end
 
+local function SafeGetItemCooldown(itemId)
+	if GetItemCooldown ~= nil then
+		return GetItemCooldown(itemId)
+	else
+		return C_Container.GetItemCooldown(itemId)
+	end
+end
+
 function TeleporterUpdateButton(button)
 
 	if UnitAffectingCombat("player") then
@@ -938,7 +946,7 @@ function TeleporterUpdateButton(button)
 	if item then
 		local cooldownStart, cooldownDuration
 		if isItem then
-			cooldownStart, cooldownDuration = GetItemCooldown(itemId)
+			cooldownStart, cooldownDuration = SafeGetItemCooldown(itemId)
 		else
 			cooldownStart, cooldownDuration = GetSpellCooldown(itemId)
 		end
