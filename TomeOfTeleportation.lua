@@ -1507,9 +1507,9 @@ local function FindValidSpells()
 	return validSpells
 end
 
-local function CleanupName(name)
+local function CleanupName(name, spellType)
 	local hide = GetOption("hidePrefixes")
-	if hide == 1 or hide == "1" then
+	if (hide == 1 or hide == "1") and spellType == ST_Challenge then
 		for index, prefix in pairs(HiddenPrefixes) do
 			local foundIndex = strfind(name, prefix)
 			if foundIndex == 1 then
@@ -1621,7 +1621,7 @@ function TeleporterOpenFrame()
 			local destination = spell.displayDestination
 			local consumable = spell.consumable
 			local spellName = spell.spellName
-			local displaySpellName = CleanupName(spellName)
+			local displaySpellName = CleanupName(spellName, spellType)
 			local itemTexture = spell.itemTexture
 			local toySpell = spell.toySpell
 			

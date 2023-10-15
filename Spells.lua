@@ -195,6 +195,7 @@ CreateDestination(
 		CreateItem(190237),				-- Broker Translocation Matrix
 		CreateItem(193588),				-- Timewalker's Hearthstone
 		CreateItem(200630),				-- Ohn'ir Windsage's Hearthstone
+		CreateItem(206195),				-- Path of the Naaru
 	})
 	
 CreateDestination(
