@@ -196,6 +196,7 @@ CreateDestination(
 		CreateItem(193588),				-- Timewalker's Hearthstone
 		CreateItem(200630),				-- Ohn'ir Windsage's Hearthstone
 		CreateItem(206195),				-- Path of the Naaru
+		CreateItem(209035),				-- Hearthstone of the Flame
 	})
 	
 CreateDestination(
@@ -430,6 +431,12 @@ CreateDestination(
 		CreateConditionalConsumable(117389, AtContinent(ContinentIdDraenor)), -- Draenor Archaeologist's Lodestone
 		CreateItem(112059),			-- Wormhole Centrifuge
 		CreateConditionalItem(129929, AtContinent(ContinentIdOutland)),	-- Ever-Shifting Mirror
+	})
+
+CreateDestination(
+	LocZone("Drustvar", 896),
+	{
+		CreateChallengeSpell(424167, "Waycrest Manor")	-- Path of Heart's Bane
 	})
 	
 CreateDestination(
@@ -791,6 +798,12 @@ CreateDestination(
 	})
 
 CreateDestination(
+	LocZone("Thaldraszus", 2025),
+	{
+		CreateChallengeSpell(424197, "Dawn of the Infinite")	-- Path of Twisted Time
+	})
+
+CreateDestination(
 	LocZone("The Forbidden Reach", 2151),
 	{		
 		CreateConditionalConsumable(204481, AtZone(2151)),		-- Morqut Hearth Totem
@@ -878,6 +891,8 @@ CreateDestination(
 		CreateConditionalConsumable(141013, AtContinent(ContinentIdBrokenIsles)),			-- Scroll of Town Portal: Shala'nir
 		CreateConditionalConsumable(141015, AtContinent(ContinentIdBrokenIsles)),			-- Scroll of Town Portal: Kal'delar	
 		CreateConditionalItem(140493, OnDayAtContinent(DayMonday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
+		CreateChallengeSpell(424163, "Darkheart Thicket"),	-- Path of the Nightmare Lord
+		CreateChallengeSpell(424153, "Black Rook Hold"),	-- Path of Ancient Horrors
 	})
 
 -- I don't know why there are so many of these, not sure which is right but it's now safe to
@@ -891,6 +906,12 @@ CreateDestination(
 		CreatePortalSpell(132622),	-- Portal: Vale of Eternal Blossoms
 		CreatePortalSpell(132624),	-- Portal: Vale of Eternal Blossoms
 		CreatePortalSpell(132626),	-- Portal: Vale of Eternal Blossoms
+	})
+
+CreateDestination(
+	LocZone("Vashj'ir", 203),
+	{
+		CreateChallengeSpell(424142, "Throne of the Tides")	-- Path of the Tidehunter
 	})
 
 CreateDestination(
@@ -916,4 +937,5 @@ CreateDestination(
 	{
 		CreateConsumable(157542),	-- Portal Scroll of Specificity
 		CreateConsumable(160218),	-- Portal Scroll of Specificity
+		CreateChallengeSpell(424187, "Atal'Dazar")	-- Path of the Golden Tomb	
 	})
