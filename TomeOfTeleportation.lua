@@ -15,6 +15,8 @@ TeleporterHearthString = "0 Hearth"
 TeleporterRecallString = "1 Astral Recall"
 TeleporterFlightString = "2 Flight Master"
 
+local DungeonsTitle = "Dungeons"
+
 local ldb = LibStub:GetLibrary("LibDataBroker-1.1")
 local icon = LibStub("LibDBIcon-1.0")
 local dataobj = ldb:NewDataObject("TomeTeleGlobal", {
@@ -517,10 +519,12 @@ local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 		info.owner = frame
 		
 		AddHideOptionMenu(1, "Hide Items", "hideItems", frame, level)
-		AddHideOptionMenu(2, "Hide Dungeon Spells", "hideChallenge", frame, level)		
+		AddHideOptionMenu(2, "Hide Dungeon Spells", "hideChallenge", frame, level)				
 		AddHideOptionMenu(3, "Hide Spells", "hideSpells", frame, level)
 		AddHideOptionMenu(4, "Hide Consumables", "hideConsumable", frame, level)
 		AddHideOptionMenu(11, "Show Dungeon Names", "showDungeonNames", frame, level)
+		AddHideOptionMenu(13, "Current Dungeons Only", "seasonOnly", frame, level)
+		AddHideOptionMenu(14, "Group Dungeons", "groupDungeons", frame, level)
 		AddHideOptionMenu(10, "Random Hearthstone", "randomHearth", frame, level)
 		AddHideOptionMenu(12, "Show Spells When In Wrong Zone", "showInWrongZone", frame, level)
 				
@@ -677,6 +681,11 @@ local function SortSpells(spell1, spell2, sortType)
 	local spellType2 = spell2.spellType
 	local zone1 = spell1.zone
 	local zone2 = spell2.zone
+
+	if GetOption("groupDungeons") then
+		if spellType1 == ST_Challenge then zone1 = DungeonsTitle end
+		if spellType2 == ST_Challenge then zone2 = DungeonsTitle end
+	end
 	
 	local so = GetOption("sortOrder")
 	
@@ -696,7 +705,7 @@ local function SortSpells(spell1, spell2, sortType)
 			return spellType1 < spellType2
 		end
 	end
-		
+
 	if zone1 ~= zone2 then
 		return zone1 < zone2
 	end
@@ -1087,6 +1096,15 @@ local function OnClickShow(spell)
 	showSpells[GetOptionId(spell)] = not IsSpellVisible(spell)
 end
 
+local function IsSeasonDungeon(spell)
+	return spell.dungeon == "Atal'Dazar" or
+		spell.dungeon == "Black Rook Hold" or
+		spell.dungeon == "Darkheart Thicket" or
+		spell.dungeon == "Dawn of the Infinite" or
+		spell.dungeon == "The Everbloom" or
+		spell.dungeon == "Throne of the Tides" or
+		spell.dungeon == "Waycrest Manor"
+end
 
 
 local function CanUseSpell(spell)
@@ -1139,6 +1157,10 @@ local function CanUseSpell(spell)
 	end
 	
 	if GetOption("hideChallenge") and spellType == ST_Challenge then
+		haveSpell = false
+	end
+
+	if GetOption("seasonOnly") and spellType == ST_Challenge and not IsSeasonDungeon(spell) then
 		haveSpell = false
 	end
 	
@@ -1485,6 +1507,9 @@ local function FindValidSpells()
 			spell.displayDestination = MINIMAP_TRACKING_FLIGHTMASTER
 		end
 
+		if spell.spellType == ST_Challenge and GetOption("groupDungeons") then
+			spell.displayDestination = DungeonsTitle
+		end
 
 		if isItem then
 			_, _, _, _, _, _, _, _, _, spell.itemTexture = GetCachedItemInfo( spellId )
