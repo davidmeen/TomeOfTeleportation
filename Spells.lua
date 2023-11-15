@@ -196,7 +196,8 @@ CreateDestination(
 		CreateItem(193588),				-- Timewalker's Hearthstone
 		CreateItem(200630),				-- Ohn'ir Windsage's Hearthstone
 		CreateItem(206195),				-- Path of the Naaru
-		CreateItem(209035),				-- Hearthstone of the Flame
+		CreateItem(208704),				-- Deepdweller's Earthen Hearthstone
+		CreateItem(209035),				-- Hearthstone of the Flame		
 	})
 	
 CreateDestination(

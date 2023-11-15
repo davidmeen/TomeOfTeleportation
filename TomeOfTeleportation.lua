@@ -8,6 +8,11 @@
 -- Better UI
 -- Proper options dialog
 
+-- Bugs
+-- Flat theme missing backdrop
+-- Random hearthstone changes after loading
+-- While loading multiple hearthstones are displayed
+
 local AddonName = "TomeOfTeleportation"
 local AddonTitle = "Tome of Teleportation"
 -- Special case strings start with number to force them to be sorted first.
@@ -156,6 +161,7 @@ local DefaultOptions =
 	["cooldownColourR"] = 1,
 	["cooldownColourG"] = 0.7,
 	["cooldownColourB"] = 0,
+	["cooldownBarInset"] = 4,
 	["disabledColourR"] = 0.5,
 	["disabledColourG"] = 0.5,
 	["disabledColourB"] = 0.5,
@@ -971,7 +977,7 @@ function TeleporterUpdateButton(button)
 			local durationRemaining = cooldownDuration - ( GetTime() - cooldownStart )
 			
 			local parentWidth = button:GetWidth()
-			local inset = 8
+			local inset = GetOption("cooldownBarInset") * 2
 			cooldownbar:SetWidth( inset + ( parentWidth - inset ) * durationRemaining / cooldownDuration )
 			
 			if durationRemaining > 3600 then
@@ -1768,7 +1774,8 @@ function TeleporterOpenFrame()
 				cooldownbar:SetWidth(64)
 				cooldownbar:SetHeight(buttonHeight)
 				cooldownbar:SetPoint("TOPLEFT",buttonFrame,"TOPLEFT",0,0)
-				cooldownbar.backdropInfo = {bgFile = "Interface/Tooltips/UI-Tooltip-Background",insets = { left = 4, right = 4, top = 3, bottom = 3 }}
+				local cdOffset = GetOption("cooldownBarInset")
+				cooldownbar.backdropInfo = {bgFile = "Interface/Tooltips/UI-Tooltip-Background",insets = { left = cdOffset, right = cdOffset, top = cdOffset - 1, bottom = cdOffset - 1 }}
 				cooldownbar:ApplyBackdrop()
 
 				-- Cooldown label
@@ -1830,6 +1837,7 @@ function TeleporterOpenFrame()
 				buttonSetting.toySpell = toySpell
 				buttonSetting.spell = spell
 				buttonSetting.spellType = spellType
+				buttonSetting.frame = buttonFrame
 				ButtonSettings[buttonFrame] = buttonSetting
 			end
 		end
@@ -2285,4 +2293,27 @@ function TeleporterCanUseCovenantHearthstone(covenant)
 	return function()
 		return (C_Covenants and C_Covenants.GetActiveCovenantID() == covenant) or not GetOption("randomHearth")
 	end
+end
+
+
+--------
+-- Functions used by tests
+function TeleporterTest_GetButtonSettingsFromFrame(button)
+	return ButtonSettings[button]
+end
+
+function TeleporterTest_GetButtonSettingsFromId(id, type)
+	for frame, button in pairs(ButtonSettings) do
+		if button.spellType == type and button.spellId == id then
+			return button
+		end
+	end
+end
+
+function TeleporterTest_GetButtonSettingsFromItemId(id)
+	return TeleporterTest_GetButtonSettingsFromId(id, ST_Item) or TeleporterTest_GetButtonSettingsFromId(id, ST_Consumable)
+end
+
+function TeleporterTest_GetButtonSettingsFromSpellId(id)
+	return TeleporterTest_GetButtonSettingsFromId(id, ST_Spell)
 end
