@@ -2317,3 +2317,8 @@ end
 function TeleporterTest_GetButtonSettingsFromSpellId(id)
 	return TeleporterTest_GetButtonSettingsFromId(id, ST_Spell)
 end
+
+function TeleporterTest_Reset()
+	TeleporterParentFrame = nil
+	IsVisible = false
+end
