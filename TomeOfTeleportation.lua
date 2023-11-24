@@ -727,7 +727,7 @@ local function SetupSpells()
 		else
 			spell.spellName = GetSpellInfo( spell.spellId)
 		end
-		
+
 		if not spell.spellName then
 			if DebugUnsupported then
 				print(spell.spellType .. " " .. spell.spellId)
@@ -2298,6 +2298,14 @@ end
 
 --------
 -- Functions used by tests
+function TeleporterTest_GetButtonSettings()
+	local buttons = {}
+	for frame, button in pairs(ButtonSettings) do
+		tinsert(buttons, button)
+	end
+	return buttons
+end
+
 function TeleporterTest_GetButtonSettingsFromFrame(button)
 	return ButtonSettings[button]
 end
@@ -2320,5 +2328,24 @@ end
 
 function TeleporterTest_Reset()
 	TeleporterParentFrame = nil
+	CastSpell = nil
+	ItemSlot = nil
+	OldItems = {}
+	RemoveItem = {}
+	ButtonSettings = {}
 	IsVisible = false
+	NeedUpdate = false
+	OpenTime = 0
+	ShouldNotBeEquiped = {}
+	ShouldBeEquiped = {}
+	EquipTime = 0
+	CustomizeSpells = false
+	RemoveIconOffset = 0
+	ShowIconOffset = 0
+	SortUpIconOffset = 0
+	SortDownIconOffset = 0
+	AddItemButton = nil
+	AddSpellButton = nil
+	DebugMode = nil
+	DebugUnsupported = nil
 end
