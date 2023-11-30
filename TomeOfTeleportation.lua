@@ -2322,8 +2322,8 @@ function TeleporterTest_GetButtonSettingsFromItemId(id)
 	return TeleporterTest_GetButtonSettingsFromId(id, ST_Item) or TeleporterTest_GetButtonSettingsFromId(id, ST_Consumable)
 end
 
-function TeleporterTest_GetButtonSettingsFromSpellId(id)
-	return TeleporterTest_GetButtonSettingsFromId(id, ST_Spell)
+function TeleporterTest_GetButtonSettingsFromSpellId(id)	
+	return TeleporterTest_GetButtonSettingsFromId(id, ST_Spell) or TeleporterTest_GetButtonSettingsFromId(id, ST_Challenge)
 end
 
 function TeleporterTest_Reset()
