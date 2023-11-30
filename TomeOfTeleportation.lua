@@ -1838,6 +1838,7 @@ function TeleporterOpenFrame()
 				buttonSetting.spell = spell
 				buttonSetting.spellType = spellType
 				buttonSetting.frame = buttonFrame
+				buttonSetting.displaySpellName = displaySpellName
 				ButtonSettings[buttonFrame] = buttonSetting
 			end
 		end
