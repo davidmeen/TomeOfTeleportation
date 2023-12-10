@@ -533,6 +533,7 @@ local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 		AddHideOptionMenu(14, "Group Dungeons", "groupDungeons", frame, level)
 		AddHideOptionMenu(10, "Random Hearthstone", "randomHearth", frame, level)
 		AddHideOptionMenu(12, "Show Spells When In Wrong Zone", "showInWrongZone", frame, level)
+		AddHideOptionMenu(13, "Allow usage in combat", "allowInCombat", frame, level)
 				
 		info.text = "Sort"
 		info.hasArrow = true
@@ -767,7 +768,7 @@ end
 local function ShowMenu()
 	local favourites = GetOption("favourites")
 	local next = next
-	if favourites and next(favourites) ~= nil and not UnitAffectingCombat("player") then
+	if favourites and next(favourites) ~= nil and (not UnitAffectingCombat("player") or GetOption("allowInCombat")) then
 		TeleToggleQuickMenu(GetSortedFavourites(favourites), GetScaledOption("QuickMenuSize"))
 	else
 		TeleporterMenu = CreateFrame("Frame", "TomeOfTeleMenu", UIParent, "UIDropDownMenuTemplate")	
@@ -941,7 +942,7 @@ end
 
 function TeleporterUpdateButton(button)
 
-	if UnitAffectingCombat("player") then
+	if not GetOption("allowInCombat") and UnitAffectingCombat("player") then
 		return
 	end
 
@@ -1561,7 +1562,7 @@ end
 
 function TeleporterOpenFrame()
 
-	if UnitAffectingCombat("player") then
+	if not GetOption("allowInCombat") and UnitAffectingCombat("player") then
 		print( "Cannot use " .. AddonTitle .. " while in combat." )
 		return
 	end
