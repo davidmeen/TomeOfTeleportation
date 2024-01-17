@@ -503,6 +503,12 @@ CreateDestination(
 		CreateItem(110560),				-- Garrison Hearthstone
 	})
 
+CreateDestination(			
+	LocArea("Gilneas", 4714),	
+	{
+		CreateItem(211788),				-- Tess's Peacebloom
+	})
+
 	
 CreateDestination(
 	LocZone("Hall of the Guardian", 734),
