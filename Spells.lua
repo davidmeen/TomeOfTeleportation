@@ -503,6 +503,11 @@ CreateDestination(
 		CreateItem(110560),				-- Garrison Hearthstone
 	})
 
+CreateDestination(
+	LocZone("Gilneas", 202),
+	{
+		CreateItem(211788),	-- Gilneas City
+	})
 	
 CreateDestination(
 	LocZone("Hall of the Guardian", 734),
