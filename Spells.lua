@@ -10,7 +10,6 @@ local MapIDAlterac = 943
 local MapIDMaw = 1543
 local MapIDKorthia = 1961
 local MapIDMechagon = 1462
-local MapIDGilneas = 202
 
 local ContinentIdOutland = 101
 local ContinentIdPandaria = 424
@@ -504,12 +503,6 @@ CreateDestination(
 		CreateItem(110560),				-- Garrison Hearthstone
 	})
 
-CreateDestination(
-	LocZone("Gilneas", 202),
-	{
-		CreateItem(211788),	-- Gilneas City
-	})
-	
 	
 CreateDestination(
 	LocZone("Hall of the Guardian", 734),
