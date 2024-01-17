@@ -10,6 +10,7 @@ local MapIDAlterac = 943
 local MapIDMaw = 1543
 local MapIDKorthia = 1961
 local MapIDMechagon = 1462
+local MapIDGilneas = 202
 
 local ContinentIdOutland = 101
 local ContinentIdPandaria = 424
