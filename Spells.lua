@@ -62,6 +62,13 @@ local function IsClass(requiredClass)
 	end
 end
 
+local function IsRace(requiredRace)
+	return function()
+		local _, playerRace = UnitRace("player")
+		return playerRace == requiredRace
+	end
+end
+
 local function HaveUpgradedZen()
 	return C_QuestLog.IsQuestFlaggedCompleted(40236)
 end
@@ -507,7 +514,7 @@ CreateDestination(
 CreateDestination(
 	LocZone("Gilneas", 202),
 	{
-		CreateConditionalItem(211788, IsRace("WORGEN")),	-- Gilneas City
+		CreateConditionalItem(211788, IsRace("Worgen")),	-- Gilneas City
 	})
 	
 CreateDestination(
