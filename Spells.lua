@@ -507,7 +507,7 @@ CreateDestination(
 CreateDestination(
 	LocZone("Gilneas", 202),
 	{
-		CreateItem(211788),	-- Gilneas City
+		CreateConditionalItem(211788, IsRace("WORGEN")),	-- Gilneas City
 	})
 	
 CreateDestination(
