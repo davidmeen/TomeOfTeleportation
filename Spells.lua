@@ -10,6 +10,7 @@ local MapIDAlterac = 943
 local MapIDMaw = 1543
 local MapIDKorthia = 1961
 local MapIDMechagon = 1462
+local MapIDGilneas = 202
 
 local ContinentIdOutland = 101
 local ContinentIdPandaria = 424
@@ -58,6 +59,13 @@ local function IsClass(requiredClass)
 	return function()
 		local _, playerClass = UnitClass("player")
 		return playerClass == requiredClass
+	end
+end
+
+local function IsRace(requiredRace)
+	return function()
+		local _, playerRace = UnitRace("player")
+		return playerRace == requiredRace
 	end
 end
 
@@ -503,12 +511,11 @@ CreateDestination(
 		CreateItem(110560),				-- Garrison Hearthstone
 	})
 
-CreateDestination(			
-	LocArea("Gilneas", 4714),	
+CreateDestination(
+	LocZone("Gilneas", 202),
 	{
-		CreateItem(211788),				-- Tess's Peacebloom
+		CreateConditionalItem(211788, IsRace("Worgen")),	-- Gilneas City
 	})
-
 	
 CreateDestination(
 	LocZone("Hall of the Guardian", 734),
