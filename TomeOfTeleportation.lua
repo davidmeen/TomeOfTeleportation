@@ -10,8 +10,6 @@
 
 -- Bugs
 -- Flat theme missing backdrop
--- Random hearthstone changes after loading
--- While loading multiple hearthstones are displayed
 
 local AddonName = "TomeOfTeleportation"
 local AddonTitle = "Tome of Teleportation"
@@ -714,6 +712,92 @@ local function SortSpells(spell1, spell2, sortType)
 	return spellName1 < spellName2
 end
 
+local function IsSpellVisible(spell)
+	local showSpells = GetOption("showSpells")
+	local visible = showSpells[GetOptionId(spell)]
+	if visible ~= nil then
+		return visible
+	else
+		return true
+	end
+end
+
+local function IsSeasonDungeon(spell)
+	return spell.dungeon == "Atal'Dazar" or
+		spell.dungeon == "Black Rook Hold" or
+		spell.dungeon == "Darkheart Thicket" or
+		spell.dungeon == "Dawn of the Infinite" or
+		spell.dungeon == "The Everbloom" or
+		spell.dungeon == "Throne of the Tides" or
+		spell.dungeon == "Waycrest Manor"
+end
+
+
+local function CanUseSpell(spell)
+	local spellId = spell.spellId
+	local spellType = spell.spellType
+	local isItem = (spellType == ST_Item)
+	local condition = spell.condition
+	local consumable = spell.consumable
+	local itemTexture = nil
+	
+	local haveSpell = false
+	local haveToy = false
+	local toyUsable =  false
+	if C_ToyBox then
+		toyUsable = C_ToyBox.IsToyUsable(spellId)
+	end
+	-- C_ToyBox.IsToyUsable returns nil if the toy hasn't been loaded yet.
+	if toyUsable == nil then		
+		toyUsable = true
+	end
+	if isItem then		
+		if toyUsable then
+			haveToy = PlayerHasToy(spellId) and toyUsable
+		end
+		haveSpell = GetItemCount( spellId ) > 0 or haveToy
+	else
+		haveSpell = IsSpellKnown( spellId )
+	end
+	
+	if condition and not CustomizeSpells then
+		if not condition() then
+			haveSpell = false
+		end
+	end
+	
+	if DebugMode then
+		haveSpell = true
+	end
+	
+	if GetOption("hideItems") and spellType == ST_Item then
+		haveSpell = false
+	end
+	
+	if GetOption("hideConsumable") and consumable then
+		haveSpell = false
+	end
+	
+	if GetOption("hideSpells") and spellType == ST_Spell then
+		haveSpell = false
+	end
+	
+	if GetOption("hideChallenge") and spellType == ST_Challenge then
+		haveSpell = false
+	end
+
+	if GetOption("seasonOnly") and spellType == ST_Challenge and not IsSeasonDungeon(spell) then
+		haveSpell = false
+	end
+	
+	if not CustomizeSpells and not IsSpellVisible(spell) then
+		haveSpell = false
+	end
+	
+	return haveSpell
+end
+
+
 local function SetupSpells()
 	local loaded = true
 	for index, spell in ipairs(TeleporterSpells) do		
@@ -728,7 +812,9 @@ local function SetupSpells()
 				print(spell.spellType .. " " .. spell.spellId)
 			end
 			spell.spellName = "<Loading>"
-			loaded = false
+			if CanUseSpell(spell) then
+				loaded = false
+			end
 		end
 		
 		spell.isItem = spell.spellType == ST_Item
@@ -777,16 +863,6 @@ function TeleporterItemMustBeEquipped(item)
 		return not IsEquippedItem ( item )
 	else
 		return false
-	end
-end
-
-local function IsSpellVisible(spell)
-	local showSpells = GetOption("showSpells")
-	local visible = showSpells[GetOptionId(spell)]
-	if visible ~= nil then
-		return visible
-	else
-		return true
 	end
 end
 
@@ -1103,82 +1179,6 @@ local function OnClickShow(spell)
 	local showSpells = GetOption("showSpells")
 	showSpells[GetOptionId(spell)] = not IsSpellVisible(spell)
 end
-
-local function IsSeasonDungeon(spell)
-	return spell.dungeon == "Atal'Dazar" or
-		spell.dungeon == "Black Rook Hold" or
-		spell.dungeon == "Darkheart Thicket" or
-		spell.dungeon == "Dawn of the Infinite" or
-		spell.dungeon == "The Everbloom" or
-		spell.dungeon == "Throne of the Tides" or
-		spell.dungeon == "Waycrest Manor"
-end
-
-
-local function CanUseSpell(spell)
-	local spellId = spell.spellId
-	local spellType = spell.spellType
-	local isItem = (spellType == ST_Item)
-	local condition = spell.condition
-	local consumable = spell.consumable
-	local itemTexture = nil
-	
-	local haveSpell = false
-	local haveToy = false
-	local toyUsable =  false
-	if C_ToyBox then
-		toyUsable = C_ToyBox.IsToyUsable(spellId)
-	end
-	-- C_ToyBox.IsToyUsable returns nil if the toy hasn't been loaded yet.
-	if toyUsable == nil then		
-		toyUsable = true
-	end
-	if isItem then		
-		if toyUsable then
-			haveToy = PlayerHasToy(spellId) and toyUsable
-		end
-		haveSpell = GetItemCount( spellId ) > 0 or haveToy
-	else
-		haveSpell = IsSpellKnown( spellId )
-	end
-	
-	if condition and not CustomizeSpells then
-		if not condition() then
-			haveSpell = false
-		end
-	end
-	
-	if DebugMode then
-		haveSpell = true
-	end
-	
-	if GetOption("hideItems") and spellType == ST_Item then
-		haveSpell = false
-	end
-	
-	if GetOption("hideConsumable") and consumable then
-		haveSpell = false
-	end
-	
-	if GetOption("hideSpells") and spellType == ST_Spell then
-		haveSpell = false
-	end
-	
-	if GetOption("hideChallenge") and spellType == ST_Challenge then
-		haveSpell = false
-	end
-
-	if GetOption("seasonOnly") and spellType == ST_Challenge and not IsSeasonDungeon(spell) then
-		haveSpell = false
-	end
-	
-	if not CustomizeSpells and not IsSpellVisible(spell) then
-		haveSpell = false
-	end
-	
-	return haveSpell
-end
-
 
 local function OnClickSortUp(spell)
 	RebuildCustomSort()
@@ -1566,7 +1566,6 @@ local function CleanupName(name, spellType)
 end
 
 function TeleporterOpenFrame()
-
 	if UnitAffectingCombat("player") then
 		print( "Cannot use " .. AddonTitle .. " while in combat." )
 		return
@@ -2158,7 +2157,9 @@ end
 function Teleporter_OnHide()
 	TeleporterHideCreatedUI()
 	IsVisible = false
-	TeleporterRestoreEquipment()
+	if not IsRefreshing then
+		TeleporterRestoreEquipment()
+	end
 end
 
 -----------------------------------------------------------------------
@@ -2260,52 +2261,8 @@ function TeleporterAddItem(id, dest)
 	end
 end
 
--- These values aren't accurate, but are good enough for this addon.
-local HighestItemNumber = nil
-local HighestSpellNumber = nil
-
-local function GetHighestItem()
-	if not HighestItemNumber then
-		local _,_,_,version = GetBuildInfo()
-		if version > 100000 then
-			-- Dragonflight
-			HighestItemNumber = 999999
-		elseif version > 90000 then
-			-- Shadowlands
-			HighestItemNumber = 195000
-		else
-			-- Classic
-			HighestItemNumber = 58480
-		end
-	end
-	return HighestItemNumber
-end
-
-local function GetHighestSpell()
-	if not HighestSpellNumber then
-		local _,_,_,version = GetBuildInfo()
-		if version > 100000 then
-			-- Dragonflight
-			HighestSpellNumber = 999999
-		elseif version > 90000 then
-			-- Shadowlands
-			HighestSpellNumber = 999999	-- Don't need to set this until I add some Dragonflight spells
-		else
-			-- Classic
-			HighestSpellNumber = 88340
-		end
-	end
-	return HighestSpellNumber
-end
-
 function TeleporterIsUnsupportedItem(spell)
-	if spell.spellType == ST_Item and spell.spellId > GetHighestItem() then
-		return 1
-	elseif (spell.spellType == ST_Spell or spell.spellType == ST_Challenge) and spell.spellId > GetHighestSpell() then
-		return 1
-	else
-		return 0
-	end
+	return false
 end
 
 function TeleporterCanUseCovenantHearthstone(covenant)
