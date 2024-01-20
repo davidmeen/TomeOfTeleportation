@@ -512,25 +512,43 @@ local function AddHideOptionMenu(index, text, option, owner, level)
 	UIDropDownMenu_AddButton(info, level)
 end
 
+local MenuIDHideItems 			= 1
+local MenuIDHideChallenge 		= 2
+local MenuIDHideSpells 			= 3
+local MenuIDHideConsumables 	= 4
+local MenuIDSort 				= 5
+local MenuIDScale 				= 6
+local MenuIDTheme 				= 7
+local MenuIDSharedSettings 		= 8
+local MenuIDCustomize 			= 9
+local MenuIDHeight 				= 10
+local MenuIDDungeonNames		= 11
+local MenuIDWrongZone			= 12
+local MenuIDCurrentDungeons		= 13
+local MenuIDGroupDungeons		= 14
+local MenuIDRandomHearth		= 15
+local MenuIDCloseAfterCast		= 16
+
 local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 	if level == 1 or topLevel then 		
 		local info = UIDropDownMenu_CreateInfo()
 		info.owner = frame
 		
-		AddHideOptionMenu(1, "Hide Items", "hideItems", frame, level)
-		AddHideOptionMenu(2, "Hide Dungeon Spells", "hideChallenge", frame, level)				
-		AddHideOptionMenu(3, "Hide Spells", "hideSpells", frame, level)
-		AddHideOptionMenu(4, "Hide Consumables", "hideConsumable", frame, level)
-		AddHideOptionMenu(11, "Show Dungeon Names", "showDungeonNames", frame, level)
-		AddHideOptionMenu(13, "Current Dungeons Only", "seasonOnly", frame, level)
-		AddHideOptionMenu(14, "Group Dungeons", "groupDungeons", frame, level)
-		AddHideOptionMenu(10, "Random Hearthstone", "randomHearth", frame, level)
-		AddHideOptionMenu(12, "Show Spells When In Wrong Zone", "showInWrongZone", frame, level)
+		AddHideOptionMenu(MenuIDHideItems, "Hide Items", "hideItems", frame, level)
+		AddHideOptionMenu(MenuIDHideChallenge, "Hide Dungeon Spells", "hideChallenge", frame, level)				
+		AddHideOptionMenu(MenuIDHideSpells, "Hide Spells", "hideSpells", frame, level)
+		AddHideOptionMenu(MenuIDHideConsumables, "Hide Consumables", "hideConsumable", frame, level)
+		AddHideOptionMenu(MenuIDDungeonNames, "Show Dungeon Names", "showDungeonNames", frame, level)
+		AddHideOptionMenu(MenuIDCurrentDungeons, "Current Dungeons Only", "seasonOnly", frame, level)
+		AddHideOptionMenu(MenuIDGroupDungeons, "Group Dungeons", "groupDungeons", frame, level)
+		AddHideOptionMenu(MenuIDRandomHearth, "Random Hearthstone", "randomHearth", frame, level)
+		AddHideOptionMenu(MenuIDWrongZone, "Show Spells When In Wrong Zone", "showInWrongZone", frame, level)
+		AddHideOptionMenu(MenuIDCloseAfterCast, "Close When Cast Finishes", "closeAfterCast", frame, level)
 				
 		info.text = "Sort"
 		info.hasArrow = true
 		info.menuList = "Sort"
-		info.value = 5
+		info.value = MenuIDSort
 		info.func = nil
 		info.checked = nil
 		UIDropDownMenu_AddButton(info, level)	
@@ -538,26 +556,26 @@ local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 		info.text = "Scale"
 		info.hasArrow = true
 		info.menuList = "Scale"
-		info.value = 6
+		info.value = MenuIDScale
 		info.checked = nil
 		UIDropDownMenu_AddButton(info, level)	
 
 		info.text = "Height"
 		info.hasArrow = true
 		info.menuList = "Height"
-		info.value = 10
+		info.value = MenuIDHeight
 		info.checked = nil
 		UIDropDownMenu_AddButton(info, level)	
 		
 		info.text = "Theme"
 		info.hasArrow = true
 		info.menuList = "Theme"
-		info.value = 7
+		info.value = MenuIDTheme
 		info.checked = nil
 		UIDropDownMenu_AddButton(info, level)
 		
 		info.text = "Use Shared Settings"
-		info.value = 8
+		info.value = MenuIDSharedSettings
 		info.hasArrow = false
 		info.menuList = nil
 		info.func = function(info) TomeOfTele_ShareOptions = not TomeOfTele_ShareOptions; Refresh(); end
@@ -566,7 +584,7 @@ local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 		UIDropDownMenu_AddButton(info, level)
 		
 		info.text = "Customize Spells"
-		info.value = 9
+		info.value = MenuIDCustomize
 		info.hasArrow = false
 		info.menuList = nil
 		info.func = function(info) CustomizeSpells = not CustomizeSpells; Refresh(); end
@@ -579,7 +597,7 @@ local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 		for i,s in ipairs(scales) do
 			local info = UIDropDownMenu_CreateInfo()
 			info.text = s .. "%"
-			info.value = s / 10 + 20
+			info.value = s / 10 + 20			-- 26 to 40
 			info.func = function(info) TomeOfTele_SetScale(s / 100) end
 			info.owner = frame
 			info.checked = function(info) return GetOption("scale") == s / 100 end
@@ -590,7 +608,7 @@ local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 		for i,s in ipairs(scales) do
 			local info = UIDropDownMenu_CreateInfo()
 			info.text = s .. "%"
-			info.value = s / 50 + 50
+			info.value = s / 50 + 50	-- 52 to 56
 			info.func = function(info) TomeOfTele_SetHeightScale(s) end
 			info.owner = frame
 			info.checked = function(info) return GetOption("heightScalePercent") == s end
@@ -2064,14 +2082,23 @@ function TeleporterEquipSlashCmdFunction( item )
 	end
 end
 
-function TeleporterUseItemSlashCmdFunction( item )
-	local spell = GetItemSpell( item )
-	TeleporterCastSpellSlashCmdFunction( spell )
-end
-
-function TeleporterCastSpellSlashCmdFunction( spell )
+local function DoCast(spell, closeFrame)
 	CastSpell = spell
 	TeleHideQuickMenu()
+	if closeFrame and not GetOption("closeAfterCast") then
+		TeleporterClose()
+	end
+end
+
+function TeleporterUseItemSlashCmdFunction( item )
+	local spell = GetItemSpell( item )
+	-- Can't close the window immediately for equippable items, as closing unequips.
+	local equippable = IsEquippableItem(item)
+	DoCast( spell, not equippable )
+end
+
+function TeleporterCastSpellSlashCmdFunction( spell, closeFrame )
+	DoCast(spell, true)	
 end
 
 function TeleporterCreateMacroSlashCmdFunction( spell )
