@@ -2029,6 +2029,18 @@ local function PrepareUnequippedSlot(item, itemSlot)
 	end
 end
 
+local function SaveItem(itemSlot)
+	local OldItem = GetInventoryItemID( "player", itemSlot )
+	if OldItem then
+		OldItems[ itemSlot ] = OldItem
+		RemoveItem[itemSlot] = function(newItem)
+			EquipItemByName( newItem, itemSlot )
+		end
+	else
+		PrepareUnequippedSlot(item, itemSlot)				
+	end
+end
+
 function TeleporterEquipSlashCmdFunction( item )
 	CastSpell = nil
 
@@ -2039,16 +2051,12 @@ function TeleporterEquipSlashCmdFunction( item )
 			if itemSlot == nil then
 				print( "Unrecognised equipable item type: " .. itemEquipLoc )
 				return
-			end
-			local OldItem = GetInventoryItemID( "player", itemSlot )
-			if OldItem then
-				OldItems[ itemSlot ] = OldItem
-				RemoveItem[itemSlot] = function(newItem)
-					EquipItemByName( newItem, itemSlot )
-				end
-			else
-				PrepareUnequippedSlot(item, itemSlot)				
-			end
+			end			
+			SaveItem(itemSlot)
+			if itemEquipLoc == "INVTYPE_2HWEAPON" then
+				-- Also need to save offhand
+				SaveItem(17)
+			end		
 			EquipItemByName( item, itemSlot )
 		end
 	end
