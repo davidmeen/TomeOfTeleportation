@@ -52,6 +52,8 @@ local AddItemButton = nil
 local AddSpellButton = nil
 local DebugMode = nil
 local DebugUnsupported = nil
+local ChosenHearth = nil
+local IsRefreshing = nil
 
 TomeOfTele_ShareOptions = true
 
@@ -463,8 +465,10 @@ end
 
 local function Refresh()
 	if IsVisible then 
+		IsRefreshing = true
 		TeleporterClose()
 		TeleporterOpenFrame()
+		IsRefreshing = false
 	end
 end
 
@@ -487,26 +491,17 @@ end
 
 local function TomeOfTele_SetScale(scale)
 	SetOption("scale", scale)
-	if IsVisible then		
-		TeleporterClose()
-		TeleporterOpenFrame()
-	end	
+	Refresh()
 end
 
 local function TomeOfTele_SetHeightScale(scale)
 	SetOption("heightScalePercent", scale)
-	if IsVisible then		
-		TeleporterClose()
-		TeleporterOpenFrame()
-	end	
+	Refresh()
 end
 
 local function TomeOfTele_SetTheme(scale)
 	SetOption("theme", scale)
-	if IsVisible then		
-		TeleporterClose()
-		TeleporterOpenFrame()
-	end	
+	Refresh()
 end
 
 local function AddHideOptionMenu(index, text, option, owner, level)
@@ -1483,6 +1478,9 @@ local function CreateMainFrame()
 end
 
 local function GetRandomHearth(validSpells)
+	if ChosenHearth then
+		return ChosenHearth
+	end
 	local hearthSpells = {}
 	for index, spell in ipairs(validSpells) do
 		if spell.zone == TeleporterHearthString then
@@ -1490,7 +1488,8 @@ local function GetRandomHearth(validSpells)
 		end
 	end
 	if  #hearthSpells > 0 then
-		return hearthSpells[math.random(#hearthSpells)]
+		ChosenHearth =  hearthSpells[math.random(#hearthSpells)]
+		return ChosenHearth
 	else
 		return nil
 	end
@@ -1592,7 +1591,11 @@ function TeleporterOpenFrame()
 		
 		local _,_,_,version = GetBuildInfo()
 		
-		IsVisible = true		
+		IsVisible = true
+
+		if not IsRefreshing then
+			ChosenHearth = nil
+		end
 
 		if TeleporterParentFrame == nil then
 			CreateMainFrame()			
@@ -2364,4 +2367,6 @@ function TeleporterTest_Reset()
 	AddSpellButton = nil
 	DebugMode = nil
 	DebugUnsupported = nil
+	ChosenHearth = nil
+	IsRefreshing = nil
 end
