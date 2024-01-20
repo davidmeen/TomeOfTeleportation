@@ -975,6 +975,13 @@ function TeleporterUpdateButton(button)
 
 			onCooldown = true
 			local durationRemaining = cooldownDuration - ( GetTime() - cooldownStart )
+
+			if durationRemaining < 0 then
+				durationRemaining = 0
+			end
+			if durationRemaining > cooldownDuration then
+				durationRemaining = cooldownDuration
+			end
 			
 			local parentWidth = button:GetWidth()
 			local inset = GetOption("cooldownBarInset") * 2
