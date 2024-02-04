@@ -200,6 +200,7 @@ CreateDestination(
 		CreateConditionalItem(183716, TeleporterCanUseCovenantHearthstone(2)),	-- Venthyr Sinstone
 		CreateConditionalItem(184353, TeleporterCanUseCovenantHearthstone(1)),	-- Kyrian Hearthstone
 		CreateItem(188952),				-- Dominated Hearthstone
+		CreateItem(190196),				-- Enlightened Hearthstone
 		CreateItem(190237),				-- Broker Translocation Matrix
 		CreateItem(193588),				-- Timewalker's Hearthstone
 		CreateItem(200630),				-- Ohn'ir Windsage's Hearthstone
@@ -688,6 +689,7 @@ CreateDestination(
 		CreateSpell(147420),								-- One With Nature
 		CreateItem(64457), 									-- The Last Relic of Argus
 		CreateConditionalItem(136849, IsClass("DRUID")),	-- Nature's Beacon
+		CreateItem(153004),									-- Unstable Portal Emitter
 		CreateItem(189827),									-- Cartel Xy's Proof of Initiation
 		CreateItem(192443),									-- Element-Infused Rocket Helmet
 		CreateItem(193000),									-- Ring-Bound Hourglass
