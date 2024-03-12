@@ -189,8 +189,7 @@ CreateDestination(
 		CreateItem(165802),				-- Noble Gardener's Hearthstone
 		CreateItem(168907),				-- Holographic Digitalization Hearthstone
 		CreateItem(165669),				-- Lunar Elder's Hearthstone
-		CreateItem(165670),				-- Peddlefeet's Lovely Hearthstone
-		CreateItem(169064),				-- Mountebank's Colorful Cloak
+		CreateItem(165670),				-- Peddlefeet's Lovely Hearthstone		
 		CreateItem(172179),				-- Eternal Traveler's Hearthstone
 		-- I don't know how to check if a covenant hearthstone can be used. To work
 		-- around this, only make them available for other covenants when not using
@@ -206,13 +205,16 @@ CreateDestination(
 		CreateItem(200630),				-- Ohn'ir Windsage's Hearthstone
 		CreateItem(206195),				-- Path of the Naaru
 		CreateItem(208704),				-- Deepdweller's Earthen Hearthstone
-		CreateItem(209035),				-- Hearthstone of the Flame		
+		CreateItem(209035),				-- Hearthstone of the Flame
+		CreateItem(212337),				-- Stone of the Hearth
 	})
 	
+-- Any hearthstones that shouldn't be randomised.
 CreateDestination(
 	TeleporterRecallString,
 	{
-		CreateSpell(556)				-- Astral Recall
+		CreateSpell(556),				-- Astral Recall (separate cooldown)
+		CreateItem(169064),				-- Mountebank's Colorful Cloak (needs to be equipped)
 	})
 
 CreateDestination(
