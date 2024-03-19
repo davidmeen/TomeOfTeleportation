@@ -194,10 +194,10 @@ CreateDestination(
 		-- I don't know how to check if a covenant hearthstone can be used. To work
 		-- around this, only make them available for other covenants when not using
 		-- the random hearthstone option.
-		CreateConditionalItem(180290, TeleporterCanUseCovenantHearthstone(3)),	-- Night Fae Hearthstone
-		CreateConditionalItem(182773, TeleporterCanUseCovenantHearthstone(4)),	-- Necrolord Hearthstone
-		CreateConditionalItem(183716, TeleporterCanUseCovenantHearthstone(2)),	-- Venthyr Sinstone
-		CreateConditionalItem(184353, TeleporterCanUseCovenantHearthstone(1)),	-- Kyrian Hearthstone
+		CreateItem(180290),				-- Night Fae Hearthstone
+		CreateItem(182773),				-- Necrolord Hearthstone
+		CreateItem(183716),				-- Venthyr Sinstone
+		CreateItem(184353),				-- Kyrian Hearthstone
 		CreateItem(188952),				-- Dominated Hearthstone
 		CreateItem(190196),				-- Enlightened Hearthstone
 		CreateItem(190237),				-- Broker Translocation Matrix

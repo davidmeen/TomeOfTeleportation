@@ -2292,12 +2292,6 @@ function TeleporterIsUnsupportedItem(spell)
 	return false
 end
 
-function TeleporterCanUseCovenantHearthstone(covenant)
-	return function()
-		return (C_Covenants and C_Covenants.GetActiveCovenantID() == covenant) or not GetOption("randomHearth")
-	end
-end
-
 
 --------
 -- Functions used by tests
