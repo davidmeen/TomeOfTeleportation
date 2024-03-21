@@ -2049,12 +2049,17 @@ local function PrepareUnequippedSlot(item, itemSlot)
 	end
 end
 
+local function SafeEquipItemByName(item, slot)
+	-- Patch 10.2.6 broke EquipItemByName but not any other function that uses the slot index
+	EquipItemByName(item, slot - 1)
+end
+
 local function SaveItem(itemSlot)
 	local OldItem = GetInventoryItemID( "player", itemSlot )
 	if OldItem then
 		OldItems[ itemSlot ] = OldItem
 		RemoveItem[itemSlot] = function(newItem)
-			EquipItemByName( newItem, itemSlot )
+			SafeEquipItemByName( newItem, itemSlot )
 		end
 	else
 		PrepareUnequippedSlot(item, itemSlot)				
@@ -2077,7 +2082,7 @@ function TeleporterEquipSlashCmdFunction( item )
 				-- Also need to save offhand
 				SaveItem(17)
 			end		
-			EquipItemByName( item, itemSlot )
+			SafeEquipItemByName( item, itemSlot )
 		end
 	end
 end
