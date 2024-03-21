@@ -2054,7 +2054,7 @@ local function SafeEquipItemByName(item, slot)
 	EquipItemByName(item, slot - 1)
 end
 
-local function SaveItem(itemSlot)
+local function SaveItem(itemSlot, item)
 	local OldItem = GetInventoryItemID( "player", itemSlot )
 	if OldItem then
 		OldItems[ itemSlot ] = OldItem
@@ -2077,10 +2077,10 @@ function TeleporterEquipSlashCmdFunction( item )
 				print( "Unrecognised equipable item type: " .. itemEquipLoc )
 				return
 			end			
-			SaveItem(itemSlot)
+			SaveItem(itemSlot, item)
 			if itemEquipLoc == "INVTYPE_2HWEAPON" then
 				-- Also need to save offhand
-				SaveItem(17)
+				SaveItem(17, nil)
 			end		
 			SafeEquipItemByName( item, itemSlot )
 		end
