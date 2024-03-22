@@ -51,6 +51,27 @@ Show the minimap icon.
 /tele hideicon
 Show the minimap icon.
 
+------------------
+
+/tele set parameter value
+Sets an option that isn't available in the UI. Omit the value to reset to the default. Some examples:
+
+/tele set allCovenants true
+When random hearthstone is enabled include all covenants, not just the one you belong to. This is off
+by default because it has been known to cause problems on some characters.
+
+/tele set background Interface/DialogFrame/UI-DialogBox-Background-Dark
+Change the background to black.
+
+/tele setnum backgroundA 0.8
+Change the background to 80% opacity.
+
+/tele set buttonWidth 128
+Change the width of the buttons.
+
+/tele set buttonHeight 64
+Change the height of the buttons.
+
 Credits
 -------
 
