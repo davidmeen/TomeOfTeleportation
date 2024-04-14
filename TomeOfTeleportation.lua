@@ -2049,9 +2049,9 @@ local function PrepareUnequippedSlot(item, itemSlot)
 	end
 end
 
-local function SafeEquipItemByName(item, slot)
-	-- Patch 10.2.6 broke EquipItemByName but not any other function that uses the slot index
-	EquipItemByName(item, slot - 1)
+-- This function exists because of a bug in patch 10.2.6 that has now been fixed.
+local function SafeEquipItemByName(item, slot)	
+	EquipItemByName(item, slot)
 end
 
 local function SaveItem(itemSlot, item)
