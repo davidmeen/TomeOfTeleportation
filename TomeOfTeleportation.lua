@@ -340,6 +340,25 @@ function TeleporterGetOption(option)
 	return GetOption(option)
 end
 
+function TeleporterIsOptionModified(option)
+	local value = nil
+	if TomeOfTele_ShareOptions then
+		if TomeOfTele_OptionsGlobal then
+			value = TomeOfTele_OptionsGlobal[option]
+		end
+	else
+		if TomeOfTele_Options then
+			value = TomeOfTele_Options[option]
+		end
+	end
+
+	if value ~= nil then
+		return true
+	else
+		return false
+	end
+end
+
 local function GetScale()
 	return GetOption("scale") * UIParent:GetEffectiveScale()
 end
@@ -359,6 +378,18 @@ local function SetOption(option, value)
 	end
 end
 
+
+function TeleporterSetOption(option, value)
+	local oldValue = GetOption(option)
+	local isSame = value == oldValue
+	if type(value) == "number" and type(oldValue) == "number" then
+		isSame = math.abs(value - oldValue) < 0.0001
+	end
+	
+	if not isSame then
+		SetOption(option, value)
+	end
+end
 
 local function GetOptionId(spell)
 	return spell.spellId .. "." .. spell.zone
