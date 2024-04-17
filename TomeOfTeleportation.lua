@@ -184,8 +184,8 @@ local DefaultTheme =
 local FlatTheme = 
 {
 	["background"] = {"Interface/DialogFrame/UI-DialogBox-Gold-Background"},
-	["edge"] = {nil},
-	["buttonEdge"] = {nil},
+	["edge"] = {""},
+	["buttonEdge"] = {""},
 	["titleBackground"] = {"Interface/DialogFrame/UI-DialogBox-Gold-Background"},
 	["backgroundA"] = {1},
 	["showTitle"] = {false},
@@ -2332,6 +2332,10 @@ function TeleporterCanUseCovenantHearthstone(covenant)
 	return function()
 		return (C_Covenants and C_Covenants.GetActiveCovenantID() == covenant) or not GetOption("randomHearth")  or GetOption("allCovenants")
 	end
+end
+
+function TeleporterGetThemes()
+	return Themes
 end
 
 
