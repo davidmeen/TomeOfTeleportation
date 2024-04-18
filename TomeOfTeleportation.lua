@@ -2338,6 +2338,10 @@ function TeleporterGetThemes()
 	return Themes
 end
 
+function TeleporterGetSpells()
+	SetupSpells()
+	return TeleporterSpells
+end
 
 --------
 -- Functions used by tests
