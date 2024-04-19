@@ -840,13 +840,18 @@ end
 
 
 local function IsSeasonDungeon(spell)
-	return spell.dungeon == "Atal'Dazar" or
-		spell.dungeon == "Black Rook Hold" or
-		spell.dungeon == "Darkheart Thicket" or
-		spell.dungeon == "Dawn of the Infinite" or
-		spell.dungeon == "The Everbloom" or
-		spell.dungeon == "Throne of the Tides" or
-		spell.dungeon == "Waycrest Manor"
+	-- Dragonflight Season 4
+	return spell.dungeon == "The Azure Vault" or
+	spell.dungeon == "Algeth'ar Academy" or
+	spell.dungeon == "The Nokhud Offensive" or
+	spell.dungeon == "Ruby Life Pools" or
+	spell.dungeon == "Neltharus" or
+	spell.dungeon == "Halls of Infusion" or
+	spell.dungeon == "Brackenhide Hollow" or
+	spell.dungeon == "Uldaman: Legacy of Tyr" or
+	spell.dungeon == "Aberrus" or
+	spell.dungeon == "Vault of the Incarnates" or
+	spell.dungeon == "Amirdrassil"
 end
 
 

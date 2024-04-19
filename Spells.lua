@@ -283,7 +283,7 @@ CreateDestination(
 CreateDestination(
 	LocZone("Badlands",	15),
 	{
-		CreateChallengeSpell(393222, "Uldaman: Legacy of Tyr."),	-- Path of the Watcher's Legacy
+		CreateChallengeSpell(393222, "Uldaman: Legacy of Tyr"),	-- Path of the Watcher's Legacy
 	})
 	
 CreateDestination(
@@ -475,7 +475,7 @@ CreateDestination(
 	{
 		CreateChallengeSpell(393279, "The Azure Vault"),		-- Path of Arcane Secrets
 		CreateChallengeSpell(393273, "Algeth'ar Academy"),		-- Path of the Draconic Diploma
-		CreateChallengeSpell(393262, "The Nokhud Offensive."),	-- Path of the Windswept Plains
+		CreateChallengeSpell(393262, "The Nokhud Offensive"),	-- Path of the Windswept Plains
 		CreateChallengeSpell(393256, "Ruby Life Pools"),		-- Path of the Clutch Defender
 		CreateChallengeSpell(393276, "Neltharus"),				-- Path of the Obsidian Hoard
 		CreateChallengeSpell(393283, "Halls of Infusion"),		-- Path of the Titanic Reservoir
