@@ -761,7 +761,7 @@ local function SortSpells(spell1, spell2, sortType)
 	return spellName1 < spellName2
 end
 
-local function IsSpellVisible(spell)
+function TeleporterIsSpellVisible(spell)
 	local showSpells = GetOption("showSpells")
 	local visible = showSpells[GetOptionId(spell)]
 	if visible ~= nil then
@@ -770,6 +770,63 @@ local function IsSpellVisible(spell)
 		return true
 	end
 end
+
+function TeleporterIsSpellAlwaysVisible(spell)
+	local showSpells = GetOption("alwaysShowSpells")
+	if not showSpells then
+		return false
+	end
+	local visible = showSpells[GetOptionId(spell)]
+	if visible ~= nil then
+		return visible
+	else
+		return false
+	end
+end
+
+
+ function TeleporterSetSpellVisible(spell)
+	local showSpells = GetOption("showSpells")
+	local alwaysShowSpells = GetOption("alwaysShowSpells")
+
+	if not showSpells then showSpells = {} end
+	if not alwaysShowSpells then alwaysShowSpells = {} end
+
+	showSpells[GetOptionId(spell)] = true
+	alwaysShowSpells[GetOptionId(spell)] = false
+
+	SetOption("showSpells", showSpells)
+	SetOption("alwaysShowSpells", alwaysShowSpells)
+end
+
+ function TeleporterSetSpellAlwaysVisible(spell)
+	local showSpells = GetOption("showSpells")
+	local alwaysShowSpells = GetOption("alwaysShowSpells")
+
+	if not showSpells then showSpells = {} end
+	if not alwaysShowSpells then alwaysShowSpells = {} end
+
+	showSpells[GetOptionId(spell)] = true
+	alwaysShowSpells[GetOptionId(spell)] = true
+
+	SetOption("showSpells", showSpells)
+	SetOption("alwaysShowSpells", alwaysShowSpells)
+end
+
+ function TeleporterSetSpellHidden(spell)
+	local showSpells = GetOption("showSpells")
+	local alwaysShowSpells = GetOption("alwaysShowSpells")
+
+	if not showSpells then showSpells = {} end
+	if not alwaysShowSpells then alwaysShowSpells = {} end
+
+	showSpells[GetOptionId(spell)] = false
+	alwaysShowSpells[GetOptionId(spell)] = false
+
+	SetOption("showSpells", showSpells)
+	SetOption("alwaysShowSpells", alwaysShowSpells)
+end
+
 
 local function IsSeasonDungeon(spell)
 	return spell.dungeon == "Atal'Dazar" or
@@ -789,6 +846,10 @@ local function CanUseSpell(spell)
 	local condition = spell.condition
 	local consumable = spell.consumable
 	local itemTexture = nil
+
+	if TeleporterIsSpellAlwaysVisible(spell) then
+		return true
+	end
 	
 	local haveSpell = false
 	local haveToy = false
@@ -839,7 +900,7 @@ local function CanUseSpell(spell)
 		haveSpell = false
 	end
 	
-	if not CustomizeSpells and not IsSpellVisible(spell) then
+	if not CustomizeSpells and not TeleporterIsSpellVisible(spell) then
 		haveSpell = false
 	end
 	
@@ -1131,7 +1192,7 @@ function TeleporterUpdateButton(button)
 
 		if CustomizeSpells then
 			local alpha = 1
-			if not IsSpellVisible(spell) then
+			if not TeleporterIsSpellVisible(spell) then
 				alpha = 0.5
 			end
 			button.backdrop:SetBackdropColor(GetOption("disabledColourR"), GetOption("disabledColourG"), GetOption("disabledColourB"), alpha)
@@ -1226,7 +1287,7 @@ end
 
 local function OnClickShow(spell)
 	local showSpells = GetOption("showSpells")
-	showSpells[GetOptionId(spell)] = not IsSpellVisible(spell)
+	showSpells[GetOptionId(spell)] = not TeleporterIsSpellVisible(spell)
 end
 
 local function OnClickSortUp(spell)
@@ -1337,6 +1398,7 @@ end
 local function InitalizeOptions()
 	if not TomeOfTele_OptionsGlobal then TomeOfTele_OptionsGlobal = {} end
 	if not TomeOfTele_OptionsGlobal["showSpells"] then TomeOfTele_OptionsGlobal["showSpells"] = {} end
+	if not TomeOfTele_OptionsGlobal["alwaysShowSpells"] then TomeOfTele_OptionsGlobal["alwaysShowSpells"] = {} end
 	if not TomeOfTele_OptionsGlobal["sortOrder"] then TomeOfTele_OptionsGlobal["sortOrder"] = {} end
 	if not TomeOfTele_Options then TomeOfTele_Options = {} end
 	if not TomeOfTele_Options["showSpells"] then TomeOfTele_Options["showSpells"] = {} end
