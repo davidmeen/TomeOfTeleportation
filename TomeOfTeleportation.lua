@@ -463,6 +463,17 @@ local function RebuildSpellList()
 			tinsert(TeleporterSpells, spell)
 		end
 	end
+
+	local extraSpellsAndItems = GetOption("extraSpellsAndItems")
+	if extraSpellsAndItems then
+		for id,spell in ipairs(extraSpellsAndItems) do
+			tinsert(TeleporterSpells, spell)
+		end
+	end
+end
+
+function TeleporterRebuildSpellList()
+	RebuildSpellList()	
 end
 
 function Teleporter_OnLoad() 
@@ -1676,6 +1687,14 @@ local function CleanupName(name, spellType)
 	return name
 end
 
+function TeleporterSortSpells()
+	local SortType = GetOption("sort")
+	if CustomizeSpells then
+		SortType = SortCustom
+	end
+	table.sort(TeleporterSpells, function(a,b) return SortSpells(a, b, SortType) end)
+end
+
 function TeleporterOpenFrame()
 	if UnitAffectingCombat("player") then
 		print( "Cannot use " .. AddonTitle .. " while in combat." )
@@ -1761,11 +1780,7 @@ function TeleporterOpenFrame()
 			OpenTime = GetTime()
 		end
 		
-		local SortType = GetOption("sort")
-		if CustomizeSpells then
-			SortType = SortCustom
-		end
-		table.sort(TeleporterSpells, function(a,b) return SortSpells(a, b, SortType) end)
+		TeleporterSortSpells()		
 		
 		local validSpells = FindValidSpells()
 		
@@ -2402,6 +2417,7 @@ end
 
 function TeleporterGetSpells()
 	SetupSpells()
+	TeleporterSortSpells()
 	return TeleporterSpells
 end
 
