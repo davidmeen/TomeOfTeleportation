@@ -923,6 +923,10 @@ local function CanUseSpell(spell)
 	return haveSpell
 end
 
+function TeleporterCanUseSpell(spell)
+	return CanUseSpell(spell)
+end
+
 
 local function SetupSpells()
 	local loaded = true
