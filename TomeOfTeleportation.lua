@@ -28,6 +28,7 @@ local ItemSlot = nil
 local OldItems = {}
 local RemoveItem = {}
 local ButtonSettings = {}
+local OrderedButtonSettings = {}
 local IsVisible = false
 local NeedUpdate = false
 local OpenTime = 0
@@ -1572,6 +1573,8 @@ function TeleporterOpenFrame()
 		local onlyHearth = GetRandomHearth(validSpells)
 
 		local ShowDungeonNames = GetOption("showDungeonNames")
+
+		local spellIndex = 1
 		
 		for index, spell in ipairs(validSpells) do
 			local spellId = spell.spellId
@@ -1760,6 +1763,8 @@ function TeleporterOpenFrame()
 				buttonSetting.frame = buttonFrame
 				buttonSetting.displaySpellName = displaySpellName
 				ButtonSettings[buttonFrame] = buttonSetting
+				OrderedButtonSettings[spellIndex] = buttonSetting
+				spellIndex = spellIndex + 1
 			end
 		end
 		
@@ -2197,11 +2202,7 @@ end
 --------
 -- Functions used by tests
 function TeleporterTest_GetButtonSettings()
-	local buttons = {}
-	for frame, button in pairs(ButtonSettings) do
-		tinsert(buttons, button)
-	end
-	return buttons
+	return OrderedButtonSettings
 end
 
 function TeleporterTest_GetButtonSettingsFromFrame(button)
@@ -2231,6 +2232,7 @@ function TeleporterTest_Reset()
 	OldItems = {}
 	RemoveItem = {}
 	ButtonSettings = {}
+	OrderedButtonSettings = {}
 	IsVisible = false
 	NeedUpdate = false
 	OpenTime = 0
