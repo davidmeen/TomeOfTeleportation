@@ -492,6 +492,8 @@ function Teleporter_OnLoad()
 
 	SlashCmdList["TELEPORTERCREATEMACRO"] = TeleporterCreateMacroSlashCmdFunction
 	SLASH_TELEPORTERCREATEMACRO1 = "/teleportercreatemacro"
+
+	TeleporterSettings_OnLoad()
 end 
 
 local function SavePosition()
@@ -625,14 +627,22 @@ local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 		info.checked = TomeOfTele_ShareOptions
 		UIDropDownMenu_AddButton(info, level)
 		
-		info.text = "Customize Spells"
+		-- I'd like to split this up, but the Wow API doesn't let you select sub categories.
+		info.text = "Customize Spells and More Settings"
 		info.value = MenuIDCustomize
 		info.hasArrow = false
 		info.menuList = nil
-		info.func = function(info) CustomizeSpells = not CustomizeSpells; Refresh(); end
+		info.func = function(info) 
+			if GetOption("oldCustomizer") then
+				CustomizeSpells = not CustomizeSpells; Refresh();
+			else
+				TeleporterClose()
+				TeleporterOpenSettings()
+			end
+		end
 		info.owner = frame
 		info.checked = CustomizeSpells
-		UIDropDownMenu_AddButton(info, level)	
+		UIDropDownMenu_AddButton(info, level)			
 		
 	elseif menuList == "Scale" then
 		local scales = { 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200 }
