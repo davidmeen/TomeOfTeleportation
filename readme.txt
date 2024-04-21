@@ -23,14 +23,16 @@ Equippable items can not be added to this menu.
 Adding New Items or Spells
 --------------------------
 
-Right click on the main window then select "Customize Spells". This will let you add 
-spells and items. To do this, you need to go to wowhead.com and get the spell or item
+Right click on the main window then select "Customize Spells and More Settings" then press the
+"-" button and select Customize Teleporters. On this screen press "Refresh Spell List." This 
+will let you add spells and items. To do this, you need to go to wowhead.com and get the spell or item
 id. For example, "Teleport: Moonglade" is at http://www.wowhead.com/spell=18960/teleport-moonglade
 which tells you the spell id is 18960.
 
-Customize Spells also lets you change the sort order with the up and down arrows, hide
-spells with the eye icon, and delete custom spells with the skull icon. The sort order
-will only be used if you right click the window and select Sort->Custom.
+Customize Spells also lets you change the sort order by hovering over a spell and pressing the Move button.
+This will only be available when the sort order is set to Custom. You can also hide or show individual 
+spells. Using the Show Always option lets you work around bugs in the game that may make it think
+spells aren't available.
 
 Advanced Options
 ----------------
@@ -54,7 +56,7 @@ Show the minimap icon.
 ------------------
 
 /tele set parameter value
-Sets an option that isn't available in the UI. Omit the value to reset to the default. Some examples:
+Sets an option without using the UI. Omit the value to reset to the default. Some examples:
 
 /tele set allCovenants true
 When random hearthstone is enabled include all covenants, not just the one you belong to. This is off
