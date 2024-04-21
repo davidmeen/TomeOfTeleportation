@@ -493,7 +493,9 @@ function Teleporter_OnLoad()
 	SlashCmdList["TELEPORTERCREATEMACRO"] = TeleporterCreateMacroSlashCmdFunction
 	SLASH_TELEPORTERCREATEMACRO1 = "/teleportercreatemacro"
 
-	TeleporterSettings_OnLoad()
+	if TeleporterSettings_OnLoad then
+		TeleporterSettings_OnLoad()
+	end
 end 
 
 local function SavePosition()
