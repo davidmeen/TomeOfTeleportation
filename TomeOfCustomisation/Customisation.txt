@@ -1,7 +1,0 @@
-To create a custom interface for Tome of Teleporatation, copy this folder into \Interface\Addons\TomeOfCustomisation.
-Edit TomeOfCustomisation.lua and modify any of the settings. All changed settings must be in {} braces.
-Extra items and spells can be added. There are some examples near the end of the file; copy these and remove the "--"
-at the beginning of the line.
-In-game right-click on the Tome window and select Custom from the Themes menu to use your theme.
-You should not have to update this add-on when you install a new version of Tome of Teleportation, so 
-your customisations will not be lost.
