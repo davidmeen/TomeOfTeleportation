@@ -746,7 +746,7 @@ local function SortSpells(spell1, spell2, sortType)
 		if spellType2 == ST_Challenge then zone2 = DungeonsTitle end
 	end
 	
-	local so = GetOption("sortOrder")
+	local so = GetOption("sortOrder") or {}
 	
 	if sortType == SortCustom then
 		local optId1 = GetOptionId(spell1)
@@ -1332,6 +1332,49 @@ local function OnClickSortUp(spell)
 	
 	Refresh()
 end
+
+function RenormalizeCustomSort()
+	RebuildCustomSort()
+
+	local so = GetOption("sortOrder")
+
+	for i = 1, #TeleporterSpells do
+		local id = GetOptionId(TeleporterSpells[i])
+		so[id] = i
+	end
+
+	RebuildCustomSort()
+end
+
+function TeleporterMoveSpellBefore(movingSpell, destSpell)
+	RebuildCustomSort()
+	
+	local so = GetOption("sortOrder")
+	local movingId = GetOptionId(movingSpell)
+	local destId = GetOptionId(destSpell)	
+	
+	so[movingId] = so[destId] - 0.5
+	
+	RenormalizeCustomSort()
+end
+
+function TeleporterMoveSpellAfter(movingSpell, destSpell)
+	RebuildCustomSort()
+	
+	local so = GetOption("sortOrder")
+	local movingId = GetOptionId(movingSpell)	
+	local destId = GetOptionId(destSpell)	
+	
+	so[movingId] = so[destId] + 0.5
+	
+	RenormalizeCustomSort()
+end
+
+function TeleporterResetSort()
+	SetOption("sortOrder", {})
+	RebuildCustomSort()
+end
+
 
 local function OnClickSortDown(spell)
 	RebuildCustomSort()
