@@ -313,21 +313,21 @@ local function CreateSpellFrame(parent)
         info.text = TextShow
         info.func = function()
             UIDropDownMenu_SetText(spellFrame.dropDown, TextShow)
-            TeleporterSetSpellVisible(spellFrame.spell)
+            spellFrame.spell : SetVisible()
         end
         UIDropDownMenu_AddButton(info)
 
         info.text = TextHide
         info.func = function()
             UIDropDownMenu_SetText(spellFrame.dropDown, TextHide)
-            TeleporterSetSpellHidden(spellFrame.spell)
+            spellFrame.spell:SetHidden()
         end
         UIDropDownMenu_AddButton(info)
 
         info.text = TextAlways
         info.func = function()
             UIDropDownMenu_SetText(spellFrame.dropDown, TextAlways)
-            TeleporterSetSpellAlwaysVisible(spellFrame.spell)
+            spellFrame.spell:SetAlwaysVisible()
         end
         UIDropDownMenu_AddButton(info)
     end)
@@ -344,9 +344,9 @@ local function RefreshSpellFrame(spellFrame, spell, parent, previous, refreshFun
     spellFrame.spellLabel:SetText(spell.spellName)
     spellFrame.spellLabel:SetWidth(200)
 
-    if TeleporterIsSpellAlwaysVisible(spell) then
+    if spell:IsAlwaysVisible() then
         UIDropDownMenu_SetText(spellFrame.dropDown, TextAlways)
-    elseif TeleporterIsSpellVisible(spell) then
+    elseif spell:IsVisible() then
         UIDropDownMenu_SetText(spellFrame.dropDown, TextShow)
     else 
         UIDropDownMenu_SetText(spellFrame.dropDown, TextHide)
@@ -431,7 +431,7 @@ local function RefreshSpells(panel)
     local spellIndex = 1
 
     for index, spell in ipairs(TeleporterGetSpells()) do
-        if TeleporterCanUseSpell(spell) or not HideUnknown then
+        if spell:CanUse() or not HideUnknown then
             if spell.zone ~= lastZone then            
                 if not ZoneLabels[zoneIndex] then
                     ZoneLabels[zoneIndex] = panel:CreateFontString(nil, nil, "GameFontWhite")

@@ -10,6 +10,7 @@ libs\LibStub\LibStub.lua
 libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
 libs\libdatabroker-1-1\LibDataBroker-1.1.lua
 libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+TeleporterSpell.lua
 TomeQuickMenu.lua
 TomeOfTeleportationSettings.lua
 TomeOfTeleportation.lua

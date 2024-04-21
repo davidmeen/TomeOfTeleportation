@@ -4,13 +4,6 @@
 -- Improve speed
 -- Optional compact UI
 
--- Low priority:
--- Better UI
--- Proper options dialog
-
--- Bugs
--- Flat theme missing backdrop
-
 local AddonName = "TomeOfTeleportation"
 local AddonTitle = "Tome of Teleportation"
 -- Special case strings start with number to force them to be sorted first.
@@ -48,45 +41,11 @@ local SortUpIconOffset = 0
 local SortDownIconOffset = 0
 local AddItemButton = nil
 local AddSpellButton = nil
-local DebugMode = nil
 local DebugUnsupported = nil
 local ChosenHearth = nil
 local IsRefreshing = nil
 
 TomeOfTele_ShareOptions = true
-
--- I'm not going to attempt any prefixes with different character sets. I may have missed some variations.
--- Some of these are odd - inconsistent translations in-game?
-local HiddenPrefixes = 
-{
-	-- German
-	"Pfad der ",
-	"Pfad des ",
-	-- English
-	"Path of the ",
-	"Path of ",
-	-- Spanish
-	"Camino de los  ",
-	"Senda de ",
-	"Senda de las ",
-	"Senda de los ",
-	"Senda del ",
-	-- French
-	"Chemin du ",
-	"Voie de ",
-	"Voie des ",
-	"Voie du ",
-	-- Italian
-	"Sentiero del ",
-	"Via degli ",
-	"Via dei ",
-	"Via del ",
-	"Via dell'",
-	-- Brazilian Portugese
-	"Caminho da ",
-	"Caminho do ",
-	"Caminho dos ",
-}
 
 BINDING_NAME_TOMEOFTELEPORTATION = "Tome of Teleportation"
 
@@ -110,11 +69,6 @@ local InvTypeToSlot =
 	["INVTYPE_WEAPONMAINHAND"] = 16,
 	["INVTYPE_TABARD"] = 19
 }
-
-
-local ST_Item = 1
-local ST_Spell = 2
-local ST_Challenge = 3
 
 local SortByDestination = 1
 local SortByType = 2
@@ -206,67 +160,6 @@ local Themes =
 	["Flat"] = FlatTheme,
 	["Wide Buttons"] = WideTheme
 }
-
-function TeleporterCreateSpell(id, dest)
-	local spell = {}
-	spell.spellId = id
-	spell.spellType = ST_Spell
-	spell.zone = dest
-	return spell
-end
-
-function TeleporterCreateItem(id, dest)
-	local spell = {}
-	spell.spellId = id
-	spell.spellType = ST_Item
-	spell.zone = dest
-	return spell
-end
-
-function TeleporterCreateChallengeSpell(id, dungeon)
-	local spell = {}
-	spell.spellId = id
-	spell.spellType = ST_Challenge
-	spell.dungeon = dungeon
-	return spell
-end
-
-function TeleporterCreateConditionalItem(id, condition, dest)
-	local spell = {}
-	spell.spellId = id
-	spell.spellType = ST_Item
-	spell.condition = condition
-	spell.zone = dest
-	return spell
-end
-
-function TeleporterCreateConditionalSpell(id, condition, dest)
-	local spell = {}
-	spell.spellId = id
-	spell.spellType = ST_Spell
-	spell.condition = condition
-	spell.zone = dest
-	return spell
-end
-
-function TeleporterCreateConditionalConsumable(id, condition, dest)
-	local spell = {}
-	spell.spellId = id
-	spell.spellType = ST_Item
-	spell.condition = condition
-	spell.zone = dest
-	spell.consumable = true
-	return spell
-end
-
-function TeleporterCreateConsumable(id, dest)
-	local spell = {}
-	spell.spellId = id
-	spell.spellType = ST_Item
-	spell.zone = dest
-	spell.consumable = true
-	return spell
-end
 
 ---------------------------------------------------------------
 
@@ -389,10 +282,6 @@ function TeleporterSetOption(option, value)
 	if not isSame then
 		SetOption(option, value)
 	end
-end
-
-local function GetOptionId(spell)
-	return spell.spellId .. "." .. spell.zone
 end
 
 function Teleporter_OnEvent(self, event, ...)
@@ -754,15 +643,15 @@ local function SortSpells(spell1, spell2, sortType)
 	local zone2 = spell2.zone
 
 	if GetOption("groupDungeons") then
-		if spellType1 == ST_Challenge then zone1 = DungeonsTitle end
-		if spellType2 == ST_Challenge then zone2 = DungeonsTitle end
+		if spell1:IsDungeonSpell() then zone1 = DungeonsTitle end
+		if spell2:IsDungeonSpell() then zone2 = DungeonsTitle end
 	end
 	
 	local so = GetOption("sortOrder") or {}
 	
 	if sortType == SortCustom then
-		local optId1 = GetOptionId(spell1)
-		local optId2 = GetOptionId(spell2)
+		local optId1 = spell1:GetOptionId()
+		local optId2 = spell2:GetOptionId()
 		-- New spells always sort last - not ideal, but makes it easier to have a deterministic sort.
 		if so[optId1] and so[optId2] then
 			return so[optId1] < so[optId2]			
@@ -784,166 +673,11 @@ local function SortSpells(spell1, spell2, sortType)
 	return spellName1 < spellName2
 end
 
-function TeleporterIsSpellVisible(spell)
-	local showSpells = GetOption("showSpells")
-	local visible = showSpells[GetOptionId(spell)]
-	if visible ~= nil then
-		return visible
-	else
-		return true
-	end
-end
-
-function TeleporterIsSpellAlwaysVisible(spell)
-	local showSpells = GetOption("alwaysShowSpells")
-	if not showSpells then
-		return false
-	end
-	local visible = showSpells[GetOptionId(spell)]
-	if visible ~= nil then
-		return visible
-	else
-		return false
-	end
-end
-
-
- function TeleporterSetSpellVisible(spell)
-	local showSpells = GetOption("showSpells")
-	local alwaysShowSpells = GetOption("alwaysShowSpells")
-
-	if not showSpells then showSpells = {} end
-	if not alwaysShowSpells then alwaysShowSpells = {} end
-
-	showSpells[GetOptionId(spell)] = true
-	alwaysShowSpells[GetOptionId(spell)] = false
-
-	SetOption("showSpells", showSpells)
-	SetOption("alwaysShowSpells", alwaysShowSpells)
-end
-
- function TeleporterSetSpellAlwaysVisible(spell)
-	local showSpells = GetOption("showSpells")
-	local alwaysShowSpells = GetOption("alwaysShowSpells")
-
-	if not showSpells then showSpells = {} end
-	if not alwaysShowSpells then alwaysShowSpells = {} end
-
-	showSpells[GetOptionId(spell)] = true
-	alwaysShowSpells[GetOptionId(spell)] = true
-
-	SetOption("showSpells", showSpells)
-	SetOption("alwaysShowSpells", alwaysShowSpells)
-end
-
- function TeleporterSetSpellHidden(spell)
-	local showSpells = GetOption("showSpells")
-	local alwaysShowSpells = GetOption("alwaysShowSpells")
-
-	if not showSpells then showSpells = {} end
-	if not alwaysShowSpells then alwaysShowSpells = {} end
-
-	showSpells[GetOptionId(spell)] = false
-	alwaysShowSpells[GetOptionId(spell)] = false
-
-	SetOption("showSpells", showSpells)
-	SetOption("alwaysShowSpells", alwaysShowSpells)
-end
-
-
-local function IsSeasonDungeon(spell)
-	-- Dragonflight Season 4
-	return spell.dungeon == "The Azure Vault" or
-	spell.dungeon == "Algeth'ar Academy" or
-	spell.dungeon == "The Nokhud Offensive" or
-	spell.dungeon == "Ruby Life Pools" or
-	spell.dungeon == "Neltharus" or
-	spell.dungeon == "Halls of Infusion" or
-	spell.dungeon == "Brackenhide Hollow" or
-	spell.dungeon == "Uldaman: Legacy of Tyr" or
-	spell.dungeon == "Aberrus" or
-	spell.dungeon == "Vault of the Incarnates" or
-	spell.dungeon == "Amirdrassil"
-end
-
-
-local function CanUseSpell(spell)
-	local spellId = spell.spellId
-	local spellType = spell.spellType
-	local isItem = (spellType == ST_Item)
-	local condition = spell.condition
-	local consumable = spell.consumable
-	local itemTexture = nil
-
-	if TeleporterIsSpellAlwaysVisible(spell) then
-		return true
-	end
-	
-	local haveSpell = false
-	local haveToy = false
-	local toyUsable =  false
-	if C_ToyBox then
-		toyUsable = C_ToyBox.IsToyUsable(spellId)
-	end
-	-- C_ToyBox.IsToyUsable returns nil if the toy hasn't been loaded yet.
-	if toyUsable == nil then		
-		toyUsable = true
-	end
-	if isItem then		
-		if toyUsable then
-			haveToy = PlayerHasToy(spellId) and toyUsable
-		end
-		haveSpell = GetItemCount( spellId ) > 0 or haveToy
-	else
-		haveSpell = IsSpellKnown( spellId )
-	end
-	
-	if condition and not CustomizeSpells then
-		if not condition() then
-			haveSpell = false
-		end
-	end
-	
-	if DebugMode then
-		haveSpell = true
-	end
-	
-	if GetOption("hideItems") and spellType == ST_Item then
-		haveSpell = false
-	end
-	
-	if GetOption("hideConsumable") and consumable then
-		haveSpell = false
-	end
-	
-	if GetOption("hideSpells") and spellType == ST_Spell then
-		haveSpell = false
-	end
-	
-	if GetOption("hideChallenge") and spellType == ST_Challenge then
-		haveSpell = false
-	end
-
-	if GetOption("seasonOnly") and spellType == ST_Challenge and not IsSeasonDungeon(spell) then
-		haveSpell = false
-	end
-	
-	if not CustomizeSpells and not TeleporterIsSpellVisible(spell) then
-		haveSpell = false
-	end
-	
-	return haveSpell
-end
-
-function TeleporterCanUseSpell(spell)
-	return CanUseSpell(spell)
-end
-
 
 local function SetupSpells()
 	local loaded = true
 	for index, spell in ipairs(TeleporterSpells) do		
-		if spell.spellType == ST_Item then
+		if spell:IsItem() then
 			spell.spellName = GetCachedItemInfo( spell.spellId )
 		else
 			spell.spellName = GetSpellInfo( spell.spellId)
@@ -954,12 +688,12 @@ local function SetupSpells()
 				print(spell.spellType .. " " .. spell.spellId)
 			end
 			spell.spellName = "<Loading>"
-			if CanUseSpell(spell) then
+			if spell:CanUse() then
 				loaded = false
 			end
 		end
 		
-		spell.isItem = spell.spellType == ST_Item
+		spell.isItem = spell:IsItem()
 	end
 	
 	return loaded
@@ -1224,7 +958,7 @@ function TeleporterUpdateButton(button)
 
 		if CustomizeSpells then
 			local alpha = 1
-			if not TeleporterIsSpellVisible(spell) then
+			if not spell:IsVisible() then
 				alpha = 0.5
 			end
 			button.backdrop:SetBackdropColor(GetOption("disabledColourR"), GetOption("disabledColourG"), GetOption("disabledColourB"), alpha)
@@ -1301,7 +1035,7 @@ local function ApplyResort()
 	local newSo = {}
 	
 	for index, spell in ipairs(TeleporterSpells) do		
-		local optId = GetOptionId(spell)
+		local optId = spell:GetOptionId()
 		newSo[optId] = index
 	end
 		
@@ -1319,21 +1053,21 @@ end
 
 local function OnClickShow(spell)
 	local showSpells = GetOption("showSpells")
-	showSpells[GetOptionId(spell)] = not TeleporterIsSpellVisible(spell)
+	showSpells[spell:GetOptionId()] = not spell:IsVisible()
 end
 
 local function OnClickSortUp(spell)
 	RebuildCustomSort()
 	
 	local so = GetOption("sortOrder")
-	local id = GetOptionId(spell)	
+	local id = spell:GetOptionId()	
 	if so[id] and so[id] > 1 then
 		local potentialPos = so[id] - 1
 		while potentialPos > 0 do
 			local spellToSwap = TeleporterSpells[potentialPos]
 			TeleporterSpells[potentialPos] = spell
 			TeleporterSpells[potentialPos+1] = spellToSwap
-			if CanUseSpell(spellToSwap) then
+			if spellToSwap:CanUse() then
 				break
 			end
 			potentialPos = potentialPos - 1
@@ -1351,7 +1085,7 @@ function RenormalizeCustomSort()
 	local so = GetOption("sortOrder")
 
 	for i = 1, #TeleporterSpells do
-		local id = GetOptionId(TeleporterSpells[i])
+		local id = TeleporterSpells[i]:GetOptionId()
 		so[id] = i
 	end
 
@@ -1362,8 +1096,8 @@ function TeleporterMoveSpellBefore(movingSpell, destSpell)
 	RebuildCustomSort()
 	
 	local so = GetOption("sortOrder")
-	local movingId = GetOptionId(movingSpell)
-	local destId = GetOptionId(destSpell)	
+	local movingId = movingSpell:GetOptionId()
+	local destId = destSpell:GetOptionId()	
 	
 	so[movingId] = so[destId] - 0.5
 	
@@ -1374,8 +1108,8 @@ function TeleporterMoveSpellAfter(movingSpell, destSpell)
 	RebuildCustomSort()
 	
 	local so = GetOption("sortOrder")
-	local movingId = GetOptionId(movingSpell)	
-	local destId = GetOptionId(destSpell)	
+	local movingId = movingSpell:GetOptionId()	
+	local destId = destSpell:GetOptionId()	
 	
 	so[movingId] = so[destId] + 0.5
 	
@@ -1392,14 +1126,14 @@ local function OnClickSortDown(spell)
 	RebuildCustomSort()
 	
 	local so = GetOption("sortOrder")
-	local id = GetOptionId(spell)	
+	local id = spell:GetOptionId()	
 	if so[id] and so[id] < #TeleporterSpells then
 		local potentialPos = so[id] + 1
 		while potentialPos <= #TeleporterSpells do
 			local spellToSwap = TeleporterSpells[potentialPos]
 			TeleporterSpells[potentialPos] = spell
 			TeleporterSpells[potentialPos-1] = spellToSwap
-			if CanUseSpell(spellToSwap) then
+			if spellToSwap:CanUse() then
 				break
 			end
 			potentialPos = potentialPos + 1
@@ -1420,7 +1154,7 @@ local function OnClickRemove(spell)
 		button1 = "Yes",
 		button2 = "No",
 		OnAccept = function() 
-			if spell.spellType == ST_Item then
+			if spell:IsItem() then
 				GetOption("extraItems")[spell.spellId] = nil
 			else
 				GetOption("extraSpells")[spell.spellId] = nil
@@ -1687,7 +1421,7 @@ local function FindValidSpells()
 	for index, spell in ipairs(TeleporterSpells) do		
 		local spellId = spell.spellId
 		local spellType = spell.spellType
-		local isItem = (spellType == ST_Item)
+		local isItem = spell:IsItem()
 		local spellName = spell.spellName
 		local isValidSpell = true
 		
@@ -1705,7 +1439,7 @@ local function FindValidSpells()
 			spell.displayDestination = MINIMAP_TRACKING_FLIGHTMASTER
 		end
 
-		if spell.spellType == ST_Challenge and GetOption("groupDungeons") then
+		if spell:IsDungeonSpell() and GetOption("groupDungeons") then
 			spell.displayDestination = DungeonsTitle
 		end
 
@@ -1721,7 +1455,7 @@ local function FindValidSpells()
 			end
 		end
 		
-		local haveSpell = isValidSpell and CanUseSpell(spell)	
+		local haveSpell = isValidSpell and spell:CanUse()
 
 		spell.toySpell = nil
 		if isItem then
@@ -1736,19 +1470,6 @@ local function FindValidSpells()
 	end
 	
 	return validSpells
-end
-
-local function CleanupName(name, spellType)
-	local hide = GetOption("hidePrefixes")
-	if (hide == 1 or hide == "1") and spellType == ST_Challenge then
-		for index, prefix in pairs(HiddenPrefixes) do
-			local foundIndex = strfind(name, prefix)
-			if foundIndex == 1 then
-				name = strsub(name, strlen(prefix))
-			end
-		end
-	end
-	return name
 end
 
 function TeleporterSortSpells()
@@ -1855,11 +1576,11 @@ function TeleporterOpenFrame()
 		for index, spell in ipairs(validSpells) do
 			local spellId = spell.spellId
 			local spellType = spell.spellType
-			local isItem = (spellType == ST_Item)
+			local isItem = spell:IsItem()
 			local destination = spell.displayDestination
 			local consumable = spell.consumable
 			local spellName = spell.spellName
-			local displaySpellName = CleanupName(spellName, spellType)
+			local displaySpellName = spell:CleanupName(spellName, spellType)
 			local itemTexture = spell.itemTexture
 			local toySpell = spell.toySpell
 			
@@ -1880,7 +1601,7 @@ function TeleporterOpenFrame()
 					newColumn = true
 				end
 
-				if spellType == ST_Challenge and ShowDungeonNames and spell.dungeon then
+				if spell:IsDungeonSpell() and ShowDungeonNames and spell.dungeon then
 					displaySpellName = spell.dungeon
 				end
 				
@@ -2127,7 +1848,7 @@ end
 local function CacheItems()
 	TomeOfTele_DevCache = {}
 	for index, spell in ipairs(TeleporterSpells) do		
-		if spell.spellType == ST_Item then
+		if spell:IsItem() then
 			local item = Item:CreateFromItemID(spell.spellId)
 			item:ContinueOnItemLoad(function()
 				TomeOfTele_DevCache[spell.spellId] = {GetItemInfo(spell.spellId)}
@@ -2172,7 +1893,7 @@ function TeleporterSlashCmdFunction(args)
 	elseif splitArgs[1] == "cache" then
 		CacheItems()
 	elseif splitArgs[1] == "debug" then
-		DebugMode = 1
+		TeleporterDebugMode = 1
 	elseif splitArgs[1] == "debugunsupported" then
 		DebugUnsupported = 1
 	elseif splitArgs[1] == nil then
@@ -2330,7 +2051,7 @@ function Teleporter_OnAddonLoaded()
 	for index, spell in ipairs(TeleporterSpells) do		
 		local spellId = spell.spellId
 		local spellType = spell.spellType
-		local isItem = (spellType == ST_Item)
+		local isItem = spell:IsItem()
 		if isItem and C_ToyBox then
 			-- Query this early so it will be ready when we need it.
 			C_ToyBox.IsToyUsable(spellId)			
@@ -2453,18 +2174,6 @@ function TeleporterAddTheme(name, theme)
 	Themes[name] = theme
 end
 
-function TeleporterAddSpell(id, dest)
-	if dest then
-		TeleporterSpells[#TeleporterSpells + 1] = {spellId = id, spellType = ST_Spell, zone = dest}
-	end
-end
-
-function TeleporterAddItem(id, dest)
-	if dest then
-		TeleporterSpells[#TeleporterSpells + 1] = {spellId = id, spellType = ST_Item, zone = dest}
-	end
-end
-
 function TeleporterIsUnsupportedItem(spell)
 	return false
 end
@@ -2499,20 +2208,20 @@ function TeleporterTest_GetButtonSettingsFromFrame(button)
 	return ButtonSettings[button]
 end
 
-function TeleporterTest_GetButtonSettingsFromId(id, type)
+function TeleporterTest_GetButtonSettingsFromId(id, isItem)
 	for frame, button in pairs(ButtonSettings) do
-		if button.spellType == type and button.spellId == id then
+		if button.spell:IsItem() == isItem and button.spellId == id then
 			return button
 		end
 	end
 end
 
 function TeleporterTest_GetButtonSettingsFromItemId(id)
-	return TeleporterTest_GetButtonSettingsFromId(id, ST_Item) or TeleporterTest_GetButtonSettingsFromId(id, ST_Consumable)
+	return TeleporterTest_GetButtonSettingsFromId(id, true)
 end
 
 function TeleporterTest_GetButtonSettingsFromSpellId(id)	
-	return TeleporterTest_GetButtonSettingsFromId(id, ST_Spell) or TeleporterTest_GetButtonSettingsFromId(id, ST_Challenge)
+	return TeleporterTest_GetButtonSettingsFromId(id, false)
 end
 
 function TeleporterTest_Reset()
@@ -2535,7 +2244,7 @@ function TeleporterTest_Reset()
 	SortDownIconOffset = 0
 	AddItemButton = nil
 	AddSpellButton = nil
-	DebugMode = nil
+	TeleporterDebugMode = nil
 	DebugUnsupported = nil
 	ChosenHearth = nil
 	IsRefreshing = nil
