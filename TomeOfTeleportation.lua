@@ -640,8 +640,8 @@ local function SortSpells(spell1, spell2, sortType)
 	local spellName2 = spell2.spellName
 	local spellType1 = spell1.spellType
 	local spellType2 = spell2.spellType
-	local zone1 = spell1.zone
-	local zone2 = spell2.zone
+	local zone1 = spell1:GetZone()
+	local zone2 = spell2:GetZone()
 
 	if GetOption("groupDungeons") then
 		if spell1:IsDungeonSpell() then zone1 = DungeonsTitle end
@@ -1404,7 +1404,7 @@ local function GetRandomHearth(validSpells)
 	end
 	local hearthSpells = {}
 	for index, spell in ipairs(validSpells) do
-		if spell.zone == TeleporterHearthString then
+		if spell:GetZone() == TeleporterHearthString then
 			tinsert(hearthSpells, spell.spellId)
 		end
 	end
@@ -1425,9 +1425,10 @@ local function FindValidSpells()
 		local isItem = spell:IsItem()
 		local spellName = spell.spellName
 		local isValidSpell = true
+		local zone = spell:GetZone()
 		
-		spell.displayDestination = spell.zone
-		if spell.zone == TeleporterHearthString or spell.zone == TeleporterRecallString then
+		spell.displayDestination = zone
+		if zone == TeleporterHearthString or zone == TeleporterRecallString then
 			local bindLocation = GetBindLocation()
 			if bindLocation then
 				spell.displayDestination = "Hearth (" .. bindLocation .. ")"
@@ -1436,7 +1437,7 @@ local function FindValidSpells()
 			end
 		end
 					
-		if spell.zone == TeleporterFlightString then
+		if zone == TeleporterFlightString then
 			spell.displayDestination = MINIMAP_TRACKING_FLIGHTMASTER
 		end
 
@@ -1588,7 +1589,7 @@ function TeleporterOpenFrame()
 			local toySpell = spell.toySpell
 			
 			local haveSpell = true
-			if spell.zone == TeleporterHearthString and GetOption("randomHearth") then
+			if spell:GetZone() == TeleporterHearthString and GetOption("randomHearth") then
 				if spellId ~= onlyHearth and not CustomizeSpells then
 					haveSpell = false
 				end

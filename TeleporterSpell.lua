@@ -65,6 +65,7 @@ function TeleporterSpell:CleanupName()
 end
 
 function TeleporterSpell:GetOptionId()
+	-- Must use the original zone name here.
 	return self.spellId .. "." .. self.zone
 end
 
@@ -202,6 +203,24 @@ function TeleporterSpell:CanUse()
 	end
 	
 	return haveSpell
+end
+
+function TeleporterSpell:GetZone()
+	local zo = TeleporterGetOption("zoneOverrides") or {}
+	return zo[self:GetOptionId()] or self.zone
+end
+
+function TeleporterSpell:SetZone(zone)
+	self.zone = zone
+end
+
+function TeleporterSpell:OverrideZoneName(zone)
+	local zo = TeleporterGetOption("zoneOverrides") or {}
+	if zone == "" then
+		zone = nil
+	end
+	zo[self:GetOptionId()] = zone
+	TeleporterSetOption("zoneOverrides", zo)
 end
 
 

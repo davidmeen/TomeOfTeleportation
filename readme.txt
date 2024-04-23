@@ -25,14 +25,18 @@ Adding New Items or Spells
 
 Right click on the main window then select "Customize Spells and More Settings" then press the
 "-" button and select Customize Teleporters. On this screen press "Refresh Spell List." This 
-will let you add spells and items. To do this, you need to go to wowhead.com and get the spell or item
-id. For example, "Teleport: Moonglade" is at http://www.wowhead.com/spell=18960/teleport-moonglade
-which tells you the spell id is 18960.
+will let you add spells and items. using the controls at the bottom of the screen. To do this, 
+you need to go to wowhead.com and get the spell or item id. For example, "Teleport: Moonglade" 
+is at http://www.wowhead.com/spell=18960/teleport-moonglade which tells you the spell id is 18960.
 
 Customize Spells also lets you change the sort order by hovering over a spell and pressing the Move button.
 This will only be available when the sort order is set to Custom. You can also hide or show individual 
 spells. Using the Show Always option lets you work around bugs in the game that may make it think
 spells aren't available.
+
+While the cursor is over a spell press the "Set Zone" button to change how the spell is grouped.
+The new zone name will be taken from the Zone box at the bottom of the screen. If this is empty
+it will be placed back into its default group.
 
 Advanced Options
 ----------------

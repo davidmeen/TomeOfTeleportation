@@ -98,7 +98,7 @@ local function CreateDestination(zone, spells)
 	if zone then
 		for i, spell in ipairs(spells) do
 			if TeleporterIsUnsupportedItem(spell) ~= 1 then
-				spell.zone = zone
+				spell:SetZone(zone)
 				tinsert(TeleporterDefaultSpells, spell)
 			end
 		end

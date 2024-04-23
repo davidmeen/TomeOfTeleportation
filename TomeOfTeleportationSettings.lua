@@ -10,6 +10,8 @@ local BelowButton = nil
 local ResetSortButton = nil
 local MovingSpell = nil
 local SelectedSpell = nil
+local SetZoneButton = nil
+local NewSpellZoneFrame = nil
 
 SLASH_TELESETTINGS1 = "/telesettings"
 
@@ -432,14 +434,15 @@ local function RefreshSpells(panel)
 
     for index, spell in ipairs(TeleporterGetSpells()) do
         if spell:CanUse() or not HideUnknown then
-            if spell.zone ~= lastZone then            
+            local zone = spell:GetZone()
+            if zone ~= lastZone then            
                 if not ZoneLabels[zoneIndex] then
                     ZoneLabels[zoneIndex] = panel:CreateFontString(nil, nil, "GameFontWhite")
                 end
                 local zoneLabel = ZoneLabels[zoneIndex]
                 zoneIndex = zoneIndex + 1
 
-                zoneLabel:SetText(spell.zone)
+                zoneLabel:SetText(zone)
 
                 if p then
                     zoneLabel:SetPoint("TOPLEFT", p, "BOTTOMLEFT", 0, -15)
@@ -452,7 +455,7 @@ local function RefreshSpells(panel)
 
                 p = zoneLabel
             end
-            lastZone = spell.zone
+            lastZone = zone
                     
             if not SpellFrames[spellIndex] then
                 SpellFrames[spellIndex] = CreateSpellFrame(panel)
@@ -465,6 +468,7 @@ local function RefreshSpells(panel)
                 MoveButton:SetPoint("TOPLEFT", frame, "TOPLEFT", 360, 0)
                 AboveButton:SetPoint("TOPLEFT", frame, "TOPLEFT", 360, 0)
                 CancelMoveButton:SetPoint("TOPLEFT", frame, "TOPLEFT", 360, 0)
+                SetZoneButton:Show()                
                 SelectedSpell = spell
                 if MovingSpell then
                     ShowAboveAndBelowButtons()
@@ -492,8 +496,8 @@ local function CreateSpell(spellType, id, zone)
     elseif spellType == TextSpell then
         spell = TeleporterCreateSpell(id, zone)
     elseif spellType == TextDungeon then
-        spell = TeleporterChallengeCreateSpell(id, zone)
-        spell.zone = zone
+        spell = TeleporterCreateChallengeSpell(id, zone)
+        spell:SetZone(zone)
     elseif spellType == TextConsumable then
         spell = TeleporterCreateConsumable(id, zone)
     else
@@ -634,6 +638,19 @@ local function CreateSpellCustomiser(panel)
     end)
     ResetSortButton:SetEnabled(sortMode == 3)
 
+    SetZoneButton = CreateFrame( "Button", nil, scrollChild, "UIPanelButtonTemplate" )    
+    SetZoneButton:SetText("Set Zone")
+    SetZoneButton:SetPoint("TOPLEFT", MoveButton, "TOPRIGHT", 2, 0)
+    SetZoneButton:SetWidth(120)
+    SetZoneButton:Hide()
+    SetZoneButton:SetScript( "OnClick", function()
+        if NewSpellZoneFrame:GetText() == "" then
+            print("Resetting zone name. Use the zone box below to specify a new zone name.")
+        end
+        SelectedSpell:OverrideZoneName(NewSpellZoneFrame:GetText())
+        RefreshSpells(scrollChild)
+    end)
+
     -- New spell
     local newSpellTypeFrame = CreateFrame("Frame", nil, panel, "UIDropDownMenuTemplate")
     newSpellTypeFrame:SetPoint("BOTTOMLEFT", panel, "BOTTOMLEFT", 4, 4)
@@ -684,20 +701,20 @@ local function CreateSpellCustomiser(panel)
     zoneLabel:SetHeight(25)
     zoneLabel:SetText("Zone:")
 
-    local newSpellZoneFrame = CreateFrame("EditBox", nil, panel, "InputBoxTemplate")
-    newSpellZoneFrame:SetPoint("TOPLEFT", zoneLabel, "TOPRIGHT", 4, 0)
-    newSpellZoneFrame:SetPoint("BOTTOMLEFT", zoneLabel, "BOTTOMRIGHT", 4, 0)
-    newSpellZoneFrame:SetWidth(100)
-    newSpellZoneFrame:SetAutoFocus(false)
-    newSpellZoneFrame:SetMultiLine(false)
+    NewSpellZoneFrame = CreateFrame("EditBox", nil, panel, "InputBoxTemplate")
+    NewSpellZoneFrame:SetPoint("TOPLEFT", zoneLabel, "TOPRIGHT", 4, 0)
+    NewSpellZoneFrame:SetPoint("BOTTOMLEFT", zoneLabel, "BOTTOMRIGHT", 4, 0)
+    NewSpellZoneFrame:SetWidth(100)
+    NewSpellZoneFrame:SetAutoFocus(false)
+    NewSpellZoneFrame:SetMultiLine(false)
 
     local createButton = CreateFrame( "Button", nil, panel, "UIPanelButtonTemplate" )
-    createButton:SetPoint("TOPLEFT", newSpellZoneFrame, "TOPRIGHT", 4, 0)
-    createButton:SetPoint("BOTTOMLEFT", newSpellZoneFrame, "BOTTOMRIGHT", 4, 0)
+    createButton:SetPoint("TOPLEFT", NewSpellZoneFrame, "TOPRIGHT", 4, 0)
+    createButton:SetPoint("BOTTOMLEFT", NewSpellZoneFrame, "BOTTOMRIGHT", 4, 0)
     createButton:SetText("Create")
     createButton:SetWidth(150)
     createButton:SetScript( "OnClick", function()
-        CreateSpell(UIDropDownMenu_GetText(newSpellTypeFrame), newSpellIdFrame:GetText(), newSpellZoneFrame:GetText())
+        CreateSpell(UIDropDownMenu_GetText(newSpellTypeFrame), newSpellIdFrame:GetText(), NewSpellZoneFrame:GetText())
         RefreshSpells(scrollChild)
     end)
 
