@@ -15,25 +15,25 @@ local HiddenPrefixes =
 	"Path of ",
 	-- Spanish
 	"Camino de los  ",
-	"Senda de ",
 	"Senda de las ",
 	"Senda de los ",
 	"Senda del ",
+	"Senda de ",
 	-- French
 	"Chemin du ",
-	"Voie de ",
 	"Voie des ",
+	"Voie de ",
 	"Voie du ",
 	-- Italian
 	"Sentiero del ",
 	"Via degli ",
-	"Via dei ",
-	"Via del ",
 	"Via dell'",
+	"Via del ",
+	"Via dei ",
 	-- Brazilian Portugese
 	"Caminho da ",
-	"Caminho do ",
 	"Caminho dos ",
+	"Caminho do ",
 }
 
 local TeleporterSpell = {}
