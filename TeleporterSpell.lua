@@ -5,7 +5,7 @@ local ST_Challenge = 3
 
 -- I'm not going to attempt any prefixes with different character sets. I may have missed some variations.
 -- Some of these are odd - inconsistent translations in-game?
-local HiddenPrefixes = 
+local HiddenPrefixes =
 {
 	-- German
 	"Pfad der ",
@@ -53,7 +53,7 @@ end
 function TeleporterSpell:CleanupName()
 	local hide = TeleporterGetOption("hidePrefixes")
     local name = self.spellName
-	if (hide == 1 or hide == "1") and self:IsDungeonSpell() then
+	if hide and self:IsDungeonSpell() then
 		for index, prefix in pairs(HiddenPrefixes) do
 			local foundIndex = strfind(name, prefix)
 			if foundIndex == 1 then
@@ -148,7 +148,7 @@ function TeleporterSpell:CanUse()
 	if spell:IsAlwaysVisible() then
 		return true
 	end
-	
+
 	local haveSpell = false
 	local haveToy = false
 	local toyUsable =  false
@@ -156,10 +156,10 @@ function TeleporterSpell:CanUse()
 		toyUsable = C_ToyBox.IsToyUsable(spellId)
 	end
 	-- C_ToyBox.IsToyUsable returns nil if the toy hasn't been loaded yet.
-	if toyUsable == nil then		
+	if toyUsable == nil then
 		toyUsable = true
 	end
-	if isItem then		
+	if isItem then
 		if toyUsable then
 			haveToy = PlayerHasToy(spellId) and toyUsable
 		end
@@ -167,29 +167,29 @@ function TeleporterSpell:CanUse()
 	else
 		haveSpell = IsSpellKnown( spellId )
 	end
-	
+
 	if condition and not CustomizeSpells then
 		if not condition() then
 			haveSpell = false
 		end
 	end
-	
+
 	if TeleporterDebugMode then
 		haveSpell = true
 	end
-	
+
 	if TeleporterGetOption("hideItems") and isItem then
 		haveSpell = false
 	end
-	
+
 	if TeleporterGetOption("hideConsumable") and consumable then
 		haveSpell = false
 	end
-	
+
 	if TeleporterGetOption("hideSpells") and spell:IsSpell() then
 		haveSpell = false
 	end
-	
+
 	if TeleporterGetOption("hideChallenge") and spell:IsDungeonSpell() then
 		haveSpell = false
 	end
@@ -197,11 +197,11 @@ function TeleporterSpell:CanUse()
 	if TeleporterGetOption("seasonOnly") and spell:IsDungeonSpell() and not self:IsSeasonDungeon() then
 		haveSpell = false
 	end
-	
+
 	if not CustomizeSpells and not spell:IsVisible() then
 		haveSpell = false
 	end
-	
+
 	return haveSpell
 end
 
