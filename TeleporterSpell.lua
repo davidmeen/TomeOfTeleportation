@@ -5,7 +5,7 @@ local ST_Challenge = 3
 
 -- I'm not going to attempt any prefixes with different character sets. I may have missed some variations.
 -- Some of these are odd - inconsistent translations in-game?
-local HiddenPrefixes = 
+local HiddenPrefixes =
 {
 	-- German
 	"Pfad der ",
@@ -148,7 +148,7 @@ function TeleporterSpell:CanUse()
 	if spell:IsAlwaysVisible() then
 		return true
 	end
-	
+
 	local haveSpell = false
 	local haveToy = false
 	local toyUsable =  false
@@ -156,10 +156,10 @@ function TeleporterSpell:CanUse()
 		toyUsable = C_ToyBox.IsToyUsable(spellId)
 	end
 	-- C_ToyBox.IsToyUsable returns nil if the toy hasn't been loaded yet.
-	if toyUsable == nil then		
+	if toyUsable == nil then
 		toyUsable = true
 	end
-	if isItem then		
+	if isItem then
 		if toyUsable then
 			haveToy = PlayerHasToy(spellId) and toyUsable
 		end
@@ -167,29 +167,29 @@ function TeleporterSpell:CanUse()
 	else
 		haveSpell = IsSpellKnown( spellId )
 	end
-	
+
 	if condition and not CustomizeSpells then
 		if not condition() then
 			haveSpell = false
 		end
 	end
-	
+
 	if TeleporterDebugMode then
 		haveSpell = true
 	end
-	
+
 	if TeleporterGetOption("hideItems") and isItem then
 		haveSpell = false
 	end
-	
+
 	if TeleporterGetOption("hideConsumable") and consumable then
 		haveSpell = false
 	end
-	
+
 	if TeleporterGetOption("hideSpells") and spell:IsSpell() then
 		haveSpell = false
 	end
-	
+
 	if TeleporterGetOption("hideChallenge") and spell:IsDungeonSpell() then
 		haveSpell = false
 	end
@@ -197,11 +197,11 @@ function TeleporterSpell:CanUse()
 	if TeleporterGetOption("seasonOnly") and spell:IsDungeonSpell() and not self:IsSeasonDungeon() then
 		haveSpell = false
 	end
-	
+
 	if not CustomizeSpells and not spell:IsVisible() then
 		haveSpell = false
 	end
-	
+
 	return haveSpell
 end
 
@@ -226,18 +226,19 @@ end
 
 function TeleporterSpell:IsSeasonDungeon()
 	-- Dragonflight Season 4
-	return
-        self.dungeon == "The Azure Vault" or
-        self.dungeon == "Algeth'ar Academy" or
-        self.dungeon == "The Nokhud Offensive" or
-        self.dungeon == "Ruby Life Pools" or
-        self.dungeon == "Neltharus" or
-        self.dungeon == "Halls of Infusion" or
-        self.dungeon == "Brackenhide Hollow" or
-		self.dungeon == "Uldaman: Legacy of Tyr" or
-		self.dungeon == "Aberrus" or
-		self.dungeon == "Vault of the Incarnates" or
-		self.dungeon == "Amirdrassil"
+	return tContains({
+		2335,	-- The Azure Vault
+		2367,	-- Algeth'ar Academy
+		2378,	-- The Nokhud Offensive
+        2376,	-- Ruby Life Pools
+        2359,	-- Neltharus
+        2382,	-- Halls of Infusion
+        2380,	-- Brackenhide Hollow
+		2355,	-- Uldaman: Legacy of Tyr
+		2405,	-- Aberrus
+		2388,	-- Vault of the Incarnates
+		2502,	-- Amirdrassil
+	}, self.dungeonID)
 end
 
 -- Spell factories
@@ -259,12 +260,14 @@ function TeleporterCreateItem(id, dest)
 	return spell
 end
 
-function TeleporterCreateChallengeSpell(id, dungeon)
+-- dungeonID from: https://wowpedia.fandom.com/wiki/LfgDungeonID#Retail
+function TeleporterCreateChallengeSpell(id, dungeonID)
 	local spell = {}
     setmetatable(spell, {__index=TeleporterSpell})
 	spell.spellId = id
+	spell.dungeonID = dungeonID
 	spell.spellType = ST_Challenge
-	spell.dungeon = dungeon
+	spell.dungeon = GetLFGDungeonInfo(dungeonID)
 	return spell
 end
 
