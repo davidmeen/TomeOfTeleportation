@@ -224,16 +224,17 @@ function TeleporterSpell:OverrideZoneName(zone)
 end
 
 
+-- dungeonID from: https://wowpedia.fandom.com/wiki/LfgDungeonID#Retail
 function TeleporterSpell:IsSeasonDungeon()
 	-- Dragonflight Season 4
 	return tContains({
 		2335,	-- The Azure Vault
 		2367,	-- Algeth'ar Academy
 		2378,	-- The Nokhud Offensive
-        2376,	-- Ruby Life Pools
-        2359,	-- Neltharus
-        2382,	-- Halls of Infusion
-        2380,	-- Brackenhide Hollow
+		2376,	-- Ruby Life Pools
+		2359,	-- Neltharus
+		2382,	-- Halls of Infusion
+		2380,	-- Brackenhide Hollow
 		2355,	-- Uldaman: Legacy of Tyr
 		2405,	-- Aberrus
 		2388,	-- Vault of the Incarnates
