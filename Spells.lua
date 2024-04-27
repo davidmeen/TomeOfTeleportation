@@ -839,7 +839,7 @@ CreateDestination(
 CreateDestination(
 	LocZone("The Maw", 1543),
 	{
-		CreateConditionalConsumable(180817, function() return AtZone(MapIDMaw)() and not AtZone(MapIDKorthia)() end),	-- Cypher of Relocation
+		CreateConditionalConsumable(180817, function() return TeleporterGetOption("showInWrongZone") or (AtZone(MapIDMaw)() and not AtZone(MapIDKorthia)()) end),	-- Cypher of Relocation
 	})
 	
 CreateDestination(
