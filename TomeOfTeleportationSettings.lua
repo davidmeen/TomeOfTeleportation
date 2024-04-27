@@ -257,7 +257,7 @@ local function CreateSettings(panel)
     p = AddCheckOption("Show Spells Everywhere",    "showInWrongZone",      scrollChild, p)
     p = AddCheckOption("Close After Cast",          "closeAfterCast",       scrollChild, p)
     p = AddCheckOption("Show Title",                "showTitle",            scrollChild, p)
-    p = AddCheckOption("Hide Spell Prefixes",       "hidePrefixes",         scrollChild, p)
+    p = AddCheckOption("Concise Dungeon Spells",    "conciseDungeonSpells", scrollChild, p)
     p = AddCheckOption("Use Old Customizer",        "oldCustomizer",        scrollChild, p)
 
     p = AddSliderOption("Button Width",         "buttonWidth", 20, 400, 1,              scrollChild, p)
