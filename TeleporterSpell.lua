@@ -14,11 +14,11 @@ local HiddenPrefixes =
 	"Path of the ",
 	"Path of ",
 	-- Spanish
-	"Camino de los  ",
-	"Senda de ",
+	"Camino de los  ",	
 	"Senda de las ",
 	"Senda de los ",
 	"Senda del ",
+	"Senda de ",
 	-- French
 	"Chemin du ",
 	"Voie de ",
