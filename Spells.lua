@@ -485,7 +485,7 @@ CreateDestination(
 CreateDestination(
 	"Dragon Isles Raids",		-- No localization.
 	{
-		CreateChallengeSpell(393262, "Aberrus"),				-- Path of the Bitter Legacy
+		CreateChallengeSpell(432257, "Aberrus"),				-- Path of the Bitter Legacy
 		CreateChallengeSpell(432254, "Vault of the Incarnates"),-- Path of the Primal Prison
 		CreateChallengeSpell(432258, "Amirdrassil"),			-- Path of the Scorching Dream		
 	})
