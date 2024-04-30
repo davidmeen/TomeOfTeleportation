@@ -125,7 +125,7 @@ local DefaultOptions =
 	["sortDownIcon"] = "Interface/Icons/misc_arrowdown",
 	["showButtonIcon"] = "Interface/Icons/levelupicon-lfd",
 	["removeButtonIcon"] = "Interface/Icons/INV_Misc_Bone_Skull_03",
-	["hidePrefixes"] = 1
+	["conciseDungeonSpells"] = 1
 }
 
 -- Themes. For now there aren't many of these. Message me on curseforge.com

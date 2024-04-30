@@ -5,7 +5,7 @@ local ST_Challenge = 3
 
 -- I'm not going to attempt any prefixes with different character sets. I may have missed some variations.
 -- Some of these are odd - inconsistent translations in-game?
-local HiddenPrefixes =
+local RedundantStrings =
 {
 	-- German
 	"Pfad der ",
@@ -14,7 +14,7 @@ local HiddenPrefixes =
 	"Path of the ",
 	"Path of ",
 	-- Spanish
-	"Camino de los  ",	
+	"Camino de los  ",
 	"Senda de las ",
 	"Senda de los ",
 	"Senda del ",
@@ -34,6 +34,14 @@ local HiddenPrefixes =
 	"Caminho da ",
 	"Caminho do ",
 	"Caminho dos ",
+	-- Simplified Chinese
+	"之路",
+	-- Traditional Chinese
+	"之路",
+	"之道",
+	"之徑",
+	-- Korean
+	" 길",
 }
 
 local TeleporterSpell = {}
@@ -51,14 +59,11 @@ function TeleporterSpell:IsDungeonSpell()
 end
 
 function TeleporterSpell:CleanupName()
-	local hide = TeleporterGetOption("hidePrefixes")
-	local name = self.spellName
+	local hide = TeleporterGetOption("conciseDungeonSpells")
+    local name = self.spellName
 	if hide and hide ~= "0" and self:IsDungeonSpell() then
-		for index, prefix in pairs(HiddenPrefixes) do
-			local foundIndex = strfind(name, prefix)
-			if foundIndex == 1 then
-				name = strsub(name, strlen(prefix))
-			end
+		for index, str in pairs(RedundantStrings) do
+			name = name: gsub(str, "")
 		end
 	end
 	return name
