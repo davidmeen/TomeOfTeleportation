@@ -52,8 +52,8 @@ end
 
 function TeleporterSpell:CleanupName()
 	local hide = TeleporterGetOption("hidePrefixes")
-    local name = self.spellName
-	if (hide == 1 or hide == "1") and self:IsDungeonSpell() then
+	local name = self.spellName
+	if hide and hide ~= "0" and self:IsDungeonSpell() then
 		for index, prefix in pairs(HiddenPrefixes) do
 			local foundIndex = strfind(name, prefix)
 			if foundIndex == 1 then
