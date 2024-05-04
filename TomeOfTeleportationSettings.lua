@@ -43,13 +43,13 @@ local function CreateResetButton(title, optionName, parent, control)
 	resetButton:SetPoint( "TOPLEFT", title, "TOPRIGHT", ControlWidth + 4,  4)
     resetButton:SetPoint( "BOTTOMLEFT", title, "BOTTOMRIGHT", ControlWidth + 4,  -4)
 	resetButton:SetWidth( 80 )
-    resetButton:SetScript( "OnClick", 
+    resetButton:SetScript( "OnClick",
         function()
             TeleporterSetOption(optionName, nil)
             control.loadValue()
             control.updateResetButton()
         end )
-    
+
     control.resetButton = resetButton
     control.updateResetButton = function()
         if TeleporterIsOptionModified(optionName) then
@@ -58,7 +58,7 @@ local function CreateResetButton(title, optionName, parent, control)
             resetButton:Disable()
         end
     end
-	
+
     return resetButton
 end
 
@@ -74,11 +74,16 @@ local function AddStringOption(text, optionName, parent, previous)
 
     local newControl = {}
     newControl.loadValue = function()
-        editFrame:SetText(TeleporterGetOption(optionName))
-    end    
+        local optionValue = TeleporterGetOption(optionName)
+        if optionValue then
+            editFrame:SetText(optionValue)
+        else
+            editFrame:SetText("")
+        end
+    end
     tinsert(SettingControls, newControl)
 
-    CreateResetButton(title, optionName, parent, newControl)    
+    CreateResetButton(title, optionName, parent, newControl)
 
     editFrame:SetScript("OnTextChanged", function(self, userInput)
         if userInput then
@@ -86,7 +91,7 @@ local function AddStringOption(text, optionName, parent, previous)
             newControl.updateResetButton()
         end
     end)
-    
+
     return title
 end
 
@@ -96,9 +101,9 @@ local function AddSliderOption(text, optionName, min, max, delta, parent, previo
     if not offset then
         offset = 0
     end
-    
+
     local title = CreateText(text, optionName, parent, previous)
-    
+
     local sliderFrame = CreateFrame("Slider", "slider" .. optionName, parent, "OptionsSliderTemplate")
     sliderFrame:SetPoint("TOPLEFT", title, "TOPRIGHT", offset, 4)
     sliderFrame:SetPoint("BOTTOMLEFT", title, "BOTTOMLEFT", offset, -4)
@@ -137,41 +142,41 @@ local function AddSliderOption(text, optionName, min, max, delta, parent, previo
     newControl.loadValue = function()
         updateDisplay()
         sliderFrame:SetValue(TeleporterGetOption(optionName))
-    end    
+    end
     tinsert(SettingControls, newControl)
 
-    CreateResetButton(title, optionName, parent, newControl)    
+    CreateResetButton(title, optionName, parent, newControl)
 
     sliderFrame:SetScript("OnValueChanged", function()
         TeleporterSetOption(optionName, sliderFrame:GetValue())
         updateDisplay()
         newControl.updateResetButton()
-    end)    
-    
+    end)
+
     return title
 end
 
 local function AddCheckOption(text, optionName, parent, previous)
     local title = CreateText(text, optionName, parent, previous)
     title:SetHeight(20)
-    
+
     local checkFrame = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
     checkFrame:SetPoint("TOPLEFT", title, "TOPRIGHT", 0, 4)
-    checkFrame:SetPoint("BOTTOMLEFT", title, "BOTTOMLEFT", 0, -4)    
-    
+    checkFrame:SetPoint("BOTTOMLEFT", title, "BOTTOMLEFT", 0, -4)
+
     local newControl = {}
     newControl.loadValue = function()
         checkFrame:SetChecked(TeleporterGetOption(optionName))
-    end    
+    end
     tinsert(SettingControls, newControl)
 
-    CreateResetButton(title, optionName, parent, newControl)    
+    CreateResetButton(title, optionName, parent, newControl)
 
     checkFrame:SetScript("OnClick", function()
         TeleporterSetOption(optionName, checkFrame:GetChecked())
         newControl.updateResetButton()
     end)
-    
+
     return title
 end
 
@@ -220,12 +225,12 @@ local function CreateSettings(panel)
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
     scrollFrame:SetPoint("TOPLEFT", 3, -4)
     scrollFrame:SetPoint("BOTTOMRIGHT", -27, 4)
-    
-    local scrollChild = CreateFrame("Frame", nil, panel)    
+
+    local scrollChild = CreateFrame("Frame", nil, panel)
     scrollFrame:SetScrollChild(scrollChild)
-    scrollChild:SetHeight(1)     
+    scrollChild:SetHeight(1)
     panel.scrollChild = scrollChild
-    
+
     local p = nil
 
     p = CreateText("Theme", "theme", scrollChild, p)
@@ -261,17 +266,17 @@ local function CreateSettings(panel)
     p = AddCheckOption("Use Old Customizer",        "oldCustomizer",        scrollChild, p)
 
     p = AddSliderOption("Button Width",         "buttonWidth", 20, 400, 1,              scrollChild, p)
-    p = AddSliderOption("Button Height",        "buttonHeight", 20, 200, 1,             scrollChild, p)  
-    p = AddSliderOption("Label Height",         "labelHeight", 10, 50, 1,               scrollChild, p)  
-    p = AddSliderOption("Maximum Height",       "maximumHeight", 100, 1000, 10,         scrollChild, p)  
-    p = AddSliderOption("Height Scale",         "heightScalePercent", 100, 300, 50,     scrollChild, p)  
-    p = AddSliderOption("Font Height",          "fontHeight", 5, 30, 1,                 scrollChild, p)  
-    p = AddSliderOption("Button Inset",         "buttonInset", 1, 20, 1,                scrollChild, p)  
-    p = AddSliderOption("Scale",                "scale", 0.6, 2, 0.1,                   scrollChild, p, true)  
-    p = AddStringOption("Background Texture",   "background",                           scrollChild, p)  
-    p = AddStringOption("Edge Texture",         "edge",                                 scrollChild, p)  
+    p = AddSliderOption("Button Height",        "buttonHeight", 20, 200, 1,             scrollChild, p)
+    p = AddSliderOption("Label Height",         "labelHeight", 10, 50, 1,               scrollChild, p)
+    p = AddSliderOption("Maximum Height",       "maximumHeight", 100, 1000, 10,         scrollChild, p)
+    p = AddSliderOption("Height Scale",         "heightScalePercent", 100, 300, 50,     scrollChild, p)
+    p = AddSliderOption("Font Height",          "fontHeight", 5, 30, 1,                 scrollChild, p)
+    p = AddSliderOption("Button Inset",         "buttonInset", 1, 20, 1,                scrollChild, p)
+    p = AddSliderOption("Scale",                "scale", 0.6, 2, 0.1,                   scrollChild, p, true)
+    p = AddStringOption("Background Texture",   "background",                           scrollChild, p)
+    p = AddStringOption("Edge Texture",         "edge",                                 scrollChild, p)
     p = AddSliderOption("Edge Size",            "frameEdgeSize", 0, 50, 1,              scrollChild, p)
-    p = AddColourOption("Background",           "background",                           scrollChild, true, p)    
+    p = AddColourOption("Background",           "background",                           scrollChild, true, p)
     p = AddStringOption("Title Background",     "titleBackground",                      scrollChild, p)
     p = AddStringOption("Title Font",           "titleFont",                            scrollChild, p)
     p = AddSliderOption("Title Width",          "titleWidth", 50, 400, 5,               scrollChild, p)
@@ -282,7 +287,7 @@ local function CreateSettings(panel)
     p = AddStringOption("Button Edge",          "buttonEdge",                           scrollChild, p)
     p = AddSliderOption("Button Edge Size",     "buttonEdgeSize", 0, 50, 1,             scrollChild, p)
     p = AddSliderOption("Button Tile Size",     "buttonTileSize", 1, 50, 1,             scrollChild, p)
-    
+
     p = AddColourOption("Ready Colour",         "readyColour",                          scrollChild, false, p)
     p = AddColourOption("Unequiped Colour",     "unequipedColour",                      scrollChild, false, p)
     p = AddColourOption("Cooldown Colour",      "cooldownColour",                       scrollChild, false, p)
@@ -337,7 +342,7 @@ local function CreateSpellFrame(parent)
     return spellFrame
 end
 
-local function RefreshSpellFrame(spellFrame, spell, parent, previous, refreshFunction)    
+local function RefreshSpellFrame(spellFrame, spell, parent, previous, refreshFunction)
     spellFrame.mainFrame:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, -15)
     spellFrame.mainFrame:SetWidth(600)
 
@@ -350,7 +355,7 @@ local function RefreshSpellFrame(spellFrame, spell, parent, previous, refreshFun
         UIDropDownMenu_SetText(spellFrame.dropDown, TextAlways)
     elseif spell:IsVisible() then
         UIDropDownMenu_SetText(spellFrame.dropDown, TextShow)
-    else 
+    else
         UIDropDownMenu_SetText(spellFrame.dropDown, TextHide)
     end
 
@@ -383,12 +388,12 @@ local function RefreshSpellFrame(spellFrame, spell, parent, previous, refreshFun
 end
 
 local function ShowAboveAndBelowButtons()
-    MoveButton:Hide()                
+    MoveButton:Hide()
 
     if TeleporterGetOption("sort") == 3 then
         AboveButton:SetEnabled(true)
         BelowButton:SetEnabled(true)
-        if SelectedSpell == MovingSpell then            
+        if SelectedSpell == MovingSpell then
             AboveButton:Hide()
             BelowButton:Hide()
             CancelMoveButton:Show()
@@ -410,7 +415,7 @@ local function ShowMoveButton()
     AboveButton:Hide()
     BelowButton:Hide()
     CancelMoveButton:Hide()
-    MoveButton:Show()    
+    MoveButton:Show()
 end
 
 -- Spells aren't loaded by default because creating the frames takes a long time.
@@ -435,7 +440,7 @@ local function RefreshSpells(panel)
     for index, spell in ipairs(TeleporterGetSpells()) do
         if spell:CanUse() or not HideUnknown then
             local zone = spell:GetZone()
-            if zone ~= lastZone then            
+            if zone ~= lastZone then
                 if not ZoneLabels[zoneIndex] then
                     ZoneLabels[zoneIndex] = panel:CreateFontString(nil, nil, "GameFontWhite")
                 end
@@ -456,19 +461,19 @@ local function RefreshSpells(panel)
                 p = zoneLabel
             end
             lastZone = zone
-                    
+
             if not SpellFrames[spellIndex] then
                 SpellFrames[spellIndex] = CreateSpellFrame(panel)
             end
             RefreshSpellFrame(SpellFrames[spellIndex], spell, panel, p, function() RefreshSpells(panel) end)
-            p = SpellFrames[spellIndex].mainFrame            
+            p = SpellFrames[spellIndex].mainFrame
             p:Show()
 
             p:SetScript("OnEnter", function(frame)
                 MoveButton:SetPoint("TOPLEFT", frame, "TOPLEFT", 360, 0)
                 AboveButton:SetPoint("TOPLEFT", frame, "TOPLEFT", 360, 0)
                 CancelMoveButton:SetPoint("TOPLEFT", frame, "TOPLEFT", 360, 0)
-                SetZoneButton:Show()                
+                SetZoneButton:Show()
                 SelectedSpell = spell
                 if MovingSpell then
                     ShowAboveAndBelowButtons()
@@ -477,7 +482,7 @@ local function RefreshSpells(panel)
             end)
             spellIndex = spellIndex + 1
         end
-    end    
+    end
 end
 
 local TextItem = "Item"
@@ -521,11 +526,11 @@ end
 local function CreateSpellCustomiser(panel)
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
     scrollFrame:SetPoint("TOPLEFT", 3, -80)
-    scrollFrame:SetPoint("RIGHT", -27, 4)    
-    
-    local scrollChild = CreateFrame("Frame", nil, panel)    
+    scrollFrame:SetPoint("RIGHT", -27, 4)
+
+    local scrollChild = CreateFrame("Frame", nil, panel)
     scrollFrame:SetScrollChild(scrollChild)
-    scrollChild:SetHeight(1)     
+    scrollChild:SetHeight(1)
     panel.scrollChild = scrollChild
 
     local beginButton = CreateFrame( "Button", nil, panel, "UIPanelButtonTemplate" )
@@ -584,28 +589,28 @@ local function CreateSpellCustomiser(panel)
     local sortMode = TeleporterGetOption("sort") or 1
     UIDropDownMenu_SetText(sortFrame, sortText[sortMode])
 
-    MoveButton = CreateFrame( "Button", nil, scrollChild, "UIPanelButtonTemplate" )    
+    MoveButton = CreateFrame( "Button", nil, scrollChild, "UIPanelButtonTemplate" )
     MoveButton:SetText("Move")
     MoveButton:SetWidth(140)
     MoveButton:SetEnabled(sortMode == 3)
     MoveButton:SetScript( "OnClick", function()
         MovingSpell = SelectedSpell
-        ShowAboveAndBelowButtons()                
+        ShowAboveAndBelowButtons()
         RefreshSpells(scrollChild)  -- Without this the button is unclickable for some reason
     end)
 
-    AboveButton = CreateFrame( "Button", nil, scrollChild, "UIPanelButtonTemplate" )    
+    AboveButton = CreateFrame( "Button", nil, scrollChild, "UIPanelButtonTemplate" )
     AboveButton:SetText("Above")
-    AboveButton:SetWidth(70)    
+    AboveButton:SetWidth(70)
     AboveButton:Hide()
     AboveButton:SetScript( "OnClick", function()
         TeleporterMoveSpellBefore(MovingSpell, SelectedSpell)
         MovingSpell = nil
-        ShowMoveButton()        
+        ShowMoveButton()
         RefreshSpells(scrollChild)  -- Without this the button is unclickable for some reason
     end)
 
-    BelowButton = CreateFrame( "Button", nil, scrollChild, "UIPanelButtonTemplate" )    
+    BelowButton = CreateFrame( "Button", nil, scrollChild, "UIPanelButtonTemplate" )
     BelowButton:SetText("Below")
     BelowButton:SetWidth(70)
     BelowButton:Hide()
@@ -617,7 +622,7 @@ local function CreateSpellCustomiser(panel)
         RefreshSpells(scrollChild)  -- Without this the button is unclickable for some reason
     end)
 
-    CancelMoveButton = CreateFrame( "Button", nil, scrollChild, "UIPanelButtonTemplate" )    
+    CancelMoveButton = CreateFrame( "Button", nil, scrollChild, "UIPanelButtonTemplate" )
     CancelMoveButton:SetText("Cancel Move")
     CancelMoveButton:SetWidth(140)
     CancelMoveButton:Hide()
@@ -628,7 +633,7 @@ local function CreateSpellCustomiser(panel)
         RefreshSpells(scrollChild)  -- Without this the button is unclickable for some reason
     end)
 
-    ResetSortButton = CreateFrame( "Button", nil, panel, "UIPanelButtonTemplate" )    
+    ResetSortButton = CreateFrame( "Button", nil, panel, "UIPanelButtonTemplate" )
     ResetSortButton:SetText("Reset Sort")
     ResetSortButton:SetWidth(100)
     ResetSortButton:SetPoint("TOPLEFT", sortFrame, "TOPRIGHT", 0, 0)
@@ -638,7 +643,7 @@ local function CreateSpellCustomiser(panel)
     end)
     ResetSortButton:SetEnabled(sortMode == 3)
 
-    SetZoneButton = CreateFrame( "Button", nil, scrollChild, "UIPanelButtonTemplate" )    
+    SetZoneButton = CreateFrame( "Button", nil, scrollChild, "UIPanelButtonTemplate" )
     SetZoneButton:SetText("Set Zone")
     SetZoneButton:SetPoint("TOPLEFT", MoveButton, "TOPRIGHT", 2, 0)
     SetZoneButton:SetWidth(120)
@@ -730,15 +735,15 @@ function TeleporterSettings_OnLoad()
 	TeleporterSettings.settingsPanel.name = "Tome of Teleportation"
     TeleporterSettings.settingsPanel.refresh = RefreshSettings
     CreateSettings(TeleporterSettings.settingsPanel)
-    InterfaceOptions_AddCategory(TeleporterSettings.settingsPanel)    
+    InterfaceOptions_AddCategory(TeleporterSettings.settingsPanel)
 
     TeleporterSettings.spellsPanel = CreateFrame("Frame")
 	TeleporterSettings.spellsPanel.name = "Customize Teleporters"
     TeleporterSettings.spellsPanel.parent = TeleporterSettings.settingsPanel.name
     CreateSpellCustomiser(TeleporterSettings.spellsPanel)
-    InterfaceOptions_AddCategory(TeleporterSettings.spellsPanel)    
+    InterfaceOptions_AddCategory(TeleporterSettings.spellsPanel)
 end
 
-function TeleporterOpenSettings()    
+function TeleporterOpenSettings()
     InterfaceOptionsFrame_OpenToCategory(TeleporterSettings.settingsPanel)
 end
