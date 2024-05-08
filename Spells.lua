@@ -70,6 +70,10 @@ local function IsRace(requiredRace)
 	end
 end
 
+local function IsDraenei()
+	return IsRace("Draenei")() or IsRace("LightforgedDraenei")()
+end
+
 local function HaveUpgradedZen()
 	return C_QuestLog.IsQuestFlaggedCompleted(40236)
 end
@@ -208,7 +212,7 @@ CreateDestination(
 		CreateItem(208704),				-- Deepdweller's Earthen Hearthstone
 		CreateItem(209035),				-- Hearthstone of the Flame
 		CreateItem(212337),				-- Stone of the Hearth
-		CreateItem(210455),				-- Draenic Hologem
+		CreateConditionalItem(210455, IsDraenei),	-- Draenic Hologem
 	})
 
 -- Any hearthstones that shouldn't be randomised.
