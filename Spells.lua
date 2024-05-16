@@ -685,6 +685,7 @@ CreateDestination(
 	{
 		CreateConditionalConsumable(87548, AtContinent(ContinentIdPandaria)), 	-- Lorewalker's Lodestone
 		CreateItem(87215),														-- Wormhole Generator: Pandaria
+		CreateConsumable(217930)												-- Nostwin's Voucher
 	})
 
 CreateDestination(
