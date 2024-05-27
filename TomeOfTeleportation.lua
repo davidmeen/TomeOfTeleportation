@@ -4,6 +4,9 @@
 -- Improve speed
 -- Optional compact UI
 
+-- Known issues:
+-- Overlapping buttons
+
 local AddonName = "TomeOfTeleportation"
 local AddonTitle = "Tome of Teleportation"
 -- Special case strings start with number to force them to be sorted first.
@@ -356,8 +359,19 @@ local function RebuildSpellList()
 
 	local extraSpellsAndItems = GetOption("extraSpellsAndItems")
 	if extraSpellsAndItems then
-		for id,spell in ipairs(extraSpellsAndItems) do
-			tinsert(TeleporterSpells, spell)
+		for index = #extraSpellsAndItems,1,-1 do
+			local spell = extraSpellsAndItems[index]
+			local isDuplicate = false
+			for id2, spell2 in ipairs(TeleporterSpells) do
+				if spell2:Equals(spell) then
+					isDuplicate = true
+					table.remove(extraSpellsAndItems, index)
+				end
+			end
+			if not isDuplicate then
+				TeleporterInitSpell(spell)
+				tinsert(TeleporterSpells, spell)
+			end
 		end
 	end
 end

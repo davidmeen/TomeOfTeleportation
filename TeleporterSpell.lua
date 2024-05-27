@@ -228,6 +228,9 @@ function TeleporterSpell:OverrideZoneName(zone)
 	TeleporterSetOption("zoneOverrides", zo)
 end
 
+function TeleporterSpell:Equals(other)
+	return ""..self.spellId == ""..other.spellId and self.spellType == other.spellType
+end
 
 -- dungeonID from: https://wowpedia.fandom.com/wiki/LfgDungeonID#Retail
 function TeleporterSpell:IsSeasonDungeon()
@@ -250,7 +253,7 @@ end
 -- Spell factories
 function TeleporterCreateSpell(id, dest)
 	local spell = {}
-    setmetatable(spell, {__index=TeleporterSpell})
+    TeleporterInitSpell(spell)
 	spell.spellId = id
 	spell.spellType = ST_Spell
 	spell.zone = dest
@@ -259,7 +262,7 @@ end
 
 function TeleporterCreateItem(id, dest)
 	local spell = {}
-    setmetatable(spell, {__index=TeleporterSpell})
+    TeleporterInitSpell(spell)
 	spell.spellId = id
 	spell.spellType = ST_Item
 	spell.zone = dest
@@ -269,7 +272,7 @@ end
 -- dungeonID from: https://wowpedia.fandom.com/wiki/LfgDungeonID#Retail
 function TeleporterCreateChallengeSpell(id, dungeonID)
 	local spell = {}
-    setmetatable(spell, {__index=TeleporterSpell})
+	TeleporterInitSpell(spell)
 	spell.spellId = id
 	spell.dungeonID = dungeonID
 	spell.spellType = ST_Challenge
@@ -279,7 +282,7 @@ end
 
 function TeleporterCreateConditionalItem(id, condition, dest)
 	local spell = {}
-    setmetatable(spell, {__index=TeleporterSpell})
+    TeleporterInitSpell(spell)
 	spell.spellId = id
 	spell.spellType = ST_Item
 	spell.condition = condition
@@ -289,7 +292,7 @@ end
 
 function TeleporterCreateConditionalSpell(id, condition, dest)
 	local spell = {}
-    setmetatable(spell, {__index=TeleporterSpell})
+    TeleporterInitSpell(spell)
 	spell.spellId = id
 	spell.spellType = ST_Spell
 	spell.condition = condition
@@ -299,7 +302,7 @@ end
 
 function TeleporterCreateConditionalConsumable(id, condition, dest)
 	local spell = {}
-    setmetatable(spell, {__index=TeleporterSpell})
+    TeleporterInitSpell(spell)
 	spell.spellId = id
 	spell.spellType = ST_Item
 	spell.condition = condition
@@ -310,10 +313,14 @@ end
 
 function TeleporterCreateConsumable(id, dest)
 	local spell = {}
-    setmetatable(spell, {__index=TeleporterSpell})
+    TeleporterInitSpell(spell)
 	spell.spellId = id
 	spell.spellType = ST_Item
 	spell.zone = dest
 	spell.consumable = true
 	return spell
+end
+
+function TeleporterInitSpell(spell)
+	setmetatable(spell, {__index=TeleporterSpell})
 end
