@@ -866,6 +866,7 @@ CreateDestination(
 	LocZone("Timeless Isle", 554),
 	{
 		CreateItem(103678),		-- Time-Lost Artifact
+		CreateItem(219222),		-- Time-Lost Artifact
 	})
 
 CreateDestination(
