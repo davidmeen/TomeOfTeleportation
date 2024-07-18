@@ -734,16 +734,28 @@ function TeleporterSettings_OnLoad()
     TeleporterSettings.settingsPanel = CreateFrame("Frame")
 	TeleporterSettings.settingsPanel.name = "Tome of Teleportation"
     TeleporterSettings.settingsPanel.refresh = RefreshSettings
+    TeleporterSettings.settingsPanel.OnCommit = TeleporterSettings.settingsPanel.okay;
+	TeleporterSettings.settingsPanel.OnDefault = TeleporterSettings.settingsPanel.default;
+	TeleporterSettings.settingsPanel.OnRefresh = TeleporterSettings.settingsPanel.refresh;
     CreateSettings(TeleporterSettings.settingsPanel)
-    InterfaceOptions_AddCategory(TeleporterSettings.settingsPanel)
+
+    local category = Settings.RegisterCanvasLayoutCategory(TeleporterSettings.settingsPanel, TeleporterSettings.settingsPanel.name, TeleporterSettings.settingsPanel.name);
+    category.ID = TeleporterSettings.settingsPanel.name;
+    Settings.RegisterAddOnCategory(category);
 
     TeleporterSettings.spellsPanel = CreateFrame("Frame")
 	TeleporterSettings.spellsPanel.name = "Customize Teleporters"
     TeleporterSettings.spellsPanel.parent = TeleporterSettings.settingsPanel.name
+    TeleporterSettings.spellsPanel.OnCommit = TeleporterSettings.spellsPanel.okay;
+	TeleporterSettings.spellsPanel.OnDefault = TeleporterSettings.spellsPanel.default;
+	TeleporterSettings.spellsPanel.OnRefresh = TeleporterSettings.spellsPanel.refresh;
     CreateSpellCustomiser(TeleporterSettings.spellsPanel)
-    InterfaceOptions_AddCategory(TeleporterSettings.spellsPanel)
+
+    local customizeName = "Customize Teleporters"
+    local subcategory = Settings.RegisterCanvasLayoutSubcategory(category, TeleporterSettings.spellsPanel, TeleporterSettings.spellsPanel.name, TeleporterSettings.spellsPanel.name);
+	subcategory.ID = TeleporterSettings.spellsPanel.name;
 end
 
 function TeleporterOpenSettings()
-    InterfaceOptionsFrame_OpenToCategory(TeleporterSettings.settingsPanel)
+    Settings.OpenToCategory(TeleporterSettings.settingsPanel.name);
 end

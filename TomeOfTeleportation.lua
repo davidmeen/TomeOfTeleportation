@@ -297,8 +297,14 @@ function Teleporter_OnEvent(self, event, ...)
 	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 		local player, guid, spell = ...
 		if player == "player" then
-			if GetSpellInfo(spell) == CastSpell then
-				TeleporterClose()
+			if C_Spell and C_Spell.GetSpellInfo then
+				if C_Spell.GetSpellInfo(spell).name == CastSpell then
+					TeleporterClose()
+				end
+			else
+				if GetSpellInfo(spell) == CastSpell then
+					TeleporterClose()
+				end
 			end
 		end
 	elseif event == "UNIT_INVENTORY_CHANGED" then
@@ -695,7 +701,11 @@ local function SetupSpells()
 		if spell:IsItem() then
 			spell.spellName = GetCachedItemInfo( spell.spellId )
 		else
-			spell.spellName = GetSpellInfo( spell.spellId)
+			if C_Spell and C_Spell.GetSpellInfo then
+				spell.spellName = C_Spell.GetSpellInfo( spell.spellId).name
+			else
+				spell.spellName = GetSpellInfo( spell.spellId)
+			end
 		end
 
 		if not spell.spellName then
@@ -925,7 +935,13 @@ function TeleporterUpdateButton(button)
 		if isItem then
 			cooldownStart, cooldownDuration = SafeGetItemCooldown(itemId)
 		else
-			cooldownStart, cooldownDuration = GetSpellCooldown(itemId)
+			if C_Spell and C_Spell.GetSpellCooldown then
+				local spellCooldownInfo = C_Spell.GetSpellCooldown(itemId);
+				cooldownStart = spellCooldownInfo.startTime
+				cooldownDuration = spellCooldownInfo.duration
+			else
+				cooldownStart, cooldownDuration = GetSpellCooldown(itemId)
+			end
 		end
 
 		if cooldownStart and cooldownStart > 0 then
@@ -1032,7 +1048,12 @@ function TeleporterShowItemTooltip( item, button )
 end
 
 function TeleporterShowSpellTooltip( item, button )
-	local link = GetSpellLink(item)
+	local link
+	if C_Spell and C_Spell.GetSpellLink then
+		link = C_Spell.GetSpellLink(item)
+	else
+		link = GetSpellLink(item)
+	end
 	if link then
 		GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")
 		GameTooltip:SetHyperlink(link)
@@ -1260,7 +1281,11 @@ local function ShowSelectDestinationUI(dialog, isItem)
 	if isItem then
 		name = GetCachedItemInfo(id)
 	else
-		name = GetSpellInfo(id)
+		if C_Spell and C_Spell.GetSpellInfo then
+			name = C_Spell.GetSpellInfo(id).name
+		else
+			name = GetSpellInfo(id)
+		end
 	end
 
 	if name then
@@ -1465,7 +1490,11 @@ local function FindValidSpells()
 				isValidSpell = false
 			end
 		else
-			_,_,spell.itemTexture = GetSpellInfo( spellId )
+			if C_Spell and C_Spell.GetSpellInfo then
+				spell.itemTexture = C_Spell.GetSpellInfo(spellId).iconID
+			else
+				_,_,spell.itemTexture = GetSpellInfo( spellId )
+			end
 			if not spellName then
 				isValidSpell = false
 			end
