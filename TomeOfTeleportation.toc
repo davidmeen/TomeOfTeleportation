@@ -7,6 +7,7 @@
 ## IconTexture: Interface\Icons\Spell_Arcane_TeleportDalaran
 
 libs\embeds.xml
+libs\LibDBIcon-1.0\lib.xml
 TeleporterSpell.lua
 TomeQuickMenu.lua
 TomeOfTeleportationSettings.lua
