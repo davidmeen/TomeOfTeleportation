@@ -179,7 +179,6 @@ CreateDestination(
 		CreateItem(93672),				-- Dark Portal
 		CreateItem(54452),				-- Ethereal Portal
 		CreateItem(6948 ),				-- Hearthstone
-		CreateItem(28585),				-- Ruby Slippers
 		CreateConsumable(37118),		-- Scroll of Recall
 		CreateConsumable(44314),		-- Scroll of Recall II
 		CreateConsumable(44315),		-- Scroll of Recall III
@@ -220,6 +219,8 @@ CreateDestination(
 	TeleporterRecallString,
 	{
 		CreateSpell(556),				-- Astral Recall (separate cooldown)
+		CreateItem(28585),				-- Ruby Slippers (needs to be equipped)
+		CreateItem(142298),				-- Astonishingly Scarlet Slippers (needs to be equipped)
 		CreateItem(169064),				-- Mountebank's Colorful Cloak (needs to be equipped)
 	})
 
@@ -444,6 +445,13 @@ CreateDestination(
 	})
 
 CreateDestination(
+	LocZone("Dornogal", 2339),
+	{
+		CreateSpell(446540),		-- Teleport: Dornogal
+		CreatePortalSpell(446534),	-- Portal: Dornogal
+	})
+
+CreateDestination(
 	LocZone("Draenor", 572),
 	{
 		CreateConditionalConsumable(117389, AtContinent(ContinentIdDraenor)), -- Draenor Archaeologist's Lodestone
@@ -590,6 +598,12 @@ CreateDestination(
 		CreateItem(22632),		-- Atiesh, Greatstaff of the Guardian
 		CreateItem(142469), 	-- Violet Seal of the Grand Magus
 		CreateChallengeSpell(373262, 175), -- Path of the Fallen Guardian		Karazhan
+	})
+
+CreateDestination(
+	LocZone("Khaz Algar", 2274),
+	{
+		CreateItem(221966),		-- Wormhole Generator: Khaz Algar
 	})
 
 CreateDestination(
