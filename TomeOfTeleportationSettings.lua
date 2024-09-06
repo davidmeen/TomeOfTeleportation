@@ -221,6 +221,28 @@ local function RefreshSettings()
     UIDropDownMenu_SetText(TeleporterThemeFrame, TeleporterGetOption("theme"))
 end
 
+local function ResetAll()
+    local dialogText = "Do you want to reset all settings to the defaults, including removing custom items? This will reload the UI."
+
+	StaticPopupDialogs["TELEPORTER_CONFIRM_RESETALL"] =
+	{
+		text = dialogText,
+		button1 = "Yes",
+		button2 = "No",
+		OnAccept = function()
+			TomeOfTele_Options = nil
+            TomeOfTele_ShareOptions = nil
+            TomeOfTele_OptionsGlobal = nil
+            TomeOfTele_IconGlobal = nil
+            ReloadUI()
+		end,
+		OnCancel = function() end,
+		hideOnEscape = true
+	}
+
+	StaticPopup_Show("TELEPORTER_CONFIRM_RESETALL")
+end
+
 local function CreateSettings(panel)
     local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
     scrollFrame:SetPoint("TOPLEFT", 3, -4)
@@ -250,6 +272,15 @@ local function CreateSettings(panel)
         end
     end)
     p:SetHeight(TeleporterThemeFrame:GetHeight())
+
+    local resetAllButton = CreateFrame( "Button", nil, panel, "UIPanelButtonTemplate" )
+    resetAllButton:SetPoint("TOPLEFT", TeleporterThemeFrame, "TOPRIGHT", 180, 0)
+    resetAllButton:SetText("Reset All")
+    resetAllButton:SetWidth(100)
+    resetAllButton:SetHeight(TeleporterThemeFrame:GetHeight())
+    resetAllButton:SetScript( "OnClick", function()
+        ResetAll()
+    end)
 
     p = AddCheckOption("All Covenant Hearthstones", "allCovenants",         scrollChild, p)
     p = AddCheckOption("Hide Items",                "hideItems",            scrollChild, p)
