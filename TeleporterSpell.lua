@@ -236,17 +236,14 @@ end
 function TeleporterSpell:IsSeasonDungeon()
 	-- Dragonflight Season 4
 	return tContains({
-		2335,	-- The Azure Vault
-		2367,	-- Algeth'ar Academy
-		2378,	-- The Nokhud Offensive
-		2376,	-- Ruby Life Pools
-		2359,	-- Neltharus
-		2382,	-- Halls of Infusion
-		2380,	-- Brackenhide Hollow
-		2355,	-- Uldaman: Legacy of Tyr
-		2405,	-- Aberrus
-		2388,	-- Vault of the Incarnates
-		2502,	-- Amirdrassil
+		2654,	-- Ara-Kara, City of Echoes
+		2652,	-- City of Threads
+		2693,	-- The Stonevault
+		2719,	-- The Dawnbreaker
+		2120,	-- Mists of Tirna Scithe
+		2123,	-- The Necrotic Wake
+		1700,	-- Siege of Boralus
+		304,	-- Grim Batol
 	}, self.dungeonID)
 end
 

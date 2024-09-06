@@ -212,6 +212,7 @@ CreateDestination(
 		CreateItem(209035),				-- Hearthstone of the Flame
 		CreateItem(212337),				-- Stone of the Hearth
 		CreateConditionalItem(210455, IsDraenei),	-- Draenic Hologem
+		CreateItem(228940),				-- Notorious Thread's Hearthstone
 	})
 
 -- Any hearthstones that shouldn't be randomised.
@@ -604,6 +605,22 @@ CreateDestination(
 	LocZone("Khaz Algar", 2274),
 	{
 		CreateItem(221966),		-- Wormhole Generator: Khaz Algar
+	})
+
+CreateDestination(
+	"War Within Dungeons",
+	{
+		CreateChallengeSpell(445416, 2652),	-- Path of Nerubian Ascension				City of Threads
+		CreateChallengeSpell(445269, 2693),	-- Path of the Corrupted Foundry			The Stonevault
+		CreateChallengeSpell(445414, 2719),	-- Path of the Arathi Flagship				The Dawnbreaker
+		CreateChallengeSpell(445418, 1700),	-- Path of the Besieged Harbor (Alliance)	Siege of Boralus
+		CreateChallengeSpell(445417, 2654),	-- Path of the Ruined City					Ara-Kara, City of Echoes
+		CreateChallengeSpell(445424, 304),	-- Path of the Twilight Fortress			Grim Batol
+		CreateChallengeSpell(445444, 2695),	-- Path of the Light's Reverence			Priory of the Sacred Flame
+		CreateChallengeSpell(464256, 1700),	-- Path of the Besieged Harbor (Horde)		Siege of Boralus
+		CreateChallengeSpell(445440, 2689),	-- Path of the Flaming Brewery				Cinderbrew Meadery
+		CreateChallengeSpell(445441, 2655),	-- Path of the Warding Candles				Darkflame Cleft
+		CreateChallengeSpell(445443, 2653),	-- Path of the Fallen Stormriders			The Rookery
 	})
 
 CreateDestination(
