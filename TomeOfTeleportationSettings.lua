@@ -295,6 +295,7 @@ local function CreateSettings(panel)
     p = AddCheckOption("Show Title",                "showTitle",            scrollChild, p)
     p = AddCheckOption("Concise Dungeon Spells",    "conciseDungeonSpells", scrollChild, p)
     p = AddCheckOption("Use Old Customizer",        "oldCustomizer",        scrollChild, p)
+    p = AddCheckOption("Show Search Box",           "showSearch",        scrollChild, p)
 
     p = AddSliderOption("Button Width",         "buttonWidth", 20, 400, 1,              scrollChild, p)
     p = AddSliderOption("Button Height",        "buttonHeight", 20, 200, 1,             scrollChild, p)

@@ -215,8 +215,24 @@ function TeleporterSpell:GetZone()
 	return zo[self:GetOptionId()] or self.zone
 end
 
-function TeleporterSpell:SetZone(zone)
+function TeleporterSpell:SetZone(zone, mapID)
 	self.zone = zone
+	if mapID then
+		local mapInfo = C_Map.GetMapInfo(mapID)
+		if mapInfo then
+			self.parentZones = {}
+			local parentMapID = mapInfo.parentMapID
+			while parentMapID ~= 0 do
+				mapInfo = C_Map.GetMapInfo(parentMapID)
+				if mapInfo then
+					tinsert(self.parentZones, string.lower(mapInfo.name))
+					parentMapID = mapInfo.parentMapID
+				else
+					parentMapID = 0
+				end
+			end
+		end
+	end
 end
 
 function TeleporterSpell:OverrideZoneName(zone)
@@ -230,6 +246,20 @@ end
 
 function TeleporterSpell:Equals(other)
 	return ""..self.spellId == ""..other.spellId and self.spellType == other.spellType
+end
+
+function TeleporterSpell:MatchesSearch(searchString)
+	local searchLower = string.lower(searchString)
+
+	if self.parentZones then
+		for i, parentZone in ipairs(self.parentZones) do
+			if string.find(parentZone, searchLower) then
+				return true
+			end
+		end
+	end
+
+	return string.find(string.lower(self.spellName), searchLower) or string.find(string.lower(self.zone), searchLower)
 end
 
 -- dungeonID from: https://wowpedia.fandom.com/wiki/LfgDungeonID#Retail

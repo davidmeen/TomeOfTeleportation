@@ -100,10 +100,18 @@ local function OnDayAtContinent(day, continent)
 end
 
 local function CreateDestination(zone, spells)
-	if zone then
+	local zoneName
+	local mapID = 0
+	if type(zone) == "string" then
+		zoneName = zone
+	else
+		zoneName = zone.name
+		mapID = zone.mapID
+	end
+	if zoneName then
 		for i, spell in ipairs(spells) do
 			if TeleporterIsUnsupportedItem(spell) ~= 1 then
-				spell:SetZone(zone)
+				spell:SetZone(zoneName, mapID)
 				tinsert(TeleporterDefaultSpells, spell)
 			end
 		end
@@ -122,18 +130,29 @@ local function PrintZoneIndex(name)
 end
 
 local function LocZone(name, mapID)
+	local result = {}
+	result.mapID = mapID
 	if mapID == 0 then
 		PrintZoneIndex(name)
-		return name
+		result.name = name
 	else
 		local mapInfo =	C_Map.GetMapInfo(mapID)
 		if not mapInfo then
 			--PrintZoneIndex(name)
-			return name
+			result.name = name
+		else
+			local locName = mapInfo.name
+			result.name = locName
 		end
-		local locName = mapInfo.name
-		return locName
 	end
+	return result
+end
+
+local function CreateZone(name, mapID)
+	local result = {}
+	result.name = name
+	result.mapID = mapID
+	return result
 end
 
 local function LocArea(name, areaID)
@@ -376,7 +395,7 @@ CreateDestination(
 	})
 
 CreateDestination(
-	LocZone("Dalaran", 41) .. " (Legion)",
+	CreateZone(LocZone("Dalaran", 41).name .. " (Legion)", 627),
 	{
 		CreatePortalSpell(224871),	-- Portal: Dalaran - Broken Isles
 		CreateSpell(224869),		-- Teleport: Dalaran - Broken Isles
@@ -387,7 +406,7 @@ CreateDestination(
 	})
 
 CreateDestination(
-	LocZone("Dalaran", 41) .. " (WotLK)",
+	CreateZone(LocZone("Dalaran", 41).name .. " (WotLK)", 125),
 	{
 		CreateSpell(53140),			-- Teleport: Dalaran
 		CreatePortalSpell(53142),	-- Portal: Dalaran
@@ -908,7 +927,7 @@ CreateDestination(
 	})
 
 CreateDestination(
-	LocZone("Tiragarde Sound", 8567),
+	LocZone("Tiragarde Sound", 895),
 	{
 		CreateChallengeSpell(410071, 1704)	-- Path of the Freebooter		Freehold
 	})
@@ -931,7 +950,7 @@ CreateDestination(
 	})
 
 CreateDestination(
-	LocZone("Uldum", 5034),
+	LocZone("Uldum", 249),
 	{
 		CreateChallengeSpell(410080, 319)	-- Path of Wind's Domain		Vortex Pinnacle
 	})

@@ -128,7 +128,8 @@ local DefaultOptions =
 	["sortDownIcon"] = "Interface/Icons/misc_arrowdown",
 	["showButtonIcon"] = "Interface/Icons/levelupicon-lfd",
 	["removeButtonIcon"] = "Interface/Icons/INV_Misc_Bone_Skull_03",
-	["conciseDungeonSpells"] = 1
+	["conciseDungeonSpells"] = 1,
+	["showSearch"] = 1
 }
 
 -- Themes. For now there aren't many of these. Message me on curseforge.com
@@ -1358,6 +1359,17 @@ local function GetMaximumHeight()
 	return GetScaledOption("maximumHeight") * GetOption("heightScalePercent") / 100
 end
 
+local function UpdateSearch(searchString)
+	if  UnitAffectingCombat("player") then
+		print("Cannot search while in combat")
+	else
+		IsRefreshing = true
+		TeleporterHideCreatedUI()
+		TeleporterOpenFrame(true)
+		IsRefreshing = false
+	end
+end
+
 local function CreateMainFrame()
 	TeleporterParentFrame = TeleporterFrame
 	TeleporterParentFrame:SetFrameStrata("HIGH")
@@ -1416,6 +1428,23 @@ local function CreateMainFrame()
 	closeButton:SetWidth( buttonWidth )
 	closeButton:SetHeight( buttonHeight )
 	closeButton:SetScript( "OnClick", TeleporterClose )
+
+	-- Serach box
+	if GetOption("showSearch") then
+		local searchFrame = CreateFrame("EditBox", "TeleporterSearchBox", TeleporterParentFrame, "InputBoxTemplate")
+		--searchFrame:SetPoint("TOPLEFT", TeleporterParentFrame, "TOPLEFT", buttonInset * 2, -buttonInset)
+		searchFrame:SetPoint("LEFT", TeleporterParentFrame, "LEFT", buttonInset * 2, 0)
+		searchFrame:SetPoint("TOPRIGHT", closeButton, "TOPLEFT", -4, -2)
+		searchFrame:SetHeight(buttonHeight)
+		searchFrame:SetAutoFocus(false)
+		searchFrame:SetMultiLine(false)
+
+		searchFrame:SetScript("OnTextChanged", function(self, userInput)
+			if userInput then
+				UpdateSearch(searchFrame:GetText())
+			end
+		end)
+	end
 
 	-- Help text
 	if GetOption("showHelp") then
@@ -1525,7 +1554,7 @@ function TeleporterSortSpells()
 	table.sort(TeleporterSpells, function(a,b) return SortSpells(a, b, SortType) end)
 end
 
-function TeleporterOpenFrame()
+function TeleporterOpenFrame(isSearching)
 	if UnitAffectingCombat("player") then
 		print( "Cannot use " .. AddonTitle .. " while in combat." )
 		return
@@ -1533,7 +1562,7 @@ function TeleporterOpenFrame()
 
 	InitalizeOptions()
 
-	if not IsVisible then
+	if not IsVisible or isSearching then
 		local buttonHeight = GetScaledOption("buttonHeight")
 		local buttonWidth = GetScaledOption("buttonWidth")
 		local labelHeight = GetScaledOption("labelHeight")
@@ -1582,6 +1611,7 @@ function TeleporterOpenFrame()
 		TeleporterCloseButton:SetWidth( buttonHeight )
 		TeleporterCloseButton:SetHeight( buttonHeight )
 		TeleporterCloseButtonText:SetFont(fontFile, fontHeight, fontFlags)
+		TeleporterSearchBox:SetHeight(buttonHeight)
 
 		if TeleporterHelpString then
 			TeleporterHelpString:SetFont(fontFile, fontHeight, fontFlags)
@@ -1599,6 +1629,17 @@ function TeleporterOpenFrame()
 		end
 
 		local minyoffset = -buttonInset - 10
+
+		local searchString = nil
+		if GetOption("showSearch") then
+			TeleporterSearchBox:Show()
+			minyoffset = -2 * buttonInset - TeleporterSearchBox:GetHeight()
+			maximumHeight = maximumHeight + TeleporterSearchBox:GetHeight() - buttonInset
+			searchString = TeleporterSearchBox:GetText()
+		else
+			TeleporterSearchBox:Hide()
+		end
+
 		local yoffset = minyoffset
 		local maxyoffset = -yoffset
 		local xoffset = buttonInset
@@ -1634,6 +1675,12 @@ function TeleporterOpenFrame()
 			local haveSpell = true
 			if spell:GetZone() == TeleporterHearthString and GetOption("randomHearth") then
 				if spellId ~= onlyHearth and not CustomizeSpells then
+					haveSpell = false
+				end
+			end
+
+			if searchString and searchString ~= "" then
+				if not spell:MatchesSearch(searchString) then
 					haveSpell = false
 				end
 			end
