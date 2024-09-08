@@ -310,7 +310,7 @@ CreateDestination(
 CreateDestination(
 	LocZone("Badlands",	15),
 	{
-		CreateChallengeSpell(393222, 2355),	-- Path of the Watcher's Legacy	 	Uldaman: Legacy of Tyr
+		CreateChallengeSpell(393222, 2355, 2071),	-- Path of the Watcher's Legacy	 	Uldaman: Legacy of Tyr
 	})
 
 CreateDestination(
@@ -344,7 +344,7 @@ CreateDestination(
 CreateDestination(
 	LocZone("Blackrock Foundry", 596),
 	{
-		CreateChallengeSpell(169771, 900)	-- Teleport: Blackrock Foundry			Blackrock Foundry
+		CreateChallengeSpell(169771, 900, 596)	-- Teleport: Blackrock Foundry			Blackrock Foundry
 	})
 
 CreateDestination(
@@ -482,20 +482,20 @@ CreateDestination(
 CreateDestination(
 	LocZone("Drustvar", 896),
 	{
-		CreateChallengeSpell(424167, 1706)	-- Path of Heart's Bane				Waycrest Manor
+		CreateChallengeSpell(424167, 1706, 1015)	-- Path of Heart's Bane				Waycrest Manor
 	})
 
 CreateDestination(
 	"Draenor Dungeons",
 	{
-		CreateChallengeSpell(159897, 1975),	-- Path of the Vigilant				Auchindoun
-		CreateChallengeSpell(159895, 1005),	-- Path of the Bloodmaul			Bloodmaul Slag Mines
-		CreateChallengeSpell(159901, 1003),	-- Path of the Verdant				The Everbloom
-		CreateChallengeSpell(159900, 1006),	-- Path of the Dark Rail			Grimrail Depot
-		CreateChallengeSpell(159896, 1007),	-- Path of the Iron Prow			Iron Docks
-		CreateChallengeSpell(159899, 1009),	-- Path of the Crescent Moon		Shadowmoon Burial Grounds
-		CreateChallengeSpell(159898, 1010),	-- Path of the Skies				Skyreach
-		CreateChallengeSpell(159902, 1004),	-- Path of the Burning Mountain		Upper Blackrock Spire
+		CreateChallengeSpell(159897, 1975, 593),	-- Path of the Vigilant				Auchindoun
+		CreateChallengeSpell(159895, 1005, 573),	-- Path of the Bloodmaul			Bloodmaul Slag Mines
+		CreateChallengeSpell(159901, 1003, 620),	-- Path of the Verdant				The Everbloom
+		CreateChallengeSpell(159900, 1006, 606),	-- Path of the Dark Rail			Grimrail Depot
+		CreateChallengeSpell(159896, 1007, 595),	-- Path of the Iron Prow			Iron Docks
+		CreateChallengeSpell(159899, 1009, 574),	-- Path of the Crescent Moon		Shadowmoon Burial Grounds
+		CreateChallengeSpell(159898, 1010, 601),	-- Path of the Skies				Skyreach
+		CreateChallengeSpell(159902, 1004, 616),	-- Path of the Burning Mountain		Upper Blackrock Spire
 	})
 
 CreateDestination(
@@ -507,21 +507,21 @@ CreateDestination(
 CreateDestination(
 	"Dragon Isles Dungeons",
 	{
-		CreateChallengeSpell(393279, 2335),	-- Path of Arcane Secrets			The Azure Vault
-		CreateChallengeSpell(393273, 2367),	-- Path of the Draconic Diploma		Algeth'ar Academy
-		CreateChallengeSpell(393262, 2378),	-- Path of the Windswept Plains		The Nokhud Offensive
-		CreateChallengeSpell(393256, 2376),	-- Path of the Clutch Defender		Ruby Life Pools
-		CreateChallengeSpell(393276, 2359),	-- Path of the Obsidian Hoard		Neltharus
-		CreateChallengeSpell(393283, 2382),	-- Path of the Titanic Reservoir	Halls of Infusion
-		CreateChallengeSpell(393267, 2380),	-- Path of the Rotting Woods		Brackenhide Hollow
+		CreateChallengeSpell(393279, 2335, 2073),	-- Path of Arcane Secrets			The Azure Vault
+		CreateChallengeSpell(393273, 2367, 2097),	-- Path of the Draconic Diploma		Algeth'ar Academy
+		CreateChallengeSpell(393262, 2378, 2093),	-- Path of the Windswept Plains		The Nokhud Offensive
+		CreateChallengeSpell(393256, 2376, 2094),	-- Path of the Clutch Defender		Ruby Life Pools
+		CreateChallengeSpell(393276, 2359, 2080),	-- Path of the Obsidian Hoard		Neltharus
+		CreateChallengeSpell(393283, 2382, 2082),	-- Path of the Titanic Reservoir	Halls of Infusion
+		CreateChallengeSpell(393267, 2380, 2096),	-- Path of the Rotting Woods		Brackenhide Hollow
 	})
 
 CreateDestination(
 	"Dragon Isles Raids",
 	{
-		CreateChallengeSpell(432257, 2405),	-- Path of the Bitter Legacy		Aberrus
-		CreateChallengeSpell(432254, 2388),	-- Path of the Primal Prison		Vault of the Incarnates
-		CreateChallengeSpell(432258, 2502),	-- Path of the Scorching Dream		Amirdrassil
+		CreateChallengeSpell(432257, 2405, 2166),	-- Path of the Bitter Legacy		Aberrus
+		CreateChallengeSpell(432254, 2388, 2119),	-- Path of the Primal Prison		Vault of the Incarnates
+		CreateChallengeSpell(432258, 2502, 2232),	-- Path of the Scorching Dream		Amirdrassil
 	})
 
 CreateDestination(
@@ -580,7 +580,7 @@ CreateDestination(
 	{
 		CreateConditionalConsumable(141017, AtContinent(ContinentIdBrokenIsles)),				-- Scroll of Town Portal: Lian'tril
 		CreateConditionalItem(140493, OnDayAtContinent(DayThursday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
-		CreateChallengeSpell(410078, 1207),	-- Path of the Earth-Warder			Neltharion's Lair
+		CreateChallengeSpell(410078, 1207, 731),	-- Path of the Earth-Warder			Neltharion's Lair
 	})
 
 CreateDestination(
@@ -617,7 +617,7 @@ CreateDestination(
 		CreateItem(22631),		-- Atiesh, Greatstaff of the Guardian
 		CreateItem(22632),		-- Atiesh, Greatstaff of the Guardian
 		CreateItem(142469), 	-- Violet Seal of the Grand Magus
-		CreateChallengeSpell(373262, 175), -- Path of the Fallen Guardian		Karazhan
+		CreateChallengeSpell(373262, 175, 821), -- Path of the Fallen Guardian		Karazhan
 	})
 
 CreateDestination(
@@ -629,17 +629,17 @@ CreateDestination(
 CreateDestination(
 	"War Within Dungeons",
 	{
-		CreateChallengeSpell(445416, 2652),	-- Path of Nerubian Ascension				City of Threads
-		CreateChallengeSpell(445269, 2693),	-- Path of the Corrupted Foundry			The Stonevault
-		CreateChallengeSpell(445414, 2719),	-- Path of the Arathi Flagship				The Dawnbreaker
-		CreateChallengeSpell(445418, 1700),	-- Path of the Besieged Harbor (Alliance)	Siege of Boralus
-		CreateChallengeSpell(445417, 2654),	-- Path of the Ruined City					Ara-Kara, City of Echoes
-		CreateChallengeSpell(445424, 304),	-- Path of the Twilight Fortress			Grim Batol
-		CreateChallengeSpell(445444, 2695),	-- Path of the Light's Reverence			Priory of the Sacred Flame
-		CreateChallengeSpell(464256, 1700),	-- Path of the Besieged Harbor (Horde)		Siege of Boralus
-		CreateChallengeSpell(445440, 2689),	-- Path of the Flaming Brewery				Cinderbrew Meadery
-		CreateChallengeSpell(445441, 2655),	-- Path of the Warding Candles				Darkflame Cleft
-		CreateChallengeSpell(445443, 2653),	-- Path of the Fallen Stormriders			The Rookery
+		CreateChallengeSpell(445416, 2652, 2213),	-- Path of Nerubian Ascension				City of Threads
+		CreateChallengeSpell(445269, 2693, 2341),	-- Path of the Corrupted Foundry			The Stonevault
+		CreateChallengeSpell(445414, 2719, 2359),	-- Path of the Arathi Flagship				The Dawnbreaker
+		CreateChallengeSpell(445418, 1700, 1162),	-- Path of the Besieged Harbor (Alliance)	Siege of Boralus
+		CreateChallengeSpell(445417, 2654, 2357),	-- Path of the Ruined City					Ara-Kara, City of Echoes
+		CreateChallengeSpell(445424, 304, 293),		-- Path of the Twilight Fortress			Grim Batol
+		CreateChallengeSpell(445444, 2695, 2308),	-- Path of the Light's Reverence			Priory of the Sacred Flame
+		CreateChallengeSpell(464256, 1700, 1162),	-- Path of the Besieged Harbor (Horde)		Siege of Boralus
+		CreateChallengeSpell(445440, 2689, 2335),	-- Path of the Flaming Brewery				Cinderbrew Meadery
+		CreateChallengeSpell(445441, 2655, 2303),	-- Path of the Warding Candles				Darkflame Cleft
+		CreateChallengeSpell(445443, 2653, 2315),	-- Path of the Fallen Stormriders			The Rookery
 	})
 
 CreateDestination(
@@ -665,7 +665,7 @@ CreateDestination(
 	LocZone("Mechagon", 1490),
 	{
 		CreateConsumable(167075),									-- Ultrasafe Transporter: Mechagon
-		CreateChallengeSpell(373274, 2006),							-- Path of the Scrappy Prince	Operation: Mechagon
+		CreateChallengeSpell(373274, 2006, 1490),					-- Path of the Scrappy Prince	Operation: Mechagon
 		CreateConditionalConsumable(169114, AtZone(MapIDMechagon))	-- Personal Time Displacer
 	})
 
@@ -685,7 +685,7 @@ CreateDestination(
 CreateDestination(
 	LocZone("Nazmir", 863),
 	{
-		CreateChallengeSpell(410074, 1712),	-- Path of Festering Rot	The Underrot
+		CreateChallengeSpell(410074, 1712, 1041),	-- Path of Festering Rot	The Underrot
 	})
 
 CreateDestination(
@@ -741,13 +741,13 @@ CreateDestination(
 CreateDestination(
 	"Pandaria Dungeons",
 	{
-		CreateChallengeSpell(131225, 471),	-- Path of the Setting Sun		Gate of the Setting Sun
-		CreateChallengeSpell(131222, 519),	-- Path of the Mogu King		Mogu'shan Palace
-		CreateChallengeSpell(131232, 472),	-- Path of the Necromancer		Scholomance
-		CreateChallengeSpell(131206, 470),	-- Path of the Shado-Pan		Shado-Pan Monastery
-		CreateChallengeSpell(131228, 554),	-- Path of the Black Ox			Siege of Niuzao
-		CreateChallengeSpell(131205, 469),	-- Path of the Stout Brew		Stormstout Brewery
-		CreateChallengeSpell(131204, 464),	-- Path of the Jade Serpent		Temple of the Jade Serpent
+		CreateChallengeSpell(131225, 471, 437),	-- Path of the Setting Sun		Gate of the Setting Sun
+		CreateChallengeSpell(131222, 519, 453),	-- Path of the Mogu King		Mogu'shan Palace
+		CreateChallengeSpell(131232, 472, 476),	-- Path of the Necromancer		Scholomance
+		CreateChallengeSpell(131206, 470, 443),	-- Path of the Shado-Pan		Shado-Pan Monastery
+		CreateChallengeSpell(131228, 554, 457),	-- Path of the Black Ox			Siege of Niuzao
+		CreateChallengeSpell(131205, 469, 439),	-- Path of the Stout Brew		Stormstout Brewery
+		CreateChallengeSpell(131204, 464, 429),	-- Path of the Jade Serpent		Temple of the Jade Serpent
 	})
 
 CreateDestination(
@@ -778,25 +778,25 @@ CreateDestination(
 CreateDestination(
 	LocZone("Scarlet Monastery", 302),
 	{
-		CreateChallengeSpell(131231, 473),	-- Path of the Scarlet Blade		Scarlet Halls
-		CreateChallengeSpell(131229, 474),	-- Path of the Scarlet Mitre		Scarlet Monastery
+		CreateChallengeSpell(131231, 473, 431),	-- Path of the Scarlet Blade		Scarlet Halls
+		CreateChallengeSpell(131229, 474, 302),	-- Path of the Scarlet Mitre		Scarlet Monastery
 	})
 
 CreateDestination(
 	"Shadowlands Dungeons",
 	{
-		CreateChallengeSpell(354462, 2123),	-- Path of the Courageous			The Necrotic Wake
-		CreateChallengeSpell(354463, 2121),	-- Path of the Plagued				Plaguefall
-		CreateChallengeSpell(354464, 2120),	-- Path of the Misty Forest			Mists of Tirna Scithe
-		CreateChallengeSpell(354465, 2119),	-- Path of the Sinful Soul			Halls of Atonement
-		CreateChallengeSpell(354466, 2122),	-- Path of the Ascendant			Spires of Ascension
-		CreateChallengeSpell(354467, 2124),	-- Path of the Undefeated			Theater of Pain
-		CreateChallengeSpell(354468, 2118),	-- Path of the Scheming Loa			De Other Side
-		CreateChallengeSpell(354469, 2117),	-- Path of the Stone Warden			Sanguine Depths
-		CreateChallengeSpell(367416, 2225),	-- Path of the Streetwise Merchant	Tazavesh, the Veiled Market
-		CreateChallengeSpell(373190, 2093),	-- Path of the Sire					Castle Nathria
-		CreateChallengeSpell(373191, 2228),	-- Path of the Tormented Soul		Sanctum of Domination
-		CreateChallengeSpell(373192, 2290),	-- Path of the First Ones			Sepulcher of the First Ones
+		CreateChallengeSpell(354462, 2123, 1666),	-- Path of the Courageous			The Necrotic Wake
+		CreateChallengeSpell(354463, 2121, 1674),	-- Path of the Plagued				Plaguefall
+		CreateChallengeSpell(354464, 2120, 1669),	-- Path of the Misty Forest			Mists of Tirna Scithe
+		CreateChallengeSpell(354465, 2119, 1663),	-- Path of the Sinful Soul			Halls of Atonement
+		CreateChallengeSpell(354466, 2122, 2017),	-- Path of the Ascendant			Spires of Ascension
+		CreateChallengeSpell(354467, 2124, 1687),	-- Path of the Undefeated			Theater of Pain
+		CreateChallengeSpell(354468, 2118, 1677),	-- Path of the Scheming Loa			De Other Side
+		CreateChallengeSpell(354469, 2117, 1675),	-- Path of the Stone Warden			Sanguine Depths
+		CreateChallengeSpell(367416, 2225, 1989),	-- Path of the Streetwise Merchant	Tazavesh, the Veiled Market
+		CreateChallengeSpell(373190, 2093, 1735),	-- Path of the Sire					Castle Nathria
+		CreateChallengeSpell(373191, 2228, 1998),	-- Path of the Tormented Soul		Sanctum of Domination
+		CreateChallengeSpell(373192, 2290, 2047),	-- Path of the First Ones			Sepulcher of the First Ones
 	})
 
 CreateDestination(
@@ -832,7 +832,7 @@ CreateDestination(
 	LocZone("Stormheim", 634),
 	{
 		CreateConditionalItem(140493, OnDayAtContinent(DayFriday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
-		CreateChallengeSpell(393764, 1194),	-- Path of Proven Worth		Halls of Valor
+		CreateChallengeSpell(393764, 1194, 703),	-- Path of Proven Worth		Halls of Valor
 	})
 
 
@@ -858,7 +858,7 @@ CreateDestination(
 		CreateItem(140324),																		-- Mobile Telemancy Beacon
 		CreateConditionalConsumable(141014, AtContinent(ContinentIdBrokenIsles)),				-- Scroll of Town Portal: Sashj'tar
 		CreateConditionalItem(140493, OnDayAtContinent(DayTuesday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
-		CreateChallengeSpell(393766, 1319),	-- Path of the Grand Magistrix		Court of Stars
+		CreateChallengeSpell(393766, 1319, 761),	-- Path of the Grand Magistrix		Court of Stars
 	})
 
 CreateDestination(
@@ -883,7 +883,7 @@ CreateDestination(
 CreateDestination(
 	LocZone("Thaldraszus", 2025),
 	{
-		CreateChallengeSpell(424197, 2430)	-- Path of Twisted Time		Dawn of the Infinite
+		CreateChallengeSpell(424197, 2430, 2198)	-- Path of Twisted Time		Dawn of the Infinite
 	})
 
 CreateDestination(
@@ -929,7 +929,7 @@ CreateDestination(
 CreateDestination(
 	LocZone("Tiragarde Sound", 895),
 	{
-		CreateChallengeSpell(410071, 1704)	-- Path of the Freebooter		Freehold
+		CreateChallengeSpell(410071, 1704, 936)	-- Path of the Freebooter		Freehold
 	})
 
 CreateDestination(
@@ -952,7 +952,7 @@ CreateDestination(
 CreateDestination(
 	LocZone("Uldum", 249),
 	{
-		CreateChallengeSpell(410080, 319)	-- Path of Wind's Domain		Vortex Pinnacle
+		CreateChallengeSpell(410080, 319, 325)	-- Path of Wind's Domain		Vortex Pinnacle
 	})
 
 CreateDestination(
@@ -975,8 +975,8 @@ CreateDestination(
 		CreateConditionalConsumable(141013, AtContinent(ContinentIdBrokenIsles)),			-- Scroll of Town Portal: Shala'nir
 		CreateConditionalConsumable(141015, AtContinent(ContinentIdBrokenIsles)),			-- Scroll of Town Portal: Kal'delar
 		CreateConditionalItem(140493, OnDayAtContinent(DayMonday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
-		CreateChallengeSpell(424163, 1202),	-- Path of the Nightmare Lord		Darkheart Thicket
-		CreateChallengeSpell(424153, 1205),	-- Path of Ancient Horrors			Black Rook Hold
+		CreateChallengeSpell(424163, 1202, 733),	-- Path of the Nightmare Lord		Darkheart Thicket
+		CreateChallengeSpell(424153, 1205, 751),	-- Path of Ancient Horrors			Black Rook Hold
 	})
 
 -- I don't know why there are so many of these, not sure which is right but it's now safe to
@@ -995,7 +995,7 @@ CreateDestination(
 CreateDestination(
 	LocZone("Vashj'ir", 203),
 	{
-		CreateChallengeSpell(424142, 324)	-- Path of the Tidehunter			Throne of the Tides
+		CreateChallengeSpell(424142, 324, 322)	-- Path of the Tidehunter			Throne of the Tides
 	})
 
 CreateDestination(
@@ -1021,5 +1021,5 @@ CreateDestination(
 	{
 		CreateConsumable(157542),	-- Portal Scroll of Specificity
 		CreateConsumable(160218),	-- Portal Scroll of Specificity
-		CreateChallengeSpell(424187, 2107),	-- Path of the Golden Tomb		Atal'Dazar
+		CreateChallengeSpell(424187, 2107, 934),	-- Path of the Golden Tomb		Atal'Dazar
 	})

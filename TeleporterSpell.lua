@@ -310,13 +310,31 @@ function TeleporterCreateItem(id, dest)
 end
 
 -- dungeonID from: https://warcraft.wiki.gg/wiki/LfgDungeonID
-function TeleporterCreateChallengeSpell(id, dungeonID)
+function TeleporterCreateChallengeSpell(id, dungeonID, mapID)
 	local spell = {}
 	TeleporterInitSpell(spell)
 	spell.spellId = id
 	spell.dungeonID = dungeonID
 	spell.spellType = ST_Challenge
 	spell.dungeon = GetLFGDungeonInfo(dungeonID)
+
+	if mapID then
+		spell:AddZoneAndParents(mapID)
+	else
+		print("Missing mapID for " .. spell.dungeon)
+		for i = 1,3000 do
+			--local name, description, bgImage, buttonImage1, loreImage, buttonImage2, dungeonAreaMapID, link, shouldDisplayDifficulty, mapID = EJ_GetInstanceInfo(i)
+			local mapInfo = C_Map.GetMapInfo(i)
+			if mapInfo and mapInfo.name == spell.dungeon then
+				while mapInfo.parentMapID ~= 0 do
+					print(mapInfo.mapID, mapInfo.name)
+					mapInfo = C_Map.GetMapInfo(mapInfo.parentMapID)
+				end
+			end
+		end
+		print("----")
+	end
+
 	return spell
 end
 
