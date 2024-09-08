@@ -215,22 +215,29 @@ function TeleporterSpell:GetZone()
 	return zo[self:GetOptionId()] or self.zone
 end
 
+function TeleporterSpell:AddZoneAndParents(mapID)
+	if not self.parentZones then
+		self.parentZones = {}
+	end
+
+	while mapID ~= 0 do
+		local mapInfo = C_Map.GetMapInfo(mapID)
+		if mapInfo then
+			tinsert(self.parentZones, string.lower(mapInfo.name))
+			mapID = mapInfo.parentMapID
+		else
+			mapID = 0
+		end
+	end
+end
+
 function TeleporterSpell:SetZone(zone, mapID)
 	self.zone = zone
 	if mapID then
 		local mapInfo = C_Map.GetMapInfo(mapID)
 		if mapInfo then
-			self.parentZones = {}
 			local parentMapID = mapInfo.parentMapID
-			while parentMapID ~= 0 do
-				mapInfo = C_Map.GetMapInfo(parentMapID)
-				if mapInfo then
-					tinsert(self.parentZones, string.lower(mapInfo.name))
-					parentMapID = mapInfo.parentMapID
-				else
-					parentMapID = 0
-				end
-			end
+			self:AddZoneAndParents(parentMapID)
 		end
 	end
 end
@@ -251,6 +258,12 @@ end
 function TeleporterSpell:MatchesSearch(searchString)
 	local searchLower = string.lower(searchString)
 
+	if self.dungeon then
+		if string.find(string.lower(self.dungeon), searchLower) then
+			return true
+		end
+	end
+
 	if self.parentZones then
 		for i, parentZone in ipairs(self.parentZones) do
 			if string.find(parentZone, searchLower) then
@@ -262,7 +275,7 @@ function TeleporterSpell:MatchesSearch(searchString)
 	return string.find(string.lower(self.spellName), searchLower) or string.find(string.lower(self.zone), searchLower)
 end
 
--- dungeonID from: https://wowpedia.fandom.com/wiki/LfgDungeonID#Retail
+-- dungeonID from: https://warcraft.wiki.gg/wiki/LfgDungeonID, or using GetLFGDungeonInfo().
 function TeleporterSpell:IsSeasonDungeon()
 	-- Dragonflight Season 4
 	return tContains({
@@ -296,7 +309,7 @@ function TeleporterCreateItem(id, dest)
 	return spell
 end
 
--- dungeonID from: https://wowpedia.fandom.com/wiki/LfgDungeonID#Retail
+-- dungeonID from: https://warcraft.wiki.gg/wiki/LfgDungeonID
 function TeleporterCreateChallengeSpell(id, dungeonID)
 	local spell = {}
 	TeleporterInitSpell(spell)
