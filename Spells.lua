@@ -204,7 +204,6 @@ CreateDestination(
 		CreateItem(64488),				-- The Innkeeper's Daughter
 		CreateItem(142298),				-- Astonishingly Scarlet Slippers
 		CreateConsumable(142543),		-- Scroll of Town Portal
-		CreateItem(142542),				-- Tome of Town Portal
 		CreateItem(162973),				-- Greatfather Winter's Hearthstone
 		CreateItem(163045),				-- Headless Horseman's Hearthstone
 		CreateItem(166747),				-- Brewfest Reveler's Hearthstone
@@ -229,7 +228,6 @@ CreateDestination(
 		CreateItem(206195),				-- Path of the Naaru
 		CreateItem(208704),				-- Deepdweller's Earthen Hearthstone
 		CreateItem(209035),				-- Hearthstone of the Flame
-		CreateItem(212337),				-- Stone of the Hearth
 		CreateConditionalItem(210455, IsDraenei),	-- Draenic Hologem
 		CreateItem(228940),				-- Notorious Thread's Hearthstone
 	})
@@ -242,6 +240,8 @@ CreateDestination(
 		CreateItem(28585),				-- Ruby Slippers (needs to be equipped)
 		CreateItem(142298),				-- Astonishingly Scarlet Slippers (needs to be equipped)
 		CreateItem(169064),				-- Mountebank's Colorful Cloak (needs to be equipped)
+		CreateItem(142542),				-- Tome of Town Portal (separate cooldown)
+		CreateItem(212337),				-- Stone of the Hearth (separate cooldown)
 	})
 
 CreateDestination(
