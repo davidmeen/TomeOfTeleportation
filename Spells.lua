@@ -230,6 +230,8 @@ CreateDestination(
 		CreateItem(209035),				-- Hearthstone of the Flame
 		CreateConditionalItem(210455, IsDraenei),	-- Draenic Hologem
 		CreateItem(228940),				-- Notorious Thread's Hearthstone
+		CreateItem(142542),				-- Tome of Town Portal
+		CreateItem(212337),				-- Stone of the Hearth
 	})
 
 -- Any hearthstones that shouldn't be randomised.
@@ -240,8 +242,6 @@ CreateDestination(
 		CreateItem(28585),				-- Ruby Slippers (needs to be equipped)
 		CreateItem(142298),				-- Astonishingly Scarlet Slippers (needs to be equipped)
 		CreateItem(169064),				-- Mountebank's Colorful Cloak (needs to be equipped)
-		CreateItem(142542),				-- Tome of Town Portal (separate cooldown)
-		CreateItem(212337),				-- Stone of the Hearth (separate cooldown)
 	})
 
 CreateDestination(

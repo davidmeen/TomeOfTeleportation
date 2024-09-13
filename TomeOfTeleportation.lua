@@ -1470,14 +1470,31 @@ local function GetRandomHearth(validSpells)
 	if ChosenHearth then
 		return ChosenHearth
 	end
-	local hearthSpells = {}
+	local hearthSpellsFastestCooldown = {}
+	local hearthSpellsNotCooldown = {}
+	local fastestCooldownEnd = 0
 	for index, spell in ipairs(validSpells) do
 		if spell:GetZone() == TeleporterHearthString then
-			tinsert(hearthSpells, spell.spellId)
+			local cooldownStart, cooldownDuration = SafeGetItemCooldown(spell.spellId)
+			if cooldownStart and cooldownStart > 0 then
+				local cooldownEnd = cooldownStart + cooldownDuration
+				if fastestCooldownEnd == 0 or cooldownEnd < fastestCooldownEnd then
+					hearthSpellsFastestCooldown = {}
+					fastestCooldownEnd = cooldownEnd
+				end
+				if cooldownEnd == fastestCooldownEnd then
+					tinsert(hearthSpellsFastestCooldown, spell.spellId)
+				end
+			else
+				tinsert(hearthSpellsNotCooldown, spell.spellId)
+			end
 		end
 	end
-	if  #hearthSpells > 0 then
-		ChosenHearth =  hearthSpells[math.random(#hearthSpells)]
+	if  #hearthSpellsNotCooldown > 0 then
+		ChosenHearth =  hearthSpellsNotCooldown[math.random(#hearthSpellsNotCooldown)]
+		return ChosenHearth
+	elseif  #hearthSpellsFastestCooldown > 0 then
+		ChosenHearth =  hearthSpellsFastestCooldown[math.random(#hearthSpellsFastestCooldown)]
 		return ChosenHearth
 	else
 		return nil
