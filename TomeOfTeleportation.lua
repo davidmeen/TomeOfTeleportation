@@ -1429,21 +1429,23 @@ local function CreateMainFrame()
 	closeButton:SetHeight( buttonHeight )
 	closeButton:SetScript( "OnClick", TeleporterClose )
 
-	-- Serach box
-	if GetOption("showSearch") then
-		local searchFrame = CreateFrame("EditBox", "TeleporterSearchBox", TeleporterParentFrame, "InputBoxTemplate")
-		--searchFrame:SetPoint("TOPLEFT", TeleporterParentFrame, "TOPLEFT", buttonInset * 2, -buttonInset)
-		searchFrame:SetPoint("LEFT", TeleporterParentFrame, "LEFT", buttonInset * 2, 0)
-		searchFrame:SetPoint("TOPRIGHT", closeButton, "TOPLEFT", -4, -2)
-		searchFrame:SetHeight(buttonHeight)
-		searchFrame:SetAutoFocus(false)
-		searchFrame:SetMultiLine(false)
+	-- Search box
+	local searchFrame = CreateFrame("EditBox", "TeleporterSearchBox", TeleporterParentFrame, "InputBoxTemplate")
+	searchFrame:SetPoint("LEFT", TeleporterParentFrame, "LEFT", buttonInset * 2, 0)
+	searchFrame:SetPoint("TOPRIGHT", closeButton, "TOPLEFT", -4, -2)
+	searchFrame:SetHeight(buttonHeight)
+	searchFrame:SetAutoFocus(false)
+	searchFrame:SetMultiLine(false)
 
-		searchFrame:SetScript("OnTextChanged", function(self, userInput)
-			if userInput then
-				UpdateSearch(searchFrame:GetText())
-			end
-		end)
+	searchFrame:SetScript("OnTextChanged", function(self, userInput)
+		if userInput then
+			UpdateSearch(searchFrame:GetText())
+		end
+	end)
+	if GetOption("showSearch") then
+		searchFrame:Show()
+	else
+		searchFrame:Hide()
 	end
 
 	-- Help text
