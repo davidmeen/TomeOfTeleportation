@@ -183,24 +183,27 @@ function TeleporterSpell:CanUse()
 		haveSpell = true
 	end
 
-	if TeleporterGetOption("hideItems") and isItem then
-		haveSpell = false
-	end
+	if not TeleporterGetSearchString() or not TeleporterGetOption("searchHidden") then
 
-	if TeleporterGetOption("hideConsumable") and consumable then
-		haveSpell = false
-	end
+		if TeleporterGetOption("hideItems") and isItem then
+			haveSpell = false
+		end
 
-	if TeleporterGetOption("hideSpells") and spell:IsSpell() then
-		haveSpell = false
-	end
+		if TeleporterGetOption("hideConsumable") and consumable then
+			haveSpell = false
+		end
 
-	if TeleporterGetOption("hideChallenge") and spell:IsDungeonSpell() then
-		haveSpell = false
-	end
+		if TeleporterGetOption("hideSpells") and spell:IsSpell() then
+			haveSpell = false
+		end
 
-	if TeleporterGetOption("seasonOnly") and spell:IsDungeonSpell() and not self:IsSeasonDungeon() then
-		haveSpell = false
+		if TeleporterGetOption("hideChallenge") and spell:IsDungeonSpell() then
+			haveSpell = false
+		end
+
+		if TeleporterGetOption("seasonOnly") and spell:IsDungeonSpell() and not self:IsSeasonDungeon() then
+			haveSpell = false
+		end
 	end
 
 	if not CustomizeSpells and not spell:IsVisible() then

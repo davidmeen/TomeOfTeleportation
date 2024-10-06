@@ -3,6 +3,7 @@
 -- TODO:
 -- Improve speed
 -- Optional compact UI
+-- Tests for search
 
 -- Known issues:
 -- Overlapping buttons
@@ -129,7 +130,8 @@ local DefaultOptions =
 	["showButtonIcon"] = "Interface/Icons/levelupicon-lfd",
 	["removeButtonIcon"] = "Interface/Icons/INV_Misc_Bone_Skull_03",
 	["conciseDungeonSpells"] = 1,
-	["showSearch"] = 1
+	["showSearch"] = 1,
+	["searchHidden"] = 1,
 }
 
 -- Themes. For now there aren't many of these. Message me on curseforge.com
@@ -695,6 +697,18 @@ local function SortSpells(spell1, spell2, sortType)
 	return spellName1 < spellName2
 end
 
+function TeleporterGetSearchString()
+	if GetOption("showSearch") then
+		local searchString = TeleporterSearchBox:GetText()
+		if searchString == "" then
+			return nil
+		else
+			return searchString
+		end
+	else
+		return nil
+	end
+end
 
 local function SetupSpells()
 	local loaded = true
@@ -1649,12 +1663,11 @@ function TeleporterOpenFrame(isSearching)
 
 		local minyoffset = -buttonInset - 10
 
-		local searchString = nil
+		local searchString = TeleporterGetSearchString()
 		if GetOption("showSearch") then
 			TeleporterSearchBox:Show()
 			minyoffset = -2 * buttonInset - TeleporterSearchBox:GetHeight()
 			maximumHeight = maximumHeight + TeleporterSearchBox:GetHeight() - buttonInset
-			searchString = TeleporterSearchBox:GetText()
 		else
 			TeleporterSearchBox:Hide()
 		end
@@ -1824,12 +1837,12 @@ function TeleporterOpenFrame(isSearching)
 				nameString:SetFont(fontFile, fontHeight, fontFlags)
 				nameString:SetJustifyH("LEFT")
 				nameString:SetJustifyV("MIDDLE")
-				nameString:SetPoint("TOP",cooldownString,"TOPRIGHT",0,0)
-				nameString:SetPoint("LEFT", buttonFrame, "TOPLEFT", iconOffsetX + iconW + 2, iconOffsetY - 1)
+				nameString:SetPoint("TOPLEFT", teleicon, "TOPRIGHT", 2, 0)
 				if CustomizeSpells then
 					nameString:SetPoint("BOTTOMRIGHT",cooldownString,"BOTTOMLEFT",-iconW * 4,0)
 				else
-					nameString:SetPoint("BOTTOMRIGHT",cooldownString,"BOTTOMLEFT",0,0)
+					nameString:SetPoint("RIGHT",cooldownString,"LEFT",0,0)
+					nameString:SetPoint("BOTTOM",teleicon,"BOTTOM",0,0)
 				end
 				nameString:SetText( displaySpellName )
 
