@@ -117,6 +117,9 @@ local DefaultOptions =
 	["unequipedColourR"] = 1,
 	["unequipedColourG"] = 0,
 	["unequipedColourB"] = 0,
+	["druidFormColourR"] = 1,
+	["druidFormColourG"] = 0.49,
+	["druidFormColourB"] = 0.04,
 	["cooldownColourR"] = 1,
 	["cooldownColourG"] = 0.7,
 	["cooldownColourB"] = 0,
@@ -945,6 +948,8 @@ function TeleporterUpdateButton(button)
 	local onCooldown = false
 	local buttonInset = GetScaledOption("buttonInset")
 
+	local _, isFlyingDruid, _, _ = GetShapeshiftFormInfo(3)
+
 	if item then
 		local cooldownStart, cooldownDuration
 		if isItem then
@@ -1009,6 +1014,12 @@ function TeleporterUpdateButton(button)
 			end
 			button.backdrop:SetBackdropColor(GetOption("disabledColourR"), GetOption("disabledColourG"), GetOption("disabledColourB"), alpha)
 			button:SetAttribute("macrotext", nil)
+		elseif isFlyingDruid then
+			button.backdrop:SetBackdropColor(GetOption("druidFormColourR"), GetOption("druidFormColourG"), GetOption("druidFormColourB"), 1)
+
+			button:SetAttribute(
+				"macrotext",
+				"/cancelform")
 		elseif isItem and TeleporterItemMustBeEquipped( item ) then
 			button.backdrop:SetBackdropColor(GetOption("unequipedColourR"), GetOption("unequipedColourG"), GetOption("unequipedColourB"), 1)
 
