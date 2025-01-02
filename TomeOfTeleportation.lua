@@ -1014,12 +1014,6 @@ function TeleporterUpdateButton(button)
 			end
 			button.backdrop:SetBackdropColor(GetOption("disabledColourR"), GetOption("disabledColourG"), GetOption("disabledColourB"), alpha)
 			button:SetAttribute("macrotext", nil)
-		elseif isFlyingDruid then
-			button.backdrop:SetBackdropColor(GetOption("druidFormColourR"), GetOption("druidFormColourG"), GetOption("druidFormColourB"), 1)
-
-			button:SetAttribute(
-				"macrotext",
-				"/cancelform")
 		elseif isItem and TeleporterItemMustBeEquipped( item ) then
 			button.backdrop:SetBackdropColor(GetOption("unequipedColourR"), GetOption("unequipedColourG"), GetOption("unequipedColourB"), 1)
 
@@ -1029,12 +1023,20 @@ function TeleporterUpdateButton(button)
 		elseif onCooldown then
 			if cooldownDuration >2 then
 				button.backdrop:SetBackdropColor(GetOption("cooldownColourR"), GetOption("cooldownColourG"), GetOption("cooldownColourB"), 1)
+			elseif isFlyingDruid then
+				button.backdrop:SetBackdropColor(GetOption("druidFormColourR"), GetOption("druidFormColourG"), GetOption("druidFormColourB"), 1)
 			else
 				button.backdrop:SetBackdropColor(GetOption("readyColourR"), GetOption("readyColourG"), GetOption("readyColourB"), 1)
 			end
 			button:SetAttribute(
 				"macrotext",
 				"/script print( \"" .. item .. " is currently on cooldown.\")")
+		elseif isFlyingDruid then
+			button.backdrop:SetBackdropColor(GetOption("druidFormColourR"), GetOption("druidFormColourG"), GetOption("druidFormColourB"), 1)
+
+			button:SetAttribute(
+				"macrotext",
+				"/cancelform")
 		else
 			button.backdrop:SetBackdropColor(GetOption("readyColourR"), GetOption("readyColourG"), GetOption("readyColourB"), 1)
 
