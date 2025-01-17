@@ -303,10 +303,12 @@ function Teleporter_OnEvent(self, event, ...)
 		if player == "player" then
 			if C_Spell and C_Spell.GetSpellInfo then
 				if C_Spell.GetSpellInfo(spell).name == CastSpell then
+					if TeleporterSearchBox then TeleporterSearchBox:SetText("") end
 					TeleporterClose()
 				end
 			else
 				if GetSpellInfo(spell) == CastSpell then
+					if TeleporterSearchBox then TeleporterSearchBox:SetText("") end
 					TeleporterClose()
 				end
 			end
