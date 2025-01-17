@@ -2,4 +2,7 @@
  <Binding name="TOMEOFTELEPORTATION" category="ADDONS">
    TeleporterSlashCmdFunction()
  </Binding>
+ <Binding name="TOMEOFTELEPORTATIONSEARCH" category="ADDONS">
+   TeleporterSlashCmdFunction("search")
+ </Binding>
 </Bindings>

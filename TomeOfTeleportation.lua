@@ -49,10 +49,12 @@ local AddSpellButton = nil
 local DebugUnsupported = nil
 local ChosenHearth = nil
 local IsRefreshing = nil
+local StartSearch = false
 
 TomeOfTele_ShareOptions = true
 
 BINDING_NAME_TOMEOFTELEPORTATION = "Tome of Teleportation"
+BINDING_NAME_TOMEOFTELEPORTATIONSEARCH = "Search Teleports"
 
 local InvTypeToSlot =
 {
@@ -2040,11 +2042,16 @@ function TeleporterSlashCmdFunction(args)
 		TeleporterDebugMode = 1
 	elseif splitArgs[1] == "debugunsupported" then
 		DebugUnsupported = 1
-	elseif splitArgs[1] == nil then
+	elseif splitArgs[1] == nil or splitArgs[1] == "search" then
 		if IsVisible then
 			TeleporterClose()
 		else
 			TeleporterOpenFrame()
+		end
+		if splitArgs[1] == "search" and GetOption("showSearch") and TeleporterSearchBox then
+			TeleporterSearchBox:SetText("")
+			-- Don't set the focus immediately because the hot key will be put in the search box
+			StartSearch = true
 		end
 	else
 		print("Tome of Teleportation usage")
@@ -2205,6 +2212,10 @@ end
 
 function Teleporter_OnUpdate()
 	if IsVisible then
+		if StartSearch and GetTime() > OpenTime + 0.1 then
+			TeleporterSearchBox:SetFocus()
+			StartSearch = false
+		end
 		-- The first time the UI is opened toy ownership may be incorrect. Reopen once it's correct.
 		if NeedUpdate then
 			-- If it's still wrong then will try again later.
