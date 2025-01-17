@@ -78,6 +78,7 @@ local InvTypeToSlot =
 local SortByDestination = 1
 local SortByType = 2
 local SortCustom = 3
+local SortByExpansion = 4
 
 local TitleFrameBG
 
@@ -610,6 +611,13 @@ local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 		info.checked = function(info) return GetOption("sort") == 2; end
 		UIDropDownMenu_AddButton(info, level)
 
+		info.text = "Expansion"
+		info.value = 4
+		info.func = function(info) TomeOfTele_SetSort(4) end
+		info.owner = frame
+		info.checked = function(info) return GetOption("sort") == 4; end
+		UIDropDownMenu_AddButton(info, level)
+
 		info.text = "Custom"
 		info.value = 3
 		info.func = function(info) TomeOfTele_SetSort(3) end
@@ -663,6 +671,8 @@ local function SortSpells(spell1, spell2, sortType)
 	local spellName2 = spell2.spellName
 	local spellType1 = spell1.spellType
 	local spellType2 = spell2.spellType
+	local spellExpansion1 = spell1.expansion or -1
+	local spellExpansion2 = spell2.expansion or -1
 	local zone1 = spell1:GetZone()
 	local zone2 = spell2:GetZone()
 
@@ -687,6 +697,10 @@ local function SortSpells(spell1, spell2, sortType)
 	elseif sortType == SortByType then
 		if spellType1 ~= spellType2 then
 			return spellType1 < spellType2
+		end
+	elseif sortType == SortByExpansion then
+		if spellExpansion1 ~= spellExpansion2 then
+			return spellExpansion1 < spellExpansion2
 		end
 	end
 
