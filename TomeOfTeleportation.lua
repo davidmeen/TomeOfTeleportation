@@ -948,7 +948,12 @@ function TeleporterUpdateButton(button)
 	local onCooldown = false
 	local buttonInset = GetScaledOption("buttonInset")
 
-	local _, isFlyingDruid, _, _ = GetShapeshiftFormInfo(3)
+	-- Detect druid flight form - only check if player is a druid
+	local isFlyingDruid = false;
+	local _, playerClass = UnitClass("player");
+	if playerClass == "DRUID" then
+		_, isFlyingDruid, _, _ = GetShapeshiftFormInfo(3);
+	end
 
 	if item then
 		local cooldownStart, cooldownDuration
