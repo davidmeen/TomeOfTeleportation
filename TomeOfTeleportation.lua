@@ -715,11 +715,15 @@ local function SortSpells(spell1, spell2, sortType)
 		return zone1 < zone2
 	end
 
-	return spellName1 < spellName2
+	if spellName1 ~= spellName2 then
+		return spellName1 < spellName2
+	end
+
+	return spellId1 < spellId2
 end
 
 function TeleporterGetSearchString()
-	if GetOption("showSearch") then
+	if GetOption("showSearch") and TeleporterSearchBox then
 		local searchString = TeleporterSearchBox:GetText()
 		if searchString == "" then
 			return nil
