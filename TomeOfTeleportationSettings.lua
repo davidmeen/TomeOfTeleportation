@@ -325,6 +325,8 @@ local function CreateSettings(panel)
     p = AddColourOption("Unequiped Colour",     "unequipedColour",                      scrollChild, false, p)
     p = AddColourOption("Cooldown Colour",      "cooldownColour",                       scrollChild, false, p)
     p = AddColourOption("Disabled Colour",      "disabledColour",                       scrollChild, false, p)
+    p = AddColourOption("Druid Form Colour",    "druidFormColour",                      scrollChild, false, p)
+
 
     p = AddSliderOption("Quick Menu Size",      "QuickMenuSize", 20, 100, 1,             scrollChild, p)
 end

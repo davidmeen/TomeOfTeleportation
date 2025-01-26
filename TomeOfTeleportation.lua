@@ -120,6 +120,9 @@ local DefaultOptions =
 	["unequipedColourR"] = 1,
 	["unequipedColourG"] = 0,
 	["unequipedColourB"] = 0,
+	["druidFormColourR"] = 1,
+	["druidFormColourG"] = 0.49,
+	["druidFormColourB"] = 0.04,
 	["cooldownColourR"] = 1,
 	["cooldownColourG"] = 0.7,
 	["cooldownColourB"] = 0,
@@ -963,6 +966,13 @@ function TeleporterUpdateButton(button)
 	local onCooldown = false
 	local buttonInset = GetScaledOption("buttonInset")
 
+	-- Detect druid flight form - only check if player is a druid
+	local isFlyingDruid = false;
+	local _, playerClass = UnitClass("player");
+	if playerClass == "DRUID" then
+		_, isFlyingDruid, _, _ = GetShapeshiftFormInfo(3);
+	end
+
 	if item then
 		local cooldownStart, cooldownDuration
 		if isItem then
@@ -1036,12 +1046,20 @@ function TeleporterUpdateButton(button)
 		elseif onCooldown then
 			if cooldownDuration >2 then
 				button.backdrop:SetBackdropColor(GetOption("cooldownColourR"), GetOption("cooldownColourG"), GetOption("cooldownColourB"), 1)
+			elseif isFlyingDruid then
+				button.backdrop:SetBackdropColor(GetOption("druidFormColourR"), GetOption("druidFormColourG"), GetOption("druidFormColourB"), 1)
 			else
 				button.backdrop:SetBackdropColor(GetOption("readyColourR"), GetOption("readyColourG"), GetOption("readyColourB"), 1)
 			end
 			button:SetAttribute(
 				"macrotext",
 				"/script print( \"" .. item .. " is currently on cooldown.\")")
+		elseif isFlyingDruid then
+			button.backdrop:SetBackdropColor(GetOption("druidFormColourR"), GetOption("druidFormColourG"), GetOption("druidFormColourB"), 1)
+
+			button:SetAttribute(
+				"macrotext",
+				"/cancelform")
 		else
 			button.backdrop:SetBackdropColor(GetOption("readyColourR"), GetOption("readyColourG"), GetOption("readyColourB"), 1)
 
