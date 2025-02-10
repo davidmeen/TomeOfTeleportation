@@ -356,25 +356,32 @@ local function RebuildSpellList()
 		tinsert(TeleporterSpells, spell)
 	end
 
+	if not GetOption("extraSpellsAndItems") then
+		SetOption("extraSpellsAndItems", {})
+	end
+
+	local extraSpellsAndItems = GetOption("extraSpellsAndItems")
+
 	local extraSpells = GetOption("extraSpells")
 	if extraSpells then
 		for id,dest in pairs(extraSpells) do
 			local spell = TeleporterCreateSpell(id,dest)
 			spell.isCustom = true
-			tinsert(TeleporterSpells, spell)
+			tinsert(extraSpellsAndItems, spell)
 		end
 	end
+	SetOption("extraSpells", nil)
 
 	local extraItems = GetOption("extraItems")
 	if extraItems then
 		for id,dest in pairs(extraItems) do
 			local spell = TeleporterCreateItem(id,dest)
 			spell.isCustom = true
-			tinsert(TeleporterSpells, spell)
+			tinsert(extraSpellsAndItems, spell)
 		end
 	end
+	SetOption("extraItems", nil)
 
-	local extraSpellsAndItems = GetOption("extraSpellsAndItems")
 	if extraSpellsAndItems then
 		for index = #extraSpellsAndItems,1,-1 do
 			local spell = extraSpellsAndItems[index]
@@ -672,8 +679,8 @@ end
 
 
 local function SortSpells(spell1, spell2, sortType)
-	local spellId1 = spell1.spellId
-	local spellId2 = spell2.spellId
+	local spellId1 = tonumber(spell1.spellId)
+	local spellId2 = tonumber(spell2.spellId)
 	local spellName1 = spell1.spellName
 	local spellName2 = spell2.spellName
 	local spellType1 = spell1.spellType
