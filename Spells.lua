@@ -258,6 +258,8 @@ CreateDestination(
 		CreateItem(228940),				-- Notorious Thread's Hearthstone
 		CreateItem(142542),				-- Tome of Town Portal
 		CreateItem(212337),				-- Stone of the Hearth
+		CreateItem(235016), 			-- Redeployment Module
+		CreateItem(236687)				-- Explosive Hearthstone
 	})
 
 -- Any hearthstones that shouldn't be randomised.
@@ -491,6 +493,12 @@ CreateDestination(
 	}).SetExpansion(ExpansionCataclysm)
 
 CreateDestination(
+	"Delves",
+	{
+		CreateItem(230850)			-- Delve-O-Bot 7001
+	}).SetExpansion(ExpansionWarWithin)
+
+CreateDestination(
 	LocZone("Dornogal", 2339),
 	{
 		CreateSpell(446540),		-- Teleport: Dornogal
@@ -650,22 +658,6 @@ CreateDestination(
 	LocZone("Khaz Algar", 2274),
 	{
 		CreateItem(221966),		-- Wormhole Generator: Khaz Algar
-	}).SetExpansion(ExpansionWarWithin)
-
-CreateDestination(
-	"War Within Dungeons",
-	{
-		CreateChallengeSpell(445416, 2652, 2213),	-- Path of Nerubian Ascension				City of Threads
-		CreateChallengeSpell(445269, 2693, 2341),	-- Path of the Corrupted Foundry			The Stonevault
-		CreateChallengeSpell(445414, 2719, 2359),	-- Path of the Arathi Flagship				The Dawnbreaker
-		CreateChallengeSpell(445418, 1700, 1162),	-- Path of the Besieged Harbor (Alliance)	Siege of Boralus
-		CreateChallengeSpell(445417, 2654, 2357),	-- Path of the Ruined City					Ara-Kara, City of Echoes
-		CreateChallengeSpell(445424, 304, 293),		-- Path of the Twilight Fortress			Grim Batol
-		CreateChallengeSpell(445444, 2695, 2308),	-- Path of the Light's Reverence			Priory of the Sacred Flame
-		CreateChallengeSpell(464256, 1700, 1162),	-- Path of the Besieged Harbor (Horde)		Siege of Boralus
-		CreateChallengeSpell(445440, 2689, 2335),	-- Path of the Flaming Brewery				Cinderbrew Meadery
-		CreateChallengeSpell(445441, 2655, 2303),	-- Path of the Warding Candles				Darkflame Cleft
-		CreateChallengeSpell(445443, 2653, 2315),	-- Path of the Fallen Stormriders			The Rookery
 	}).SetExpansion(ExpansionWarWithin)
 
 CreateDestination(
@@ -866,7 +858,7 @@ CreateDestination(
 	LocZone("Stormsong Valley", 942),
 	{
 		CreateItem(202046)		-- Lucky Tortollan Charm
-	}).SetExpansion(ExpansionBattleForAzeroth)
+	}).SetExpansion(ExpansionDragonflight)
 
 CreateDestination(
 	LocZone("Stormwind City", 84),
@@ -989,6 +981,13 @@ CreateDestination(
 	}).SetExpansion(ExpansionClassic)
 
 CreateDestination(
+	"Undermine",
+	{
+		CreateChallengeSpell(1226482, 2779, 2346),	-- Path of the Full House				Liberation of Undermine
+	}).SetExpansion(ExpansionWarWithin)
+
+
+CreateDestination(
 	LocZone("Valdrakken", 2112),
 	{
 		CreateSpell(395277),		-- Teleport: Valdrakken
@@ -1025,6 +1024,24 @@ CreateDestination(
 	}).SetExpansion(ExpansionCataclysm)
 
 CreateDestination(
+	"War Within Dungeons",
+	{
+		CreateChallengeSpell(445416, 2652, 2213),	-- Path of Nerubian Ascension				City of Threads
+		CreateChallengeSpell(445269, 2693, 2341),	-- Path of the Corrupted Foundry			The Stonevault
+		CreateChallengeSpell(445414, 2719, 2359),	-- Path of the Arathi Flagship				The Dawnbreaker
+		CreateChallengeSpell(445418, 1700, 1162),	-- Path of the Besieged Harbor (Alliance)	Siege of Boralus
+		CreateChallengeSpell(445417, 2654, 2357),	-- Path of the Ruined City					Ara-Kara, City of Echoes
+		CreateChallengeSpell(445424, 304, 293),		-- Path of the Twilight Fortress			Grim Batol
+		CreateChallengeSpell(445444, 2695, 2308),	-- Path of the Light's Reverence			Priory of the Sacred Flame
+		CreateChallengeSpell(464256, 1700, 1162),	-- Path of the Besieged Harbor (Horde)		Siege of Boralus
+		CreateChallengeSpell(445440, 2689, 2335),	-- Path of the Flaming Brewery				Cinderbrew Meadery
+		CreateChallengeSpell(467546, 2689, 2335),	-- Path of the Waterworks					Cinderbrew Meadery
+		CreateChallengeSpell(445441, 2655, 2303),	-- Path of the Warding Candles				Darkflame Cleft
+		CreateChallengeSpell(445443, 2653, 2315),	-- Path of the Fallen Stormriders			The Rookery
+		CreateChallengeSpell(1216786, 2791, 2387),	-- Path of the Circuit Breaker				Operation: Floodgate
+	}).SetExpansion(ExpansionWarWithin)
+
+CreateDestination(
 	LocZone("Winterspring", 83),
 	{
 		CreateItem(18984),		-- Dimensional Ripper - Everlook
@@ -1048,4 +1065,6 @@ CreateDestination(
 		CreateConsumable(157542),	-- Portal Scroll of Specificity
 		CreateConsumable(160218),	-- Portal Scroll of Specificity
 		CreateChallengeSpell(424187, 2107, 934),	-- Path of the Golden Tomb		Atal'Dazar
+		CreateChallengeSpell(467553, 1707, 934),	-- Path of the Azerite Refinery	The MOTHERLODE!!
+		CreateChallengeSpell(467555, 1707, 934),	-- Path of the Azerite Refinery	The MOTHERLODE!!
 	}).SetExpansion(ExpansionBattleForAzeroth)
