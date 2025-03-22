@@ -42,6 +42,10 @@ local function AtContinent(requiredContinent)
 	return AtZone(requiredContinent)
 end
 
+local function InUndermineRaid()
+	return AtZone(2406)() or AtZone(2428)() or AtZone(2407)() or AtZone(2408)() or AtZone(2411)() or AtZone(2409)()
+end
+
 local function AllowWhistle()
 	--return AtContinent(ContinentIdBrokenIsles)() or AtContinent(ContinentIdArgus)() or AtContinent(ContinentIdKulTiras)() or AtContinent(ContinentIdZandalar)() or AtZone(MapIdAlterac)
 	-- This is getting complicated - until I find a better way, always allow it.
@@ -983,7 +987,13 @@ CreateDestination(
 CreateDestination(
 	"Undermine",
 	{
-		CreateChallengeSpell(1226482, 2779, 2346),	-- Path of the Full House				Liberation of Undermine
+		CreateChallengeSpell(1226482, 2779, 2346),			-- Path of the Full House				Liberation of Undermine
+		CreateConditionalItem(234389, InUndermineRaid),		-- Gallagio Loyalty Rewards Card: Silver
+		CreateConditionalItem(234390, InUndermineRaid),		-- Gallagio Loyalty Rewards Card: Gold
+		CreateConditionalItem(234391, InUndermineRaid),		-- Gallagio Loyalty Rewards Card: Platinum
+		CreateConditionalItem(234392, InUndermineRaid),		-- Gallagio Loyalty Rewards Card: Black
+		CreateConditionalItem(234393, InUndermineRaid),		-- Gallagio Loyalty Rewards Card: Diamond
+		CreateConditionalItem(234394, InUndermineRaid),		-- Gallagio Loyalty Rewards Card: Legendary
 	}).SetExpansion(ExpansionWarWithin)
 
 
