@@ -2430,3 +2430,7 @@ function TeleporterTest_Reset()
 	ChosenHearth = nil
 	IsRefreshing = nil
 end
+
+function Teleporter_OnAddonCompartmentClick()
+	TeleporterSlashCmdFunction()
+end

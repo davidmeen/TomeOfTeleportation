@@ -5,6 +5,7 @@
 ## SavedVariablesPerCharacter: TomeOfTele_Options,TomeOfTele_ShareOptions
 ## SavedVariables: TomeOfTele_OptionsGlobal,TomeOfTele_IconGlobal
 ## IconTexture: Interface\Icons\Spell_Arcane_TeleportDalaran
+## AddonCompartmentFunc: Teleporter_OnAddonCompartmentClick
 
 libs\embeds.xml
 libs\LibDBIcon-1.0\lib.xml
