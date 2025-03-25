@@ -846,7 +846,7 @@ local function CreateAddFavouriteMenu()
 				info.value = 1000
 				info.checked = nil
 
-				info.text = "Add favourite"
+				info.text = "Add to minimap button menu"
 				info.func = function()
 					local favourites = GetOption("favourites")
 					favourites[RightClickMenuSpell] = RightClickMenuSpellIsItem
@@ -872,7 +872,7 @@ local function CreateRemoveFavouriteMenu()
 				info.value = 1001
 				info.checked = nil
 
-				info.text = "Remove favourite"
+				info.text = "Remove from minimap button menu"
 				info.func = function()
 					local favourites = GetOption("favourites")
 					favourites[RightClickMenuSpell] = nil
@@ -884,7 +884,7 @@ local function CreateRemoveFavouriteMenu()
 end
 
 local function CreateEquipableItemRightClickMenu()
-	if not RemoveFavouriteMenu then
+	if not CantAddFavouriteMenu then
 		CantAddFavouriteMenu = CreateFrame("Frame", "TomeOfTeleCantAddFavouriteMenu", UIParent, "UIDropDownMenuTemplate")
 
 		UIDropDownMenu_Initialize(
@@ -897,7 +897,7 @@ local function CreateEquipableItemRightClickMenu()
 				info.value = 1002
 				info.checked = nil
 
-				info.text = "This item can not be added to favourites"
+				info.text = "This item can not be added to the minimap button menu"
 				info.func = nil
 				UIDropDownMenu_AddButton(info, level)
 
