@@ -207,7 +207,9 @@ function TeleporterSpell:CanUse()
 	end
 
 	if not CustomizeSpells and not spell:IsVisible() then
-		haveSpell = false
+		if not TeleporterGetSearchString() or not TeleporterGetOption("searchHidden") then
+			haveSpell = false
+		end
 	end
 
 	return haveSpell
