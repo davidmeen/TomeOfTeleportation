@@ -277,6 +277,9 @@ local function SetOption(option, value)
 	if TomeOfTele_Options == nil then
 		TomeOfTele_Options = {}
 	end
+	if TomeOfTele_OptionsGlobal == nil then
+		TomeOfTele_OptionsGlobal = {}
+	end
 	if TomeOfTele_ShareOptions then
 		TomeOfTele_OptionsGlobal[option] = value
 	else
