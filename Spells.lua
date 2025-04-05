@@ -521,7 +521,7 @@ CreateDestination(
 	LocZone("Drustvar", 896),
 	{
 		CreateChallengeSpell(424167, 1706, 1015)	-- Path of Heart's Bane				Waycrest Manor
-	}).SetExpansion(ExpansionShadowlands)
+	}).SetExpansion(ExpansionBattleForAzeroth)
 
 CreateDestination(
 	"Draenor Dungeons",
