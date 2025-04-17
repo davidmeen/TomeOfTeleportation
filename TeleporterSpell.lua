@@ -171,6 +171,23 @@ function TeleporterSpell:CanUse()
 		haveSpell = GetItemCount( spellId ) > 0 or haveToy
 	else
 		haveSpell = IsSpellKnown( spellId )
+
+		if not haveSpell then
+			if C_MountJournal then
+				local mountId = C_MountJournal.GetMountFromSpell(spellId)
+				if mountId then
+					local _, _,_,_,isUsable = C_MountJournal.GetMountInfoByID(mountId)
+					haveSpell = isUsable
+				end
+			end
+			if C_PetJournal then
+				local petId, petGuid = C_PetJournal.FindPetIDByName(self.spellName)
+				if petId and C_PetJournal.PetIsSummonable(petGuid) then
+					haveSpell = true
+					self.isPet = true
+				end
+			end
+		end
 	end
 
 	if condition and not CustomizeSpells then

@@ -1082,6 +1082,11 @@ function TeleporterUpdateButton(button)
 					"macrotext",
 					"/teleportercastspell " .. toySpell .. "\n" ..
 					"/cast " .. item .. "\n" )
+			elseif settings.isPet then
+				local _, petGuid = C_PetJournal.FindPetIDByName(item)
+				button:SetAttribute(
+					"macrotext",
+					"/script C_PetJournal.SummonPetByGUID(\"" .. petGuid .. "\")\n")
 			elseif isItem then
 				button:SetAttribute(
 					"macrotext",
@@ -1935,6 +1940,7 @@ function TeleporterOpenFrame(isSearching)
 				buttonSetting.spellType = spellType
 				buttonSetting.frame = buttonFrame
 				buttonSetting.displaySpellName = displaySpellName
+				buttonSetting.isPet = spell.isPet
 				ButtonSettings[buttonFrame] = buttonSetting
 				OrderedButtonSettings[spellIndex] = buttonSetting
 				spellIndex = spellIndex + 1
