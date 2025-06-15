@@ -1078,10 +1078,18 @@ function TeleporterUpdateButton(button)
 			button.backdrop:SetBackdropColor(GetOption("readyColourR"), GetOption("readyColourG"), GetOption("readyColourB"), 1)
 
 			if toySpell then
-				button:SetAttribute(
-					"macrotext",
-					"/teleportercastspell " .. toySpell .. "\n" ..
-					"/cast " .. item .. "\n" )
+				if itemId == 140192 then
+					-- Work around for Dalaran Hearthstone using wrong item in some cases.
+					button:SetAttribute(
+						"macrotext",
+						"/teleportercastspell " .. toySpell .. "\n"  ..
+						"/use item:" .. itemId.. "\n" )
+				else
+					button:SetAttribute(
+						"macrotext",
+						"/teleportercastspell " .. toySpell .. "\n"  ..
+						"/cast " .. item .. "\n" )
+				end
 			elseif settings.isPet then
 				local _, petGuid = C_PetJournal.FindPetIDByName(item)
 				button:SetAttribute(
