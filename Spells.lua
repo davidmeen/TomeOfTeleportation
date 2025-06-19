@@ -263,7 +263,8 @@ CreateDestination(
 		CreateItem(142542),				-- Tome of Town Portal
 		CreateItem(212337),				-- Stone of the Hearth
 		CreateItem(235016), 			-- Redeployment Module
-		CreateItem(236687)				-- Explosive Hearthstone
+		CreateItem(236687),				-- Explosive Hearthstone
+		CreateItem(235016),				-- Redeployment Module
 	})
 
 -- Any hearthstones that shouldn't be randomised.
