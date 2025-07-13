@@ -41,6 +41,7 @@ local LocalizedStrings = {
 		["Dragon Isles Raids"] = "Dragon Isles Raids",
 		["Fishing Pool"] = "Fishing Pool",
 		["Delves"] = "Delves",
+		["Random"] = "Random",
 	},
 	-- Simplified Chinese
 	["zhCN"] = {
@@ -60,6 +61,7 @@ local LocalizedStrings = {
 		["Dragon Isles Raids"] = "巨龙群岛团队副本",
 		["Fishing Pool"] = "钓鱼池",
 		["Delves"] = "地下堡",
+		["Random"] = "随机",
 	},
 	-- Traditional Chinese
 	["zhTW"] = {
@@ -79,6 +81,7 @@ local LocalizedStrings = {
 		["Dragon Isles Raids"] = "巨龍群島團隊副本",
 		["Fishing Pool"] = "釣魚池",
 		["Delves"] = "地下堡",
+		["Random"] = "隨機",
 	},
 	-- German
 	["deDE"] = {
@@ -98,6 +101,7 @@ local LocalizedStrings = {
 		["Dragon Isles Raids"] = "Dragon Isles Raids",
 		["Fishing Pool"] = "Fishing Pool",
 		["Delves"] = "Delves",
+		["Random"] = "Zufällig",
 	},
 	-- French
 	["frFR"] = {
@@ -117,6 +121,7 @@ local LocalizedStrings = {
 		["Dragon Isles Raids"] = "Dragon Isles Raids",
 		["Fishing Pool"] = "Fishing Pool",
 		["Delves"] = "Delves",
+		["Random"] = "Aléatoire",
 	},
 	-- Spanish
 	["esES"] = {
@@ -136,6 +141,7 @@ local LocalizedStrings = {
 		["Dragon Isles Raids"] = "Dragon Isles Raids",
 		["Fishing Pool"] = "Fishing Pool",
 		["Delves"] = "Delves",
+		["Random"] = "Aleatorio",
 	},
 	-- Russian
 	["ruRU"] = {
@@ -155,6 +161,7 @@ local LocalizedStrings = {
 		["Dragon Isles Raids"] = "Dragon Isles Raids",
 		["Fishing Pool"] = "Fishing Pool",
 		["Delves"] = "Delves",
+		["Random"] = "Случайный",
 	},
 	-- Korean
 	["koKR"] = {
@@ -174,6 +181,7 @@ local LocalizedStrings = {
 		["Dragon Isles Raids"] = "Dragon Isles Raids",
 		["Fishing Pool"] = "Fishing Pool",
 		["Delves"] = "Delves",
+		["Random"] = "무작위",
 	},
 }
 
@@ -974,15 +982,15 @@ CreateDestination(
 	}).SetExpansion(ExpansionPandaria)
 
 CreateDestination(
-	"Random",		-- No localization.
+	GetLocalizedCategoryName("Random"),
 	{
 		CreateSpell(147420),								-- One With Nature
 		CreateItem(64457), 									-- The Last Relic of Argus
 		CreateConditionalItem(136849, IsClass("DRUID")),	-- Nature's Beacon
-		CreateItem(153004),									-- Unstable Portal Emitter
-		CreateItem(189827),									-- Cartel Xy's Proof of Initiation
-		CreateItem(192443),									-- Element-Infused Rocket Helmet
-		CreateItem(193000),									-- Ring-Bound Hourglass
+		CreateItem(153004),								-- Unstable Portal Emitter
+		CreateItem(189827),								-- Cartel Xy's Proof of Initiation
+		CreateItem(192443),								-- Element-Infused Rocket Helmet
+		CreateItem(193000),								-- Ring-Bound Hourglass
 		CreateConditionalItem(163073, function() return AtContinent(ContinentIdKulTiras)() or AtContinent(ContinentIdZandalar)() or AtContinent(ContinentIdNazjatar)() end),	-- Conch of Wa'mundi
 	})
 
