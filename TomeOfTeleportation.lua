@@ -10,6 +10,33 @@
 
 local AddonName = "TomeOfTeleportation"
 local AddonTitle = "Tome of Teleportation"
+
+-- Simple localization function for Hearth category
+local function GetLocalizedHearthText()
+	local locale = GetLocale() or "enUS"
+	if locale == "zhCN" then
+		return "炉石"
+	elseif locale == "zhTW" then
+		return "爐石"
+	elseif locale == "deDE" then
+		return "Hearth" -- TODO: Add German translation
+	elseif locale == "frFR" then
+		return "Hearth" -- TODO: Add French translation
+	elseif locale == "esES" then
+		return "Hearth" -- TODO: Add Spanish translation
+	elseif locale == "ruRU" then
+		return "Hearth" -- TODO: Add Russian translation
+	elseif locale == "koKR" then
+		return "Hearth" -- TODO: Add Korean translation
+	elseif locale == "ptBR" then
+		return "Hearth" -- TODO: Add Portuguese (Brazil) translation
+	elseif locale == "itIT" then
+		return "Hearth" -- TODO: Add Italian translation
+	else
+		return "Hearth"
+	end
+end
+
 -- Special case strings start with number to force them to be sorted first.
 TeleporterHearthString = "0 Hearth"
 TeleporterRecallString = "1 Astral Recall"
@@ -1595,9 +1622,9 @@ local function FindValidSpells()
 		if zone == TeleporterHearthString or zone == TeleporterRecallString then
 			local bindLocation = GetBindLocation()
 			if bindLocation then
-				spell.displayDestination = "Hearth (" .. bindLocation .. ")"
+				spell.displayDestination = GetLocalizedHearthText() .. " (" .. bindLocation .. ")"
 			else
-				spell.displayDestination = "Hearth"
+				spell.displayDestination = GetLocalizedHearthText()
 			end
 		end
 
