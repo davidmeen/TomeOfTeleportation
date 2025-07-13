@@ -1242,7 +1242,6 @@ CreateDestination(
 		CreateChallengeSpell(445269, 2693, 2341),	-- Path of the Corrupted Foundry			The Stonevault
 		CreateChallengeSpell(445414, 2719, 2359),	-- Path of the Arathi Flagship				The Dawnbreaker
 		CreateChallengeSpell(445417, 2654, 2357),	-- Path of the Ruined City					Ara-Kara, City of Echoes
-		CreateChallengeSpell(445424, 304, 293),		-- Path of the Twilight Fortress			Grim Batol
 		CreateChallengeSpell(445444, 2695, 2308),	-- Path of the Light's Reverence			Priory of the Sacred Flame
 		CreateChallengeSpell(464256, 1700, 1162),	-- Path of the Besieged Harbor (Horde)		Siege of Boralus
 		CreateChallengeSpell(445440, 2689, 2335),	-- Path of the Flaming Brewery				Cinderbrew Meadery
@@ -1251,6 +1250,12 @@ CreateDestination(
 		CreateChallengeSpell(445443, 2653, 2315),	-- Path of the Fallen Stormriders			The Rookery
 		CreateChallengeSpell(1216786, 2791, 2387),	-- Path of the Circuit Breaker				Operation: Floodgate
 	}).SetExpansion(ExpansionWarWithin)
+
+CreateDestination(
+	LocZone("Twilight Highlands", 241),
+	{
+		CreateChallengeSpell(445424, 304, 293),		-- Path of the Twilight Fortress			Grim Batol
+	}).SetExpansion(ExpansionCataclysm)
 
 CreateDestination(
 	LocZone("Winterspring", 83),
