@@ -1152,7 +1152,8 @@ CreateDestination(
 CreateDestination(
 	LocZone("Tiragarde Sound", 895),
 	{
-		CreateChallengeSpell(410071, 1704, 936)	-- Path of the Freebooter		Freehold
+		CreateChallengeSpell(410071, 1704, 936),	-- Path of the Freebooter		Freehold
+		CreateChallengeSpell(445418, 1700, 1162),	-- Path of the Besieged Harbor (Alliance)	Siege of Boralus
 	}).SetExpansion(ExpansionBattleForAzeroth)
 
 CreateDestination(
@@ -1240,7 +1241,6 @@ CreateDestination(
 		CreateChallengeSpell(445416, 2652, 2213),	-- Path of Nerubian Ascension				City of Threads
 		CreateChallengeSpell(445269, 2693, 2341),	-- Path of the Corrupted Foundry			The Stonevault
 		CreateChallengeSpell(445414, 2719, 2359),	-- Path of the Arathi Flagship				The Dawnbreaker
-		CreateChallengeSpell(445418, 1700, 1162),	-- Path of the Besieged Harbor (Alliance)	Siege of Boralus
 		CreateChallengeSpell(445417, 2654, 2357),	-- Path of the Ruined City					Ara-Kara, City of Echoes
 		CreateChallengeSpell(445424, 304, 293),		-- Path of the Twilight Fortress			Grim Batol
 		CreateChallengeSpell(445444, 2695, 2308),	-- Path of the Light's Reverence			Priory of the Sacred Flame
