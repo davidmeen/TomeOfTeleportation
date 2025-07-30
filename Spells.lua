@@ -1,4 +1,3 @@
-
 local MapIDAlteracValley = 91
 local MapIDAlteracValleyKorrak = 1537
 local MapIDIsleOfThunder = 504
@@ -21,6 +20,216 @@ local ContinentIdArgus = 905
 local ContinentIdZandalar = 875
 local ContinentIdKulTiras = 876
 local ContinentIdNazjatar = 1355
+
+-- Localization system
+local LocalizedStrings = {
+	-- English
+	["enUS"] = {
+		-- Expansion suffixes
+		["Legion"] = " (Legion)",
+		["WotLK"] = " (WotLK)",
+		["BFA"] = " (BFA)",
+		["Shadowlands"] = " (Shadowlands)",
+		["Dragonflight"] = " (Dragonflight)",
+		["WarWithin"] = " (War Within)",
+		-- Category names
+		["Draenor Dungeons"] = "Draenor Dungeons",
+		["Dragon Isles Dungeons"] = "Dragon Isles Dungeons",
+		["Pandaria Dungeons"] = "Pandaria Dungeons",
+		["Shadowlands Dungeons"] = "Shadowlands Dungeons",
+		["War Within Dungeons"] = "War Within Dungeons",
+		["Dragon Isles Raids"] = "Dragon Isles Raids",
+		["Fishing Pool"] = "Fishing Pool",
+		["Delves"] = "Delves",
+		["Random"] = "Random",
+	},
+	-- Simplified Chinese
+	["zhCN"] = {
+		-- Expansion suffixes
+		["Legion"] = " (军团再临)",
+		["WotLK"] = " (巫妖王之怒)",
+		["BFA"] = " (争霸艾泽拉斯)",
+		["Shadowlands"] = " (暗影国度)",
+		["Dragonflight"] = " (巨龙时代)",
+		["WarWithin"] = " (地心之战)",
+		-- Category names
+		["Draenor Dungeons"] = "德拉诺地下城",
+		["Dragon Isles Dungeons"] = "巨龙群岛地下城",
+		["Pandaria Dungeons"] = "潘达利亚地下城",
+		["Shadowlands Dungeons"] = "暗影界地下城",
+		["War Within Dungeons"] = "地心之战地下城",
+		["Dragon Isles Raids"] = "巨龙群岛团队副本",
+		["Fishing Pool"] = "钓鱼池",
+		["Delves"] = "地下堡",
+		["Random"] = "随机",
+	},
+	-- Traditional Chinese
+	["zhTW"] = {
+		-- Expansion suffixes
+		["Legion"] = " (軍團再臨)",
+		["WotLK"] = " (巫妖王之怒)",
+		["BFA"] = " (決戰艾澤拉斯)",
+		["Shadowlands"] = " (暗影之境)",
+		["Dragonflight"] = " (巨龍時代)",
+		["WarWithin"] = " (地心之戰)",
+		-- Category names
+		["Draenor Dungeons"] = "德拉諾地下城",
+		["Dragon Isles Dungeons"] = "巨龍群島地下城",
+		["Pandaria Dungeons"] = "潘達利亞地下城",
+		["Shadowlands Dungeons"] = "暗影界地下城",
+		["War Within Dungeons"] = "地心之戰地下城",
+		["Dragon Isles Raids"] = "巨龍群島團隊副本",
+		["Fishing Pool"] = "釣魚池",
+		["Delves"] = "地下堡",
+		["Random"] = "隨機",
+	},
+	-- German
+	["deDE"] = {
+		-- Expansion suffixes
+		["Legion"] = " (Legion)",
+		["WotLK"] = " (WotLK)",
+		["BFA"] = " (BFA)",
+		["Shadowlands"] = " (Shadowlands)",
+		["Dragonflight"] = " (Dragonflight)",
+		["WarWithin"] = " (War Within)",
+		-- Category names
+		["Draenor Dungeons"] = "Draenor Dungeons",
+		["Dragon Isles Dungeons"] = "Dragon Isles Dungeons",
+		["Pandaria Dungeons"] = "Pandaria Dungeons",
+		["Shadowlands Dungeons"] = "Shadowlands Dungeons",
+		["War Within Dungeons"] = "War Within Dungeons",
+		["Dragon Isles Raids"] = "Dragon Isles Raids",
+		["Fishing Pool"] = "Fishing Pool",
+		["Delves"] = "Delves",
+		["Random"] = "Zufällig",
+	},
+	-- French
+	["frFR"] = {
+		-- Expansion suffixes
+		["Legion"] = " (Légion)",
+		["WotLK"] = " (WotLK)",
+		["BFA"] = " (BFA)",
+		["Shadowlands"] = " (Shadowlands)",
+		["Dragonflight"] = " (Dragonflight)",
+		["WarWithin"] = " (War Within)",
+		-- Category names
+		["Draenor Dungeons"] = "Draenor Dungeons",
+		["Dragon Isles Dungeons"] = "Dragon Isles Dungeons",
+		["Pandaria Dungeons"] = "Pandaria Dungeons",
+		["Shadowlands Dungeons"] = "Shadowlands Dungeons",
+		["War Within Dungeons"] = "War Within Dungeons",
+		["Dragon Isles Raids"] = "Dragon Isles Raids",
+		["Fishing Pool"] = "Fishing Pool",
+		["Delves"] = "Delves",
+		["Random"] = "Aléatoire",
+	},
+	-- Spanish
+	["esES"] = {
+		-- Expansion suffixes
+		["Legion"] = " (Legión)",
+		["WotLK"] = " (WotLK)",
+		["BFA"] = " (BFA)",
+		["Shadowlands"] = " (Shadowlands)",
+		["Dragonflight"] = " (Dragonflight)",
+		["WarWithin"] = " (War Within)",
+		-- Category names
+		["Draenor Dungeons"] = "Draenor Dungeons",
+		["Dragon Isles Dungeons"] = "Dragon Isles Dungeons",
+		["Pandaria Dungeons"] = "Pandaria Dungeons",
+		["Shadowlands Dungeons"] = "Shadowlands Dungeons",
+		["War Within Dungeons"] = "War Within Dungeons",
+		["Dragon Isles Raids"] = "Dragon Isles Raids",
+		["Fishing Pool"] = "Fishing Pool",
+		["Delves"] = "Delves",
+		["Random"] = "Aleatorio",
+	},
+	-- Russian
+	["ruRU"] = {
+		-- Expansion suffixes
+		["Legion"] = " (Легион)",
+		["WotLK"] = " (WotLK)",
+		["BFA"] = " (BFA)",
+		["Shadowlands"] = " (Shadowlands)",
+		["Dragonflight"] = " (Dragonflight)",
+		["WarWithin"] = " (War Within)",
+		-- Category names
+		["Draenor Dungeons"] = "Draenor Dungeons",
+		["Dragon Isles Dungeons"] = "Dragon Isles Dungeons",
+		["Pandaria Dungeons"] = "Pandaria Dungeons",
+		["Shadowlands Dungeons"] = "Shadowlands Dungeons",
+		["War Within Dungeons"] = "War Within Dungeons",
+		["Dragon Isles Raids"] = "Dragon Isles Raids",
+		["Fishing Pool"] = "Fishing Pool",
+		["Delves"] = "Delves",
+		["Random"] = "Случайный",
+	},
+	-- Korean
+	["koKR"] = {
+		-- Expansion suffixes
+		["Legion"] = " (군단)",
+		["WotLK"] = " (WotLK)",
+		["BFA"] = " (BFA)",
+		["Shadowlands"] = " (Shadowlands)",
+		["Dragonflight"] = " (Dragonflight)",
+		["WarWithin"] = " (War Within)",
+		-- Category names
+		["Draenor Dungeons"] = "Draenor Dungeons",
+		["Dragon Isles Dungeons"] = "Dragon Isles Dungeons",
+		["Pandaria Dungeons"] = "Pandaria Dungeons",
+		["Shadowlands Dungeons"] = "Shadowlands Dungeons",
+		["War Within Dungeons"] = "War Within Dungeons",
+		["Dragon Isles Raids"] = "Dragon Isles Raids",
+		["Fishing Pool"] = "Fishing Pool",
+		["Delves"] = "Delves",
+		["Random"] = "무작위",
+	},
+}
+
+-- Get current client locale
+local function GetClientLocale()
+	return GetLocale() or "enUS"
+end
+
+-- Get localized string
+local function GetLocalizedString(key)
+	local locale = GetClientLocale()
+	local strings = LocalizedStrings[locale] or LocalizedStrings["enUS"]
+	return strings[key] or key
+end
+
+-- Get localized expansion suffix
+local function GetLocalizedExpansionSuffix(expansionKey)
+	return GetLocalizedString(expansionKey)
+end
+
+-- Create localized zone name with expansion suffix
+local function CreateLocalizedZoneName(baseZoneName, expansionKey)
+	if not expansionKey then
+		return baseZoneName
+	end
+	return baseZoneName .. GetLocalizedExpansionSuffix(expansionKey)
+end
+
+-- Get localized category name
+local function GetLocalizedCategoryName(categoryName)
+	return GetLocalizedString(categoryName)
+end
+
+-- Test localization system (optional, for debugging)
+local function TestLocalization()
+	local locale = GetClientLocale()
+	print("=== Localization Test ===")
+	print("Current locale: " .. locale)
+	print("Dalaran (Legion): " .. CreateLocalizedZoneName("Dalaran", "Legion"))
+	print("Dalaran (WotLK): " .. CreateLocalizedZoneName("Dalaran", "WotLK"))
+	print("Draenor Dungeons: " .. GetLocalizedCategoryName("Draenor Dungeons"))
+	print("Dragon Isles Dungeons: " .. GetLocalizedCategoryName("Dragon Isles Dungeons"))
+	print("Fishing Pool: " .. GetLocalizedCategoryName("Fishing Pool"))
+	print("========================")
+end
+
+-- Uncomment the line below to run the test
+-- TestLocalization()
 
 local function AtZone(requiredZone)
 	return function()
@@ -427,7 +636,7 @@ CreateDestination(
 	})
 
 CreateDestination(
-	CreateZone(LocZone("Dalaran", 41).name .. " (Legion)", 627),
+	CreateZone(CreateLocalizedZoneName(LocZone("Dalaran", 41).name, "Legion"), 627),
 	{
 		CreatePortalSpell(224871),	-- Portal: Dalaran - Broken Isles
 		CreateSpell(224869),		-- Teleport: Dalaran - Broken Isles
@@ -438,7 +647,7 @@ CreateDestination(
 	}).SetExpansion(ExpansionLegion)
 
 CreateDestination(
-	CreateZone(LocZone("Dalaran", 41).name .. " (WotLK)", 125),
+	CreateZone(CreateLocalizedZoneName(LocZone("Dalaran", 41).name, "WotLK"), 125),
 	{
 		CreateSpell(53140),			-- Teleport: Dalaran
 		CreatePortalSpell(53142),	-- Portal: Dalaran
@@ -497,7 +706,7 @@ CreateDestination(
 	}).SetExpansion(ExpansionCataclysm)
 
 CreateDestination(
-	"Delves",
+	GetLocalizedCategoryName("Delves"),
 	{
 		CreateItem(230850)			-- Delve-O-Bot 7001
 	}).SetExpansion(ExpansionWarWithin)
@@ -524,7 +733,7 @@ CreateDestination(
 	}).SetExpansion(ExpansionBattleForAzeroth)
 
 CreateDestination(
-	"Draenor Dungeons",
+	GetLocalizedCategoryName("Draenor Dungeons"),
 	{
 		CreateChallengeSpell(159897, 1975, 593),	-- Path of the Vigilant				Auchindoun
 		CreateChallengeSpell(159895, 1005, 573),	-- Path of the Bloodmaul			Bloodmaul Slag Mines
@@ -543,7 +752,7 @@ CreateDestination(
 	}).SetExpansion(ExpansionDragonflight)
 
 CreateDestination(
-	"Dragon Isles Dungeons",
+	GetLocalizedCategoryName("Dragon Isles Dungeons"),
 	{
 		CreateChallengeSpell(393279, 2335, 2073),	-- Path of Arcane Secrets			The Azure Vault
 		CreateChallengeSpell(393273, 2367, 2097),	-- Path of the Draconic Diploma		Algeth'ar Academy
@@ -555,7 +764,7 @@ CreateDestination(
 	}).SetExpansion(ExpansionDragonflight)
 
 CreateDestination(
-	"Dragon Isles Raids",
+	GetLocalizedCategoryName("Dragon Isles Raids"),
 	{
 		CreateChallengeSpell(432257, 2405, 2166),	-- Path of the Bitter Legacy		Aberrus
 		CreateChallengeSpell(432254, 2388, 2119),	-- Path of the Primal Prison		Vault of the Incarnates
@@ -582,7 +791,7 @@ CreateDestination(
 	}).SetExpansion(ExpansionBurningCrusade)
 
 CreateDestination(
-	"Fishing Pool",					-- No localization.
+	GetLocalizedCategoryName("Fishing Pool"),					-- No localization.
 	{
 		CreateConditionalSpell(201891, AtContinent(ContinentIdBrokenIsles)),		-- Undercurrent
 		CreateConditionalConsumable(162515, InBFAZone),	-- Midnight Salmon
@@ -761,7 +970,7 @@ CreateDestination(
 	}).SetExpansion(ExpansionPandaria)
 
 CreateDestination(
-	"Pandaria Dungeons",
+	GetLocalizedCategoryName("Pandaria Dungeons"),
 	{
 		CreateChallengeSpell(131225, 471, 437),	-- Path of the Setting Sun		Gate of the Setting Sun
 		CreateChallengeSpell(131222, 519, 453),	-- Path of the Mogu King		Mogu'shan Palace
@@ -773,15 +982,15 @@ CreateDestination(
 	}).SetExpansion(ExpansionPandaria)
 
 CreateDestination(
-	"Random",		-- No localization.
+	GetLocalizedCategoryName("Random"),
 	{
 		CreateSpell(147420),								-- One With Nature
 		CreateItem(64457), 									-- The Last Relic of Argus
 		CreateConditionalItem(136849, IsClass("DRUID")),	-- Nature's Beacon
-		CreateItem(153004),									-- Unstable Portal Emitter
-		CreateItem(189827),									-- Cartel Xy's Proof of Initiation
-		CreateItem(192443),									-- Element-Infused Rocket Helmet
-		CreateItem(193000),									-- Ring-Bound Hourglass
+		CreateItem(153004),								-- Unstable Portal Emitter
+		CreateItem(189827),								-- Cartel Xy's Proof of Initiation
+		CreateItem(192443),								-- Element-Infused Rocket Helmet
+		CreateItem(193000),								-- Ring-Bound Hourglass
 		CreateConditionalItem(163073, function() return AtContinent(ContinentIdKulTiras)() or AtContinent(ContinentIdZandalar)() or AtContinent(ContinentIdNazjatar)() end),	-- Conch of Wa'mundi
 	})
 
@@ -805,7 +1014,7 @@ CreateDestination(
 	}).SetExpansion(ExpansionClassic)
 
 CreateDestination(
-	"Shadowlands Dungeons",
+	GetLocalizedCategoryName("Shadowlands Dungeons"),
 	{
 		CreateChallengeSpell(354462, 2123, 1666),	-- Path of the Courageous			The Necrotic Wake
 		CreateChallengeSpell(354463, 2121, 1674),	-- Path of the Plagued				Plaguefall
@@ -951,7 +1160,8 @@ CreateDestination(
 CreateDestination(
 	LocZone("Tiragarde Sound", 895),
 	{
-		CreateChallengeSpell(410071, 1704, 936)	-- Path of the Freebooter		Freehold
+		CreateChallengeSpell(410071, 1704, 936),	-- Path of the Freebooter		Freehold
+		CreateChallengeSpell(445418, 1700, 1162),	-- Path of the Besieged Harbor (Alliance)	Siege of Boralus
 	}).SetExpansion(ExpansionBattleForAzeroth)
 
 CreateDestination(
@@ -1034,14 +1244,12 @@ CreateDestination(
 	}).SetExpansion(ExpansionCataclysm)
 
 CreateDestination(
-	"War Within Dungeons",
+	GetLocalizedCategoryName("War Within Dungeons"),
 	{
 		CreateChallengeSpell(445416, 2652, 2213),	-- Path of Nerubian Ascension				City of Threads
 		CreateChallengeSpell(445269, 2693, 2341),	-- Path of the Corrupted Foundry			The Stonevault
 		CreateChallengeSpell(445414, 2719, 2359),	-- Path of the Arathi Flagship				The Dawnbreaker
-		CreateChallengeSpell(445418, 1700, 1162),	-- Path of the Besieged Harbor (Alliance)	Siege of Boralus
 		CreateChallengeSpell(445417, 2654, 2357),	-- Path of the Ruined City					Ara-Kara, City of Echoes
-		CreateChallengeSpell(445424, 304, 293),		-- Path of the Twilight Fortress			Grim Batol
 		CreateChallengeSpell(445444, 2695, 2308),	-- Path of the Light's Reverence			Priory of the Sacred Flame
 		CreateChallengeSpell(464256, 1700, 1162),	-- Path of the Besieged Harbor (Horde)		Siege of Boralus
 		CreateChallengeSpell(445440, 2689, 2335),	-- Path of the Flaming Brewery				Cinderbrew Meadery
@@ -1050,6 +1258,12 @@ CreateDestination(
 		CreateChallengeSpell(445443, 2653, 2315),	-- Path of the Fallen Stormriders			The Rookery
 		CreateChallengeSpell(1216786, 2791, 2387),	-- Path of the Circuit Breaker				Operation: Floodgate
 	}).SetExpansion(ExpansionWarWithin)
+
+CreateDestination(
+	LocZone("Twilight Highlands", 241),
+	{
+		CreateChallengeSpell(445424, 304, 293),		-- Path of the Twilight Fortress			Grim Batol
+	}).SetExpansion(ExpansionCataclysm)
 
 CreateDestination(
 	LocZone("Winterspring", 83),

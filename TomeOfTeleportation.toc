@@ -1,6 +1,15 @@
 ## Interface: 110107
 ## Title : Tome of Teleportation
 ## Notes: An interface for managing teleportation spells and items.
+## Notes-zhCN: 一个管理传送法术和物品的界面
+## Notes-zhTW: 一個管理傳送法術和物品的介面
+## Notes-deDE: Eine Benutzeroberfläche zur Verwaltung von Teleportationszaubern und Gegenständen
+## Notes-frFR: Une interface pour gérer les sorts et objets de téléportation
+## Notes-esES: Una interfaz para gestionar hechizos y objetos de teletransporte
+## Notes-ruRU: Интерфейс для управления заклинаниями и предметами телепортации
+## Notes-koKR: 순간이동 주문과 아이템을 관리하는 인터페이스입니다
+## Notes-ptBR: Uma interface para gerenciar feitiços e itens de teleporte
+## Notes-itIT: Un'interfaccia per gestire incantesimi e oggetti di teletrasporto
 ## Author: Remeen
 ## SavedVariablesPerCharacter: TomeOfTele_Options,TomeOfTele_ShareOptions
 ## SavedVariables: TomeOfTele_OptionsGlobal,TomeOfTele_IconGlobal
