@@ -779,9 +779,14 @@ local function SetupSpells()
 			spell.spellName = GetCachedItemInfo( spell.spellId )
 		else
 			if C_Spell and C_Spell.GetSpellInfo then
-				spell.spellName = C_Spell.GetSpellInfo( spell.spellId).name
+				local spellInfo = C_Spell.GetSpellInfo(spell.spellId)
+				if spellInfo then
+					spell.spellName = spellInfo.name
+				else
+					spell.spellName = "Unknown spell"
+				end
 			else
-				spell.spellName = GetSpellInfo( spell.spellId)
+				spell.spellName = GetSpellInfo(spell.spellId)
 			end
 		end
 
@@ -1643,7 +1648,12 @@ local function FindValidSpells()
 			end
 		else
 			if C_Spell and C_Spell.GetSpellInfo then
-				spell.itemTexture = C_Spell.GetSpellInfo(spellId).iconID
+				local spellInfo = C_Spell.GetSpellInfo(spell.spellId)
+				if spellInfo then
+					spell.itemTexture = spellInfo.iconID
+				else
+					spell.itemTexture = nil
+				end
 			else
 				_,_,spell.itemTexture = GetSpellInfo( spellId )
 			end

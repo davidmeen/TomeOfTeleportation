@@ -472,7 +472,9 @@ CreateDestination(
 		CreateItem(142542),				-- Tome of Town Portal
 		CreateItem(212337),				-- Stone of the Hearth
 		CreateItem(235016), 			-- Redeployment Module
-		CreateItem(236687)				-- Explosive Hearthstone
+		CreateItem(236687),				-- Explosive Hearthstone
+		CreateItem(246565),				-- Cosmic Hearthstone
+		CreateItem(245970),				-- P.O.S.T. Master's Express Hearthstone
 	})
 
 -- Any hearthstones that shouldn't be randomised.
@@ -868,6 +870,13 @@ CreateDestination(
 	}).SetExpansion(ExpansionClassic)
 
 CreateDestination(
+	LocZone("K'aresh", 2371),
+	{
+		CreateChallengeSpell(1239155, 2805, 2460),	-- Path of the All-Devouring			Manaforge Omega
+	}).SetExpansion(ExpansionWarWithin)
+
+
+CreateDestination(
 	LocZone("Khaz Algar", 2274),
 	{
 		CreateItem(221966),		-- Wormhole Generator: Khaz Algar
@@ -1257,6 +1266,7 @@ CreateDestination(
 		CreateChallengeSpell(445441, 2655, 2303),	-- Path of the Warding Candles				Darkflame Cleft
 		CreateChallengeSpell(445443, 2653, 2315),	-- Path of the Fallen Stormriders			The Rookery
 		CreateChallengeSpell(1216786, 2791, 2387),	-- Path of the Circuit Breaker				Operation: Floodgate
+		CreateChallengeSpell(1237215, 2987, 2449),	-- Path of the Eco-Dome			Eco-Dome Al'dani
 	}).SetExpansion(ExpansionWarWithin)
 
 CreateDestination(

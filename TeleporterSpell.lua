@@ -310,15 +310,14 @@ end
 function TeleporterSpell:IsSeasonDungeon()
 	-- Dragonflight Season 4
 	return tContains({
+		2987,	-- Eco-Dome Al'dani
+		2805, 	-- Manaforge Omega
+		2654,	-- Ara-Kara, City of Echoes
+		2719,	-- The Dawnbreaker
 		2791,	-- Operation: Floodgate
-		2689,	-- Cinderbrew Meadery
-		2653,	-- The Rookery
-		2655,	-- Darkflame Cleft
 		2695,	-- Priory of the Sacred Flame
-		1707,	-- The MOTHERLODE!!
-		2124,	-- Theater of Pain
-		2006,	-- Operation: Mechagon
-		2779,	-- Liberation of Undermine
+		2119,	-- Halls of Atonement
+		2225,	-- Tazavesh, the Veiled Market
 	}, self.dungeonID)
 end
 

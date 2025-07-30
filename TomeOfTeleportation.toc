@@ -1,4 +1,4 @@
-## Interface: 110107
+## Interface: 110200
 ## Title : Tome of Teleportation
 ## Notes: An interface for managing teleportation spells and items.
 ## Notes-zhCN: 一个管理传送法术和物品的界面
