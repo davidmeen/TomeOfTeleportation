@@ -532,6 +532,7 @@ local MenuIDCurrentDungeons		= 13
 local MenuIDGroupDungeons		= 14
 local MenuIDRandomHearth		= 15
 local MenuIDCloseAfterCast		= 16
+local MenuIDShowIcon			= 17
 
 local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 	if level == 1 or topLevel then
@@ -576,6 +577,24 @@ local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 		info.menuList = "Theme"
 		info.value = MenuIDTheme
 		info.checked = nil
+		UIDropDownMenu_AddButton(info, level)
+
+
+		info.text = "Show Minimap Icon"
+		info.value = MenuIDShowIcon
+		info.func = function(info)
+			TomeOfTele_IconGlobal.hide = not TomeOfTele_IconGlobal.hide
+			info.checked = not TomeOfTele_IconGlobal.hide
+			if TomeOfTele_IconGlobal.hide then
+				icon:Hide("TomeTeleGlobal")
+			else
+				icon:Show("TomeTeleGlobal")
+			end
+		end
+		info.owner = frame
+		info.checked = not TomeOfTele_IconGlobal.hide
+		info.hasArrow = false
+		info.menuList = nil
 		UIDropDownMenu_AddButton(info, level)
 
 		info.text = "Use Shared Settings"
