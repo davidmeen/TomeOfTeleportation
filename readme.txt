@@ -78,6 +78,22 @@ Change the width of the buttons.
 /tele set buttonHeight 64
 Change the height of the buttons.
 
+Troubleshooting
+---------------
+
+If the window does not open or looks incorrect, first try disabling all other addons. If it starts working,
+then enable the addons one by one, and let me know which addon causes the problem in the comments on Curseforge.
+
+Tun on script errors by typing this into the chat window: /console scriptErrors 1.
+If you get any errors then post them in the comments on Curseforge.
+
+Check if the addon works on a brand new character to see if per-character settings have been corrupted.
+
+In File Explorer go to the folder when the game is installed, then go to \_retail_\WTF\Account\YourAccountName\SavedVariables.
+Move the file TomeOfTeleportation.lua to another folder. This will reset your settings. If this fixes the problem, then
+copy the contents of the file to pastebin.com and post a comment on Curseforge. If it doesn't help, move the file back
+to its original location.
+
 Credits
 -------
 
