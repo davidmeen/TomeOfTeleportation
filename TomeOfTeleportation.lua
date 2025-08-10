@@ -1737,7 +1737,7 @@ function TeleporterOpenFrame(isSearching)
 			ChosenHearth = nil
 		end
 
-		if TeleporterParentFrame == nil then
+		if TeleporterParentFrame == nil or TeleporterCloseButton == nil then
 			CreateMainFrame()
 		end
 
@@ -1760,10 +1760,14 @@ function TeleporterOpenFrame(isSearching)
 				GetOption("backgroundA"))
 
 		-- UI scale may have changed, resize
-		TeleporterCloseButton:SetWidth( buttonHeight )
-		TeleporterCloseButton:SetHeight( buttonHeight )
-		TeleporterCloseButtonText:SetFont(fontFile, fontHeight, fontFlags)
-		TeleporterSearchBox:SetHeight(buttonHeight)
+		if TeleporterCloseButton then
+			TeleporterCloseButton:SetWidth( buttonHeight )
+			TeleporterCloseButton:SetHeight( buttonHeight )
+			TeleporterCloseButtonText:SetFont(fontFile, fontHeight, fontFlags)
+		end
+		if TeleporterSearchBox then
+			TeleporterSearchBox:SetHeight(buttonHeight)
+		end
 
 		if TeleporterHelpString then
 			TeleporterHelpString:SetFont(fontFile, fontHeight, fontFlags)
