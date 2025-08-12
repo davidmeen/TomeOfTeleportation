@@ -165,6 +165,7 @@ local DefaultOptions =
 	["conciseDungeonSpells"] = 1,
 	["showSearch"] = 1,
 	["searchHidden"] = 1,
+	["tooltip"] = 1,
 }
 
 -- Themes. For now there aren't many of these. Message me on curseforge.com
@@ -1893,25 +1894,37 @@ function TeleporterOpenFrame(isSearching)
 				buttonFrame:SetAttribute("type", "macro")
 				buttonFrame:Show()
 
-				if isItem then
+				if GetOption("tooltip") then
+					if isItem then
+						buttonFrame:SetScript(
+							"OnEnter",
+							function()
+								TeleporterShowItemTooltip( spellId, buttonFrame )
+							end )
+					else
+						buttonFrame:SetScript(
+							"OnEnter",
+							function()
+								TeleporterShowSpellTooltip( spellName, buttonFrame )
+							end )
+					end
+
 					buttonFrame:SetScript(
-						"OnEnter",
+						"OnLeave",
 						function()
-							TeleporterShowItemTooltip( spellId, buttonFrame )
+							GameTooltip:Hide()
 						end )
 				else
 					buttonFrame:SetScript(
 						"OnEnter",
 						function()
-							TeleporterShowSpellTooltip( spellName, buttonFrame )
+						end )
+
+					buttonFrame:SetScript(
+						"OnLeave",
+						function()
 						end )
 				end
-
-				buttonFrame:SetScript(
-					"OnLeave",
-					function()
-						GameTooltip:Hide()
-					end )
 
 				-- Icon
 				local iconOffsetX = 6 * GetScale()
