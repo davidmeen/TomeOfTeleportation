@@ -409,7 +409,7 @@ local function LocArea(name, areaID)
 		--	print("Incorrect localization of " .. name .. ", got " .. locName)
 		--end
 	end
-	return locName
+	return locName or name
 end
 
 local function CreatePortalSpell(spell)
