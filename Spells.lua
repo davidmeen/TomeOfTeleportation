@@ -237,7 +237,7 @@ local function AtZone(requiredZone)
 			return true
 		end
 		local mapID = C_Map.GetBestMapForUnit("player")
-		while mapID ~= 0 do
+		while mapID ~= 0 and mapID ~= nil do
 			if mapID == requiredZone then
 				return true
 			end
