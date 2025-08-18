@@ -1516,6 +1516,10 @@ local function CreateMainFrame()
 	local titleHeight = GetScaledOption("titleHeight")
 	local buttonInset = GetOption("buttonInset")
 
+	if GetOption("titleFont") == "" then
+		SetOption("titleFont", nil)
+	end
+
 	TeleporterParentFrame:ClearAllPoints()
 	local points = GetOption("points")
 	if points then
