@@ -255,6 +255,10 @@ local function InUndermineRaid()
 	return AtZone(2406)() or AtZone(2428)() or AtZone(2407)() or AtZone(2408)() or AtZone(2411)() or AtZone(2409)()
 end
 
+local function InManaforgeRaid()
+	return AtZone(2460)() or AtZone(2461)() or AtZone(2462)() or AtZone(2463)() or AtZone(2464)() or AtZone(2465)() or AtZone(2466)() or AtZone(2467)() or AtZone(2468)() or AtZone(2469)() or AtZone(2470)()
+end
+
 local function AllowWhistle()
 	--return AtContinent(ContinentIdBrokenIsles)() or AtContinent(ContinentIdArgus)() or AtContinent(ContinentIdKulTiras)() or AtContinent(ContinentIdZandalar)() or AtZone(MapIdAlterac)
 	-- This is getting complicated - until I find a better way, always allow it.
@@ -872,7 +876,8 @@ CreateDestination(
 CreateDestination(
 	LocZone("K'aresh", 2371),
 	{
-		CreateChallengeSpell(1239155, 2805, 2460),	-- Path of the All-Devouring			Manaforge Omega
+		CreateChallengeSpell(1239155, 2805, 2460),		-- Path of the All-Devouring			Manaforge Omega
+		CreateConditionalItem(249699, InManaforgeRaid),	-- Shadowguard Translocator
 	}).SetExpansion(ExpansionWarWithin)
 
 
