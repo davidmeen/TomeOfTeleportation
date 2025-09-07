@@ -722,6 +722,7 @@ CreateDestination(
 	{
 		CreateSpell(446540),		-- Teleport: Dornogal
 		CreatePortalSpell(446534),	-- Portal: Dornogal
+		CreateItem(243056),			-- Delver's Mana-Bound Ethergate
 	}).SetExpansion(ExpansionWarWithin)
 
 CreateDestination(
