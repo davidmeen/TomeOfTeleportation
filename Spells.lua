@@ -479,6 +479,7 @@ CreateDestination(
 		CreateItem(236687),				-- Explosive Hearthstone
 		CreateItem(246565),				-- Cosmic Hearthstone
 		CreateItem(245970),				-- P.O.S.T. Master's Express Hearthstone
+		CreateItem(250411),				-- Timerunner's Hearthstone
 	})
 
 -- Any hearthstones that shouldn't be randomised.
