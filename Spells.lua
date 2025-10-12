@@ -651,6 +651,7 @@ CreateDestination(
 		CreateItem(139599),			-- Empowered Ring of the Kirin Tor
 		CreateItem(140192),			-- Dalaran Hearthstone
 		CreateConditionalItem(43824, AtZone(MapIDDalaranLegion)),	-- The Schools of Arcane Magic - Mastery
+		CreateConsumable(238727),	-- Nostwin's Voucher
 	}).SetExpansion(ExpansionLegion)
 
 CreateDestination(
