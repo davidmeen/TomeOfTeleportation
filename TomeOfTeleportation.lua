@@ -21,7 +21,7 @@ local function GetLocalizedHearthText()
 	elseif locale == "deDE" then
 		return "Hearth" -- TODO: Add German translation
 	elseif locale == "frFR" then
-		return "Hearth" -- TODO: Add French translation
+		return "Foyer"
 	elseif locale == "esES" then
 		return "Hearth" -- TODO: Add Spanish translation
 	elseif locale == "ruRU" then
