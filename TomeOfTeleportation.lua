@@ -43,6 +43,7 @@ TeleporterRecallString = "1 Astral Recall"
 TeleporterFlightString = "2 Flight Master"
 
 local DungeonsTitle = "Dungeons"
+local RaidsTitle = "Raids"
 
 local ldb = LibStub:GetLibrary("LibDataBroker-1.1")
 local icon = LibStub("LibDBIcon-1.0")
@@ -534,6 +535,8 @@ local MenuIDGroupDungeons		= 14
 local MenuIDRandomHearth		= 15
 local MenuIDCloseAfterCast		= 16
 local MenuIDShowIcon			= 17
+local MenuIDCurrentRaids		= 18
+local MenuIDGroupRaids			= 19
 
 local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 	if level == 1 or topLevel then
@@ -544,9 +547,11 @@ local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 		AddHideOptionMenu(MenuIDHideChallenge, "Hide Dungeon Spells", "hideChallenge", frame, level)
 		AddHideOptionMenu(MenuIDHideSpells, "Hide Spells", "hideSpells", frame, level)
 		AddHideOptionMenu(MenuIDHideConsumables, "Hide Consumables", "hideConsumable", frame, level)
-		AddHideOptionMenu(MenuIDDungeonNames, "Show Dungeon Names", "showDungeonNames", frame, level)
+		AddHideOptionMenu(MenuIDDungeonNames, "Show Dungeon and Raid Names", "showDungeonNames", frame, level)
 		AddHideOptionMenu(MenuIDCurrentDungeons, "Current Dungeons Only", "seasonOnly", frame, level)
+		AddHideOptionMenu(MenuIDCurrentRaids, "Current Raids Only", "seasonRaidsOnly", frame, level)
 		AddHideOptionMenu(MenuIDGroupDungeons, "Group Dungeons", "groupDungeons", frame, level)
+		AddHideOptionMenu(MenuIDGroupRaids, "Group Raids", "groupRaids", frame, level)
 		AddHideOptionMenu(MenuIDRandomHearth, "Random Hearthstone", "randomHearth", frame, level)
 		AddHideOptionMenu(MenuIDWrongZone, "Show Spells When In Wrong Zone", "showInWrongZone", frame, level)
 		AddHideOptionMenu(MenuIDCloseAfterCast, "Close When Cast Finishes", "closeAfterCast", frame, level)
@@ -743,6 +748,16 @@ local function SortSpells(spell1, spell2, sortType)
 	if GetOption("groupDungeons") then
 		if spell1:IsDungeonSpell() then zone1 = DungeonsTitle end
 		if spell2:IsDungeonSpell() then zone2 = DungeonsTitle end
+	end
+
+	if GetOption("groupRaids") then
+		if spell1:IsRaidSpell() then zone1 = RaidsTitle end
+		if spell2:IsRaidSpell() then zone2 = RaidsTitle end
+	end
+
+	if GetOption("showDungeonNames") then
+		if spell1:IsDungeonSpell() or spell1:IsRaidSpell() then spellName1 = spell1.dungeon end
+		if spell2:IsDungeonSpell() or spell2:IsRaidSpell() then spellName2 = spell2.dungeon end
 	end
 
 	local so = GetOption("sortOrder") or {}
@@ -1665,6 +1680,10 @@ local function FindValidSpells()
 			spell.displayDestination = DungeonsTitle
 		end
 
+		if spell:IsRaidSpell() and GetOption("groupRaids") then
+			spell.displayDestination = RaidsTitle
+		end
+
 		if isItem then
 			_, _, _, _, _, _, _, _, _, spell.itemTexture = GetCachedItemInfo( spellId )
 			if not spellName then
@@ -1855,7 +1874,7 @@ function TeleporterOpenFrame(isSearching)
 					newColumn = true
 				end
 
-				if spell:IsDungeonSpell() and ShowDungeonNames and spell.dungeon then
+				if (spell:IsDungeonSpell() or spell:IsRaidSpell()) and ShowDungeonNames and spell.dungeon then
 					displaySpellName = spell.dungeon
 				end
 

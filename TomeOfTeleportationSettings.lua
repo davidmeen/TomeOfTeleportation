@@ -284,10 +284,12 @@ local function CreateSettings(panel)
     p = AddCheckOption("All Covenant Hearthstones", "allCovenants",         scrollChild, p)
     p = AddCheckOption("Hide Items",                "hideItems",            scrollChild, p)
     p = AddCheckOption("Hide Dungeon Spells",       "hideChallenge",        scrollChild, p)
-    p = AddCheckOption("Show Spells",               "hideSpells",           scrollChild, p)
-    p = AddCheckOption("Show Dungeon Names",        "showDungeonNames",     scrollChild, p)
+    p = AddCheckOption("Hide Spells",               "hideSpells",           scrollChild, p)
+    p = AddCheckOption("Show Dungeon/Raid Names",   "showDungeonNames",     scrollChild, p)
     p = AddCheckOption("Current Dungeons Only",     "seasonOnly",           scrollChild, p)
+    p = AddCheckOption("Current Raids Only",        "seasonRaidsOnly",      scrollChild, p)
     p = AddCheckOption("Group Dungeons Together",   "groupDungeons",        scrollChild, p)
+    p = AddCheckOption("Group Raids Together",      "groupRaids",           scrollChild, p)
     p = AddCheckOption("Random Heathstone",         "randomHearth",         scrollChild, p)
     p = AddCheckOption("Show Spells Everywhere",    "showInWrongZone",      scrollChild, p)
     p = AddCheckOption("Close After Cast",          "closeAfterCast",       scrollChild, p)
@@ -296,7 +298,7 @@ local function CreateSettings(panel)
     p = AddCheckOption("Use Old Customizer",        "oldCustomizer",        scrollChild, p)
     p = AddCheckOption("Show Search Box",           "showSearch",           scrollChild, p)
     p = AddCheckOption("Search Hidden Items",       "searchHidden",         scrollChild, p)
-    p = AddCheckOption("Show Tooltips",             "tooltip",         scrollChild, p)
+    p = AddCheckOption("Show Tooltips",             "tooltip",              scrollChild, p)
 
     p = AddSliderOption("Button Width",         "buttonWidth", 20, 400, 1,              scrollChild, p)
     p = AddSliderOption("Button Height",        "buttonHeight", 20, 200, 1,             scrollChild, p)
@@ -525,6 +527,7 @@ end
 local TextItem = "Item"
 local TextSpell = "Spell"
 local TextDungeon = "Dungeon"
+local TextRaid = "Raid"
 local TextConsumable = "Consumable"
 
 local function CreateSpell(spellType, id, zone)
@@ -538,7 +541,10 @@ local function CreateSpell(spellType, id, zone)
     elseif spellType == TextSpell then
         spell = TeleporterCreateSpell(id, zone)
     elseif spellType == TextDungeon then
-        spell = TeleporterCreateChallengeSpell(id, zone)
+        spell = TeleporterCreateDungeonSpell(id, zone)
+        spell:SetZone(zone)
+    elseif spellType == TextRaid then
+        spell = TeleporterCreateRaidSpell(id, zone)
         spell:SetZone(zone)
     elseif spellType == TextConsumable then
         spell = TeleporterCreateConsumable(id, zone)
@@ -721,6 +727,12 @@ local function CreateSpellCustomiser(panel)
         info.text = TextDungeon
         info.func = function()
             UIDropDownMenu_SetText(newSpellTypeFrame, TextDungeon)
+        end
+        UIDropDownMenu_AddButton(info)
+
+        info.text = TextRaid
+        info.func = function()
+            UIDropDownMenu_SetText(newSpellTypeFrame, TextRaid)
         end
         UIDropDownMenu_AddButton(info)
     end)

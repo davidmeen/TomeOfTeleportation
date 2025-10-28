@@ -1,9 +1,9 @@
 local ST_Item = 1
 local ST_Spell = 2
-local ST_Challenge = 3
+local ST_Dungeon = 3
+local ST_Raid = 4
 
 
--- I'm not going to attempt any prefixes with different character sets. I may have missed some variations.
 -- Some of these are odd - inconsistent translations in-game?
 local RedundantStrings =
 {
@@ -55,7 +55,11 @@ function TeleporterSpell:IsSpell()
 end
 
 function TeleporterSpell:IsDungeonSpell()
-    return self.spellType == ST_Challenge
+    return self.spellType == ST_Dungeon
+end
+
+function TeleporterSpell:IsRaidSpell()
+    return self.spellType == ST_Raid
 end
 
 function TeleporterSpell:CleanupName()
@@ -221,6 +225,10 @@ function TeleporterSpell:CanUse()
 		if TeleporterGetOption("seasonOnly") and spell:IsDungeonSpell() and not self:IsSeasonDungeon() then
 			haveSpell = false
 		end
+
+		if TeleporterGetOption("seasonRaidsOnly") and spell:IsRaidSpell() and not self:IsSeasonDungeon() then
+			haveSpell = false
+		end
 	end
 
 	if not CustomizeSpells and not spell:IsVisible() then
@@ -341,12 +349,12 @@ function TeleporterCreateItem(id, dest)
 end
 
 -- dungeonID from: https://warcraft.wiki.gg/wiki/LfgDungeonID
-function TeleporterCreateChallengeSpell(id, dungeonID, mapID)
+function TeleporterCreateDungeonSpell(id, dungeonID, mapID)
 	local spell = {}
 	TeleporterInitSpell(spell)
 	spell.spellId = id
 	spell.dungeonID = dungeonID
-	spell.spellType = ST_Challenge
+	spell.spellType = ST_Dungeon
 	spell.dungeon = GetLFGDungeonInfo(dungeonID)
 
 	if mapID then
@@ -366,6 +374,12 @@ function TeleporterCreateChallengeSpell(id, dungeonID, mapID)
 		print("----")
 	end
 
+	return spell
+end
+
+function TeleporterCreateRaidSpell(id, dungeonID, mapID)
+	local spell = TeleporterCreateDungeonSpell(id, dungeonID, mapID)
+	spell.spellType = ST_Raid
 	return spell
 end
 
