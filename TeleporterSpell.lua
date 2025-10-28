@@ -316,17 +316,28 @@ end
 -- Use this script in-game to get the dungeon IDs:
 -- /script for i=1,3000 do d=GetLFGDungeonInfo(i);if d=="Dungeon Name" then print(i); end;end
 function TeleporterSpell:IsSeasonDungeon()
-	-- Dragonflight Season 4
-	return tContains({
-		2987,	-- Eco-Dome Al'dani
-		2805, 	-- Manaforge Omega
-		2654,	-- Ara-Kara, City of Echoes
-		2719,	-- The Dawnbreaker
-		2791,	-- Operation: Floodgate
-		2695,	-- Priory of the Sacred Flame
-		2119,	-- Halls of Atonement
-		2225,	-- Tazavesh, the Veiled Market
-	}, self.dungeonID)
+	if PlayerIsTimerunning and PlayerIsTimerunning() then
+		-- Legion Remix
+		return tContains({
+			1205,	-- Black Rook Hold
+			1319, 	-- Court of Stars
+			1202,	-- Darkheart Thicket
+			1194,	-- Halls of Valor
+			1207,	-- Neltharion's Lair
+		}, self.dungeonID)
+	else
+		-- Dragonflight Season 4
+		return tContains({
+			2987,	-- Eco-Dome Al'dani
+			2805, 	-- Manaforge Omega
+			2654,	-- Ara-Kara, City of Echoes
+			2719,	-- The Dawnbreaker
+			2791,	-- Operation: Floodgate
+			2695,	-- Priory of the Sacred Flame
+			2119,	-- Halls of Atonement
+			2225,	-- Tazavesh, the Veiled Market
+		}, self.dungeonID)
+	end
 end
 
 -- Spell factories
