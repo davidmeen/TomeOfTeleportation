@@ -1,9 +1,0 @@
-## Interface: 70200
-## Title : Tome of Customisation
-## Notes: Custom interface for Tome of Teleportation
-## Author: Remeen
-## Dependencies: TomeOfTeleportation
-
-TomeOfCustomisation.lua
-TomeOfCustomisation.xml
-

@@ -7,6 +7,10 @@ local MapIDAzsuna = 627
 local MapIDDalaranLegion = 1014
 local MapIDAntoranWastes = 885
 local MapIDAlterac = 943
+local MapIDMaw = 1543
+local MapIDKorthia = 1961
+local MapIDMechagon = 1462
+local MapIDGilneas = 202
 
 local ContinentIdOutland = 101
 local ContinentIdPandaria = 424
@@ -15,11 +19,225 @@ local ContinentIdBrokenIsles = 619
 local ContinentIdArgus = 905
 local ContinentIdZandalar = 875
 local ContinentIdKulTiras = 876
+local ContinentIdNazjatar = 1355
+
+-- Localization system
+local LocalizedStrings = {
+	-- English
+	["enUS"] = {
+		-- Expansion suffixes
+		["Legion"] = " (Legion)",
+		["WotLK"] = " (WotLK)",
+		["BFA"] = " (BFA)",
+		["Shadowlands"] = " (Shadowlands)",
+		["Dragonflight"] = " (Dragonflight)",
+		["WarWithin"] = " (War Within)",
+		-- Category names
+		["Draenor Dungeons"] = "Draenor Dungeons",
+		["Dragon Isles Dungeons"] = "Dragon Isles Dungeons",
+		["Pandaria Dungeons"] = "Pandaria Dungeons",
+		["Shadowlands Dungeons"] = "Shadowlands Dungeons",
+		["War Within Dungeons"] = "War Within Dungeons",
+		["Dragon Isles Raids"] = "Dragon Isles Raids",
+		["Fishing Pool"] = "Fishing Pool",
+		["Delves"] = "Delves",
+		["Random"] = "Random",
+	},
+	-- Simplified Chinese
+	["zhCN"] = {
+		-- Expansion suffixes
+		["Legion"] = " (军团再临)",
+		["WotLK"] = " (巫妖王之怒)",
+		["BFA"] = " (争霸艾泽拉斯)",
+		["Shadowlands"] = " (暗影国度)",
+		["Dragonflight"] = " (巨龙时代)",
+		["WarWithin"] = " (地心之战)",
+		-- Category names
+		["Draenor Dungeons"] = "德拉诺地下城",
+		["Dragon Isles Dungeons"] = "巨龙群岛地下城",
+		["Pandaria Dungeons"] = "潘达利亚地下城",
+		["Shadowlands Dungeons"] = "暗影界地下城",
+		["War Within Dungeons"] = "地心之战地下城",
+		["Dragon Isles Raids"] = "巨龙群岛团队副本",
+		["Fishing Pool"] = "钓鱼池",
+		["Delves"] = "地下堡",
+		["Random"] = "随机",
+	},
+	-- Traditional Chinese
+	["zhTW"] = {
+		-- Expansion suffixes
+		["Legion"] = " (軍團再臨)",
+		["WotLK"] = " (巫妖王之怒)",
+		["BFA"] = " (決戰艾澤拉斯)",
+		["Shadowlands"] = " (暗影之境)",
+		["Dragonflight"] = " (巨龍時代)",
+		["WarWithin"] = " (地心之戰)",
+		-- Category names
+		["Draenor Dungeons"] = "德拉諾地下城",
+		["Dragon Isles Dungeons"] = "巨龍群島地下城",
+		["Pandaria Dungeons"] = "潘達利亞地下城",
+		["Shadowlands Dungeons"] = "暗影界地下城",
+		["War Within Dungeons"] = "地心之戰地下城",
+		["Dragon Isles Raids"] = "巨龍群島團隊副本",
+		["Fishing Pool"] = "釣魚池",
+		["Delves"] = "地下堡",
+		["Random"] = "隨機",
+	},
+	-- German
+	["deDE"] = {
+		-- Expansion suffixes
+		["Legion"] = " (Legion)",
+		["WotLK"] = " (WotLK)",
+		["BFA"] = " (BFA)",
+		["Shadowlands"] = " (Shadowlands)",
+		["Dragonflight"] = " (Dragonflight)",
+		["WarWithin"] = " (War Within)",
+		-- Category names
+		["Draenor Dungeons"] = "Draenor Dungeons",
+		["Dragon Isles Dungeons"] = "Dragon Isles Dungeons",
+		["Pandaria Dungeons"] = "Pandaria Dungeons",
+		["Shadowlands Dungeons"] = "Shadowlands Dungeons",
+		["War Within Dungeons"] = "War Within Dungeons",
+		["Dragon Isles Raids"] = "Dragon Isles Raids",
+		["Fishing Pool"] = "Fishing Pool",
+		["Delves"] = "Delves",
+		["Random"] = "Zufällig",
+	},
+	-- French
+	["frFR"] = {
+		-- Expansion suffixes
+		["Legion"] = " (Légion)",
+		["WotLK"] = " (WotLK)",
+		["BFA"] = " (BFA)",
+		["Shadowlands"] = " (Ombreterre)",
+		["Dragonflight"] = " (Dragonflight)",
+		["WarWithin"] = " (War Within)",
+		-- Category names
+		["Draenor Dungeons"] = "Donjons de Draenor",
+		["Dragon Isles Dungeons"] = "Donjons des Îles aux Dragons",
+		["Pandaria Dungeons"] = "Donjons de Pandarie",
+		["Shadowlands Dungeons"] = "Donjons de l'Ombreterre",
+		["War Within Dungeons"] = "Donjons de The War Within",
+		["Dragon Isles Raids"] = "Raids des Îles aux Dragons",
+		["Fishing Pool"] = "Bancs de poissons",
+		["Delves"] = "Gouffres",
+		["Random"] = "Aléatoire",
+	},
+	-- Spanish
+	["esES"] = {
+		-- Expansion suffixes
+		["Legion"] = " (Legión)",
+		["WotLK"] = " (WotLK)",
+		["BFA"] = " (BFA)",
+		["Shadowlands"] = " (Shadowlands)",
+		["Dragonflight"] = " (Dragonflight)",
+		["WarWithin"] = " (War Within)",
+		-- Category names
+		["Draenor Dungeons"] = "Draenor Dungeons",
+		["Dragon Isles Dungeons"] = "Dragon Isles Dungeons",
+		["Pandaria Dungeons"] = "Pandaria Dungeons",
+		["Shadowlands Dungeons"] = "Shadowlands Dungeons",
+		["War Within Dungeons"] = "War Within Dungeons",
+		["Dragon Isles Raids"] = "Dragon Isles Raids",
+		["Fishing Pool"] = "Fishing Pool",
+		["Delves"] = "Delves",
+		["Random"] = "Aleatorio",
+	},
+	-- Russian
+	["ruRU"] = {
+		-- Expansion suffixes
+		["Legion"] = " (Легион)",
+		["WotLK"] = " (WotLK)",
+		["BFA"] = " (BFA)",
+		["Shadowlands"] = " (Shadowlands)",
+		["Dragonflight"] = " (Dragonflight)",
+		["WarWithin"] = " (War Within)",
+		-- Category names
+		["Draenor Dungeons"] = "Draenor Dungeons",
+		["Dragon Isles Dungeons"] = "Dragon Isles Dungeons",
+		["Pandaria Dungeons"] = "Pandaria Dungeons",
+		["Shadowlands Dungeons"] = "Shadowlands Dungeons",
+		["War Within Dungeons"] = "War Within Dungeons",
+		["Dragon Isles Raids"] = "Dragon Isles Raids",
+		["Fishing Pool"] = "Fishing Pool",
+		["Delves"] = "Delves",
+		["Random"] = "Случайный",
+	},
+	-- Korean
+	["koKR"] = {
+		-- Expansion suffixes
+		["Legion"] = " (군단)",
+		["WotLK"] = " (WotLK)",
+		["BFA"] = " (BFA)",
+		["Shadowlands"] = " (Shadowlands)",
+		["Dragonflight"] = " (Dragonflight)",
+		["WarWithin"] = " (War Within)",
+		-- Category names
+		["Draenor Dungeons"] = "Draenor Dungeons",
+		["Dragon Isles Dungeons"] = "Dragon Isles Dungeons",
+		["Pandaria Dungeons"] = "Pandaria Dungeons",
+		["Shadowlands Dungeons"] = "Shadowlands Dungeons",
+		["War Within Dungeons"] = "War Within Dungeons",
+		["Dragon Isles Raids"] = "Dragon Isles Raids",
+		["Fishing Pool"] = "Fishing Pool",
+		["Delves"] = "Delves",
+		["Random"] = "무작위",
+	},
+}
+
+-- Get current client locale
+local function GetClientLocale()
+	return GetLocale() or "enUS"
+end
+
+-- Get localized string
+local function GetLocalizedString(key)
+	local locale = GetClientLocale()
+	local strings = LocalizedStrings[locale] or LocalizedStrings["enUS"]
+	return strings[key] or key
+end
+
+-- Get localized expansion suffix
+local function GetLocalizedExpansionSuffix(expansionKey)
+	return GetLocalizedString(expansionKey)
+end
+
+-- Create localized zone name with expansion suffix
+local function CreateLocalizedZoneName(baseZoneName, expansionKey)
+	if not expansionKey then
+		return baseZoneName
+	end
+	return baseZoneName .. GetLocalizedExpansionSuffix(expansionKey)
+end
+
+-- Get localized category name
+local function GetLocalizedCategoryName(categoryName)
+	return GetLocalizedString(categoryName)
+end
+
+-- Test localization system (optional, for debugging)
+local function TestLocalization()
+	local locale = GetClientLocale()
+	print("=== Localization Test ===")
+	print("Current locale: " .. locale)
+	print("Dalaran (Legion): " .. CreateLocalizedZoneName("Dalaran", "Legion"))
+	print("Dalaran (WotLK): " .. CreateLocalizedZoneName("Dalaran", "WotLK"))
+	print("Draenor Dungeons: " .. GetLocalizedCategoryName("Draenor Dungeons"))
+	print("Dragon Isles Dungeons: " .. GetLocalizedCategoryName("Dragon Isles Dungeons"))
+	print("Fishing Pool: " .. GetLocalizedCategoryName("Fishing Pool"))
+	print("========================")
+end
+
+-- Uncomment the line below to run the test
+-- TestLocalization()
 
 local function AtZone(requiredZone)
 	return function()
+		if TeleporterGetOption("showInWrongZone") then
+			return true
+		end
 		local mapID = C_Map.GetBestMapForUnit("player")
-		while mapID ~= 0 do
+		while mapID ~= 0 and mapID ~= nil do
 			if mapID == requiredZone then
 				return true
 			end
@@ -31,6 +249,14 @@ end
 
 local function AtContinent(requiredContinent)
 	return AtZone(requiredContinent)
+end
+
+local function InUndermineRaid()
+	return AtZone(2406)() or AtZone(2428)() or AtZone(2407)() or AtZone(2408)() or AtZone(2411)() or AtZone(2409)()
+end
+
+local function InManaforgeRaid()
+	return AtZone(2460)() or AtZone(2461)() or AtZone(2462)() or AtZone(2463)() or AtZone(2464)() or AtZone(2465)() or AtZone(2466)() or AtZone(2467)() or AtZone(2468)() or AtZone(2469)() or AtZone(2470)()
 end
 
 local function AllowWhistle()
@@ -54,6 +280,17 @@ local function IsClass(requiredClass)
 	end
 end
 
+local function IsRace(requiredRace)
+	return function()
+		local _, playerRace = UnitRace("player")
+		return playerRace == requiredRace
+	end
+end
+
+local function IsDraenei()
+	return IsRace("Draenei")() or IsRace("LightforgedDraenei")()
+end
+
 local function HaveUpgradedZen()
 	return C_QuestLog.IsQuestFlaggedCompleted(40236)
 end
@@ -65,6 +302,18 @@ local DayWednesday = 4
 local DayThursday = 5
 local DayFriday = 6
 local DaySaturday = 7
+
+local ExpansionClassic = 1
+local ExpansionBurningCrusade = 2
+local ExpansionWrath = 3
+local ExpansionCataclysm = 4
+local ExpansionPandaria = 5
+local ExpansionDraenor = 6
+local ExpansionLegion = 7
+local ExpansionBattleForAzeroth = 8
+local ExpansionShadowlands = 9
+local ExpansionDragonflight = 10
+local ExpansionWarWithin = 11
 
 local function OnDay(day)
 	return function()
@@ -79,13 +328,38 @@ local function OnDayAtContinent(day, continent)
 	end
 end
 
-local function CreateDestination(zone, spells)	
-	for i, spell in ipairs(spells) do
-		spell.zone = zone
-		tinsert(TeleporterDefaultSpells, spell)
-	end
-end
+local function CreateDestination(zone, spells)
+	local zoneName
+	local mapID = 0
 
+	local results = {}
+	results.spells = {}
+
+	results.SetExpansion = function(expansion)
+		for i, spell in ipairs(results.spells) do
+			spell.expansion = expansion
+		end
+		return expansion
+	end
+
+	if type(zone) == "string" then
+		zoneName = zone
+	else
+		zoneName = zone.name
+		mapID = zone.mapID
+	end
+	if zoneName then
+		for i, spell in ipairs(spells) do
+			if TeleporterIsUnsupportedItem(spell) ~= 1 then
+				spell:SetZone(zoneName, mapID)
+				tinsert(TeleporterDefaultSpells, spell)
+				tinsert(results.spells, spell)
+			end
+		end
+	end
+
+	return results
+end
 
 local function PrintZoneIndex(name)
 	for i = 1, 10000 do
@@ -99,18 +373,29 @@ local function PrintZoneIndex(name)
 end
 
 local function LocZone(name, mapID)
+	local result = {}
+	result.mapID = mapID
 	if mapID == 0 then
-		PrintZoneIndex(name)		
-		return name
+		PrintZoneIndex(name)
+		result.name = name
 	else
 		local mapInfo =	C_Map.GetMapInfo(mapID)
 		if not mapInfo then
-			PrintZoneIndex(name)	
-			return name
+			--PrintZoneIndex(name)
+			result.name = name
+		else
+			local locName = mapInfo.name
+			result.name = locName
 		end
-		local locName = mapInfo.name
-		return locName
 	end
+	return result
+end
+
+local function CreateZone(name, mapID)
+	local result = {}
+	result.name = name
+	result.mapID = mapID
+	return result
 end
 
 local function LocArea(name, areaID)
@@ -125,22 +410,30 @@ local function LocArea(name, areaID)
 	else
 		locName = C_Map.GetAreaInfo(areaID)
 		--if locName ~= name then
-		--	print("Incorrect localization of " .. name .. ", got " .. locName)		
+		--	print("Incorrect localization of " .. name .. ", got " .. locName)
 		--end
 	end
-	return locName
+	return locName or name
+end
+
+local function CreatePortalSpell(spell)
+	return TeleporterCreateConditionalSpell(spell,
+		function()
+			return TeleporterGetOption("showInWrongZone") or IsInGroup()
+		end)
 end
 
 local CreateSpell = TeleporterCreateSpell
 local CreateItem = TeleporterCreateItem
-local CreateChallengeSpell = TeleporterCreateChallengeSpell
+local CreateDungeonSpell = TeleporterCreateDungeonSpell
+local CreateRaidSpell = TeleporterCreateRaidSpell
 local CreateConditionalItem = TeleporterCreateConditionalItem
 local CreateConditionalSpell = TeleporterCreateConditionalSpell
 local CreateConditionalConsumable = TeleporterCreateConditionalConsumable
 local CreateConsumable = TeleporterCreateConsumable
 
-TeleporterDefaultSpells = 
-{	
+TeleporterDefaultSpells =
+{
 }
 
 CreateDestination(
@@ -149,14 +442,12 @@ CreateDestination(
 		CreateItem(93672),				-- Dark Portal
 		CreateItem(54452),				-- Ethereal Portal
 		CreateItem(6948 ),				-- Hearthstone
-		CreateItem(28585),				-- Ruby Slippers
 		CreateConsumable(37118),		-- Scroll of Recall
 		CreateConsumable(44314),		-- Scroll of Recall II
 		CreateConsumable(44315),		-- Scroll of Recall III
-		CreateItem(64488),				-- The Innkeeper's Daughter	
+		CreateItem(64488),				-- The Innkeeper's Daughter
 		CreateItem(142298),				-- Astonishingly Scarlet Slippers
 		CreateConsumable(142543),		-- Scroll of Town Portal
-		CreateItem(142542),				-- Tome of Town Portal
 		CreateItem(162973),				-- Greatfather Winter's Hearthstone
 		CreateItem(163045),				-- Headless Horseman's Hearthstone
 		CreateItem(166747),				-- Brewfest Reveler's Hearthstone
@@ -166,20 +457,49 @@ CreateDestination(
 		CreateItem(165669),				-- Lunar Elder's Hearthstone
 		CreateItem(165670),				-- Peddlefeet's Lovely Hearthstone
 		CreateItem(172179),				-- Eternal Traveler's Hearthstone
+		-- I don't know how to check if a covenant hearthstone can be used. To work
+		-- around this, only make them available for other covenants when not using
+		-- the random hearthstone option.
+		CreateConditionalItem(180290, TeleporterCanUseCovenantHearthstone(3)),	-- Night Fae Hearthstone
+		CreateConditionalItem(182773, TeleporterCanUseCovenantHearthstone(4)),	-- Necrolord Hearthstone
+		CreateConditionalItem(183716, TeleporterCanUseCovenantHearthstone(2)),	-- Venthyr Sinstone
+		CreateConditionalItem(184353, TeleporterCanUseCovenantHearthstone(1)),	-- Kyrian Hearthstone
+		CreateItem(188952),				-- Dominated Hearthstone
+		CreateItem(190196),				-- Enlightened Hearthstone
+		CreateItem(190237),				-- Broker Translocation Matrix
+		CreateItem(193588),				-- Timewalker's Hearthstone
+		CreateItem(200630),				-- Ohn'ir Windsage's Hearthstone
+		CreateItem(206195),				-- Path of the Naaru
+		CreateItem(208704),				-- Deepdweller's Earthen Hearthstone
+		CreateItem(209035),				-- Hearthstone of the Flame
+		CreateConditionalItem(210455, IsDraenei),	-- Draenic Hologem
+		CreateItem(228940),				-- Notorious Thread's Hearthstone
+		CreateItem(142542),				-- Tome of Town Portal
+		CreateItem(212337),				-- Stone of the Hearth
+		CreateItem(235016), 			-- Redeployment Module
+		CreateItem(236687),				-- Explosive Hearthstone
+		CreateItem(246565),				-- Cosmic Hearthstone
+		CreateItem(245970),				-- P.O.S.T. Master's Express Hearthstone
+		CreateItem(250411),				-- Timerunner's Hearthstone
 	})
-	
+
+-- Any hearthstones that shouldn't be randomised.
 CreateDestination(
 	TeleporterRecallString,
 	{
-		CreateSpell(556)				-- Astral Recall
+		CreateSpell(556),				-- Astral Recall (separate cooldown)
+		CreateItem(28585),				-- Ruby Slippers (needs to be equipped)
+		CreateItem(142298),				-- Astonishingly Scarlet Slippers (needs to be equipped)
+		CreateItem(169064),				-- Mountebank's Colorful Cloak (needs to be equipped)
 	})
 
 CreateDestination(
 	TeleporterFlightString,
-	{ 
-		CreateConditionalItem(141605, AllowWhistle) 	-- Flight Master's Whistle
+	{
+		CreateConditionalItem(141605, AllowWhistle), 	-- Flight Master's Whistle
+		CreateConditionalItem(168862, AllowWhistle), 	-- G.E.A.R. Tracking Beacon
 	})
-	
+
 CreateDestination(
 	LocZone("Alterac Valley", 91),
 	{
@@ -197,30 +517,36 @@ CreateDestination(
 		CreateConditionalItem(17904, IsInAlteracValley ),	-- Stormpike Insignia Rank 6
 		CreateConditionalItem(18149, IsInAlteracValley ), -- Rune of Recall6
 		CreateConditionalItem(18150, IsInAlteracValley ), -- Rune of Recall6
-	})
+	}).SetExpansion(ExpansionClassic)
 
 CreateDestination(
 	LocZone("Antoran Wastes", 885),
 	{
 		CreateConditionalItem(153226, AtZone(MapIDAntoranWastes))	-- Observer's Locus Resonator
-	})
+	}).SetExpansion(ExpansionLegion)
+
+CreateDestination(
+	LocZone("Ardenweald", 1565),
+	{
+		CreateConsumable(184503),	-- Attendant's Pocket Portal: Ardenweald
+	}).SetExpansion(ExpansionShadowlands)
 
 CreateDestination(
 	LocZone("Argus", 905),
 	{
 		CreateItem(151652)				-- Wormhole Generator: Argus
-	})
+	}).SetExpansion(ExpansionLegion)
 
 CreateDestination(
 	LocZone("Ashran", 588),
 	{
 		CreateConsumable(116413),		-- Scroll of Town Portal
 		CreateConsumable(119183),		-- Scroll of Risky Recall
-		CreateSpell(176246),			-- Portal: Stormshield
+		CreatePortalSpell(176246),		-- Portal: Stormshield
 		CreateSpell(176248),			-- Teleport: Stormshield
-		CreateSpell(176244),			-- Portal: Warspear
+		CreatePortalSpell(176244),		-- Portal: Warspear
 		CreateSpell(176242),			-- Teleport: Warspear
-	})
+	}).SetExpansion(ExpansionDraenor)
 
 CreateDestination(
 	LocZone("Azsuna", 630),
@@ -228,7 +554,20 @@ CreateDestination(
 		CreateConditionalItem(129276, AtZone(MapIDAzsuna)),	-- Beginner's Guide to Dimensional Rifting
 		CreateConditionalConsumable(141016, AtContinent(ContinentIdBrokenIsles)),	-- Scroll of Town Portal: Faronaar
 		CreateConditionalItem(140493, OnDayAtContinent(DayWednesday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
-	}, 630)
+	}, 630).SetExpansion(ExpansionLegion)
+
+CreateDestination(
+	LocZone("Badlands",	15),
+	{
+		CreateDungeonSpell(393222, 2355, 2071),	-- Path of the Watcher's Legacy	 	Uldaman: Legacy of Tyr
+	}).SetExpansion(ExpansionClassic)
+
+CreateDestination(
+	LocZone("Bastion", 1533),
+	{
+		CreateConsumable(184500),	-- Attendant's Pocket Portal: Bastion
+	}).SetExpansion(ExpansionShadowlands)
+
 
 CreateDestination(
 	LocArea("Bizmo's Brawlpub", 6618),
@@ -236,84 +575,91 @@ CreateDestination(
 		CreateItem(95051),				-- The Brassiest Knuckle
 		CreateItem(118907),				-- Pit Fighter's Punching Ring
 		CreateItem(144391),				-- Pugilist's Powerful Punching Ring
-	})			
-			
-CreateDestination(			
+	}).SetExpansion(ExpansionClassic)
+
+CreateDestination(
 	LocZone("Black Temple", 490),
-	{			
+	{
 		CreateItem(32757),				-- Blessed Medallion of Karabor
 		CreateItem(151016), 			-- Fractured Necrolyte Skull
-	})
-				
-CreateDestination(			
+	}).SetExpansion(ExpansionBurningCrusade)
+
+CreateDestination(
 	LocZone("Blackrock Depths", 242),
-	{			
+	{
 		CreateItem(37863)				-- Direbrew's Remote
-	})
+	}).SetExpansion(ExpansionClassic)
 
-CreateDestination(			
+CreateDestination(
 	LocZone("Blackrock Foundry", 596),
-	{	
-		CreateChallengeSpell(169771)	-- Teleport: Blackrock Foundry
-	})
+	{
+		CreateDungeonSpell(169771, 900, 596)	-- Teleport: Blackrock Foundry			Blackrock Foundry
+	}).SetExpansion(ExpansionDraenor)
 
-CreateDestination(			
-	LocZone("Blade's Edge Mountains", 105),	
+CreateDestination(
+	LocZone("Blade's Edge Mountains", 105),
 	{
 		CreateItem(30544),				-- Ultrasafe Transporter - Toshley's Station
-	})
+	}).SetExpansion(ExpansionBurningCrusade)
 
-CreateDestination(			
+CreateDestination(
 	LocArea("Bladespire Citadel", 6864),
 	{
 		CreateItem(118662), 			-- Bladespire Relic
-	})
+	}).SetExpansion(ExpansionDraenor)
 
-CreateDestination(			
-	LocArea("Booty Bay", 35),	
+CreateDestination(
+	LocArea("Booty Bay", 35),
 	{
 		CreateItem(50287),				-- Boots of the Bay
-	})
-	
-CreateDestination(			
+	}).SetExpansion(ExpansionClassic)
+
+CreateDestination(
 	LocZone("Boralus", 1161),
 	{
 		CreateSpell(281403),			-- Teleport: Boralus
-		CreateSpell(281400),			-- Portal: Boralus
+		CreatePortalSpell(281400),		-- Portal: Boralus
 		CreateItem(166560),				-- Captain's Signet of Command
-	})
+	}).SetExpansion(ExpansionBattleForAzeroth)
 
-CreateDestination(			
-	LocZone("Brawl'gar Arena", 503),	
+CreateDestination(
+	LocZone("Brawl'gar Arena", 503),
 	{
 		CreateItem(95050),				-- The Brassiest Knuckle
 		CreateItem(118908),				-- Pit Fighter's Punching Ring
 		CreateItem(144392),				-- Pugilist's Powerful Punching Ring
-	}, 503)
-	
-CreateDestination(			
+	}, 503).SetExpansion(ExpansionClassic)
+
+CreateDestination(
 	LocZone("Broken Isles",	619),
 	{
-		CreateConsumable(132523), 		-- Reaves Battery (can't always teleport, don't currently check).	
+		CreateConsumable(132523), 		-- Reaves Battery (can't always teleport, don't currently check).
 		CreateItem(144341), 			-- Rechargeable Reaves Battery
+	}).SetExpansion(ExpansionLegion)
+
+CreateDestination(
+	"Camp",
+	{
+		CreateSpell(312372),
 	})
 
-CreateDestination(			
-	LocZone("Dalaran", 41) .. " (Legion)",	
+CreateDestination(
+	CreateZone(CreateLocalizedZoneName(LocZone("Dalaran", 41).name, "Legion"), 627),
 	{
-		CreateSpell(224871),		-- Portal: Dalaran - Broken Isles (UNTESTED)
-		CreateSpell(224869),		-- Teleport: Dalaran - Broken Isles	(UNTESTED)
+		CreatePortalSpell(224871),	-- Portal: Dalaran - Broken Isles
+		CreateSpell(224869),		-- Teleport: Dalaran - Broken Isles
 		CreateItem(138448),			-- Emblem of Margoss
 		CreateItem(139599),			-- Empowered Ring of the Kirin Tor
 		CreateItem(140192),			-- Dalaran Hearthstone
 		CreateConditionalItem(43824, AtZone(MapIDDalaranLegion)),	-- The Schools of Arcane Magic - Mastery
-	})
+		CreateConsumable(238727),	-- Nostwin's Voucher
+	}).SetExpansion(ExpansionLegion)
 
-CreateDestination(			
-	LocZone("Dalaran", 41) .. " (WotLK)",	
+CreateDestination(
+	CreateZone(CreateLocalizedZoneName(LocZone("Dalaran", 41).name, "WotLK"), 125),
 	{
 		CreateSpell(53140),			-- Teleport: Dalaran
-		CreateSpell(53142),			-- Portal: Dalaran
+		CreatePortalSpell(53142),	-- Portal: Dalaran
 	-- ilvl 200 rings
 		CreateItem(40586),			-- Band of the Kirin Tor
 		CreateItem(44934),			-- Loop of the Kirin Tor
@@ -337,36 +683,50 @@ CreateDestination(
 
 		CreateConditionalItem(43824, AtZone(MapIDDalaran)),	-- The Schools of Arcane Magic - Mastery
 		CreateItem(52251),			-- Jaina's Locket
-	})
-	
-CreateDestination(			
+	}).SetExpansion(ExpansionWrath)
+
+CreateDestination(
 	LocArea("Dalaran Crater", 279),
 	{
 		CreateSpell(120145),		-- Ancient Teleport: Dalaran
-		CreateSpell(120146),		-- Ancient Portal: Dalaran
-	})
+		CreatePortalSpell(120146),	-- Ancient Portal: Dalaran
+	}).SetExpansion(ExpansionClassic)
 
-CreateDestination(			
+CreateDestination(
 	LocZone("Darnassus", 89),
 	{
 		CreateSpell(3565),			-- Teleport: Darnassus
-		CreateSpell(11419),			-- Portal: Darnassus
-	})
-	
-CreateDestination(			
+		CreatePortalSpell(11419),	-- Portal: Darnassus
+	}).SetExpansion(ExpansionClassic)
+
+CreateDestination(
 	LocZone("Dazar'alor", 1163),
 	{
 		CreateSpell(281404),		-- Teleport: Dazar'alor
-		CreateSpell(281402),		-- Portal: Dazar'alor
+		CreatePortalSpell(281402),	-- Portal: Dazar'alor
 		CreateItem(166559),			-- Commander's Signet of Battle
 		CreateConditionalItem(165581, AtZone(1163)), -- Crest of Pa'ku
-	})
+	}).SetExpansion(ExpansionBattleForAzeroth)
 
 CreateDestination(
 	LocZone("Deepholm", 207),
 	{
 		CreateConsumable(58487),	-- Potion of Deepholm
-	})
+	}).SetExpansion(ExpansionCataclysm)
+
+CreateDestination(
+	GetLocalizedCategoryName("Delves"),
+	{
+		CreateItem(230850)			-- Delve-O-Bot 7001
+	}).SetExpansion(ExpansionWarWithin)
+
+CreateDestination(
+	LocZone("Dornogal", 2339),
+	{
+		CreateSpell(446540),		-- Teleport: Dornogal
+		CreatePortalSpell(446534),	-- Portal: Dornogal
+		CreateItem(243056),			-- Delver's Mana-Bound Ethergate
+	}).SetExpansion(ExpansionWarWithin)
 
 CreateDestination(
 	LocZone("Draenor", 572),
@@ -374,92 +734,137 @@ CreateDestination(
 		CreateConditionalConsumable(117389, AtContinent(ContinentIdDraenor)), -- Draenor Archaeologist's Lodestone
 		CreateItem(112059),			-- Wormhole Centrifuge
 		CreateConditionalItem(129929, AtContinent(ContinentIdOutland)),	-- Ever-Shifting Mirror
-	})
-	
+	}).SetExpansion(ExpansionDraenor)
+
 CreateDestination(
-	"Draenor Dungeons",					-- No localization
+	LocZone("Drustvar", 896),
 	{
-		CreateChallengeSpell(159897),	-- Teleport: Auchindoun
-		CreateChallengeSpell(159895),	-- Teleport: Bloodmaul Slag Mines
-		CreateChallengeSpell(159901),	-- Teleport: Overgrown Outpost
-		CreateChallengeSpell(159900),	-- Teleport: Grimrail Depot
-		CreateChallengeSpell(159896),	-- Teleport: Iron Docks
-		CreateChallengeSpell(159899),	-- Teleport: Shadowmoon Burial Grounds
-		CreateChallengeSpell(159898),	-- Teleport: Skyreach
-		CreateChallengeSpell(159902),	-- Teleport: Upper Blackrock Spire
-	})
+		CreateDungeonSpell(424167, 1706, 1015)	-- Path of Heart's Bane				Waycrest Manor
+	}).SetExpansion(ExpansionBattleForAzeroth)
+
+CreateDestination(
+	GetLocalizedCategoryName("Draenor Dungeons"),
+	{
+		CreateDungeonSpell(159897, 1975, 593),	-- Path of the Vigilant				Auchindoun
+		CreateDungeonSpell(159895, 1005, 573),	-- Path of the Bloodmaul			Bloodmaul Slag Mines
+		CreateDungeonSpell(159901, 1003, 620),	-- Path of the Verdant				The Everbloom
+		CreateDungeonSpell(159900, 1006, 606),	-- Path of the Dark Rail			Grimrail Depot
+		CreateDungeonSpell(159896, 1007, 595),	-- Path of the Iron Prow			Iron Docks
+		CreateDungeonSpell(159899, 1009, 574),	-- Path of the Crescent Moon		Shadowmoon Burial Grounds
+		CreateDungeonSpell(159898, 1010, 601),	-- Path of the Skies				Skyreach
+		CreateDungeonSpell(159902, 1004, 616),	-- Path of the Burning Mountain		Upper Blackrock Spire
+	}).SetExpansion(ExpansionDraenor)
+
+CreateDestination(
+	LocZone("Dragon Isles", 1978),
+	{
+		CreateItem(198156), -- Wyrmhole Generator
+	}).SetExpansion(ExpansionDragonflight)
+
+CreateDestination(
+	GetLocalizedCategoryName("Dragon Isles Dungeons"),
+	{
+		CreateDungeonSpell(393279, 2335, 2073),	-- Path of Arcane Secrets			The Azure Vault
+		CreateDungeonSpell(393273, 2367, 2097),	-- Path of the Draconic Diploma		Algeth'ar Academy
+		CreateDungeonSpell(393262, 2378, 2093),	-- Path of the Windswept Plains		The Nokhud Offensive
+		CreateDungeonSpell(393256, 2376, 2094),	-- Path of the Clutch Defender		Ruby Life Pools
+		CreateDungeonSpell(393276, 2359, 2080),	-- Path of the Obsidian Hoard		Neltharus
+		CreateDungeonSpell(393283, 2382, 2082),	-- Path of the Titanic Reservoir	Halls of Infusion
+		CreateDungeonSpell(393267, 2380, 2096),	-- Path of the Rotting Woods		Brackenhide Hollow
+	}).SetExpansion(ExpansionDragonflight)
+
+CreateDestination(
+	GetLocalizedCategoryName("Dragon Isles Raids"),
+	{
+		CreateRaidSpell(432257, 2405, 2166),	-- Path of the Bitter Legacy		Aberrus
+		CreateRaidSpell(432254, 2388, 2119),	-- Path of the Primal Prison		Vault of the Incarnates
+		CreateRaidSpell(432258, 2502, 2232),	-- Path of the Scorching Dream		Amirdrassil
+	}).SetExpansion(ExpansionDragonflight)
 
 CreateDestination(
 	LocZone("Acherus: The Ebon Hold", 647),
 	{
 		CreateSpell(50977),			-- Death Gate
-	})
+	})	-- I haven't set an expansion because it's in a Classic zone, added in Wrath, and was moved in Legion.
 
 CreateDestination(
 	LocZone("Emerald Dreamway", 715),
 	{
 		CreateSpell(193753), 		-- Dreamwalk
-	})
+	}).SetExpansion(ExpansionLegion)
 
 CreateDestination(
 	LocZone("The Exodar", 103),
 	{
 		CreateSpell(32271),			-- Teleport: Exodar
-		CreateSpell(32266),			-- Portal: Exodar
-	})
+		CreatePortalSpell(32266),	-- Portal: Exodar
+	}).SetExpansion(ExpansionBurningCrusade)
 
 CreateDestination(
-	"Fishing Pool",					-- No localization.
-	{	
+	GetLocalizedCategoryName("Fishing Pool"),					-- No localization.
+	{
 		CreateConditionalSpell(201891, AtContinent(ContinentIdBrokenIsles)),		-- Undercurrent
 		CreateConditionalConsumable(162515, InBFAZone),	-- Midnight Salmon
 	})
-	
+
 CreateDestination(
 	GARRISON_LOCATION_TOOLTIP,
 	{
 		CreateItem(110560),				-- Garrison Hearthstone
-	})
+	}).SetExpansion(ExpansionDraenor)
 
-	
+CreateDestination(
+	LocZone("Gilneas", 202),
+	{
+		CreateConditionalItem(211788, IsRace("Worgen")),	-- Tess's Peacebloom
+	}).SetExpansion(ExpansionCataclysm)
+
 CreateDestination(
 	LocZone("Hall of the Guardian", 734),
 	{
-		CreateChallengeSpell(193759), 	-- Teleport: Hall of the Guardian
+		CreateSpell(193759), 	-- Teleport: Hall of the Guardian
+	}).SetExpansion(ExpansionLegion)
+
+-- TODO: Include destination in name
+CreateDestination(
+	"Hearth (Necrolord)",
+	{
+		CreateSpell(324547)		-- Hearth Kidneystone
 	})
---	
+
 CreateDestination(
 	LocZone("Highmountain", 869),
 	{
 		CreateConditionalConsumable(141017, AtContinent(ContinentIdBrokenIsles)),				-- Scroll of Town Portal: Lian'tril
 		CreateConditionalItem(140493, OnDayAtContinent(DayThursday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
-	})
+		CreateDungeonSpell(410078, 1207, 731),	-- Path of the Earth-Warder			Neltharion's Lair
+	}).SetExpansion(ExpansionLegion)
 
 CreateDestination(
 	LocZone("Icecrown", 118),
 	{
 		CreateItem(46874),				-- Argent Crusader's Tabard
-	})
+	}).SetExpansion(ExpansionWrath)
 
 CreateDestination(
 	LocZone("Ironforge", 87),
 	{
 		CreateSpell(3562),				-- Teleport: Ironforge
-		CreateSpell(11416)				-- Portal: Ironforge
-	})
+		CreatePortalSpell(11416)		-- Portal: Ironforge
+	}).SetExpansion(ExpansionClassic)
 
 CreateDestination(
 	LocZone("Isle of Thunder", 504),
 	{
 		CreateConditionalItem(95567, AtZone(MapIDIsleOfThunder )),	-- Kirin Tor Beacon
 		CreateConditionalItem(95568, AtZone(MapIDIsleOfThunder )),	-- Sunreaver Beacon
-	})
+	}).SetExpansion(ExpansionPandaria)
 
 CreateDestination(
 	LocArea("Karabor", 6930),
 	{
 		CreateItem(118663),				-- Relic of Karabor
-	})
+	}).SetExpansion(ExpansionDraenor)
 
 CreateDestination(
 	LocZone("Karazhan", 794),
@@ -469,32 +874,50 @@ CreateDestination(
 		CreateItem(22631),		-- Atiesh, Greatstaff of the Guardian
 		CreateItem(22632),		-- Atiesh, Greatstaff of the Guardian
 		CreateItem(142469), 	-- Violet Seal of the Grand Magus
-	})
-	
+		CreateDungeonSpell(373262, 175, 821), -- Path of the Fallen Guardian		Karazhan
+	}).SetExpansion(ExpansionClassic)
+
+CreateDestination(
+	LocZone("K'aresh", 2371),
+	{
+		CreateRaidSpell(1239155, 2805, 2460),		-- Path of the All-Devouring			Manaforge Omega
+		CreateConditionalItem(249699, InManaforgeRaid),	-- Shadowguard Translocator
+	}).SetExpansion(ExpansionWarWithin)
+
+
+CreateDestination(
+	LocZone("Khaz Algar", 2274),
+	{
+		CreateItem(221966),		-- Wormhole Generator: Khaz Algar
+	}).SetExpansion(ExpansionWarWithin)
+
 CreateDestination(
 	LocZone("Kul Tiras", 876),
 	{
 		CreateItem(168807)		-- Wormhole Generator: Kul Tiras
-	})
+	}).SetExpansion(ExpansionBattleForAzeroth)
 
 CreateDestination(
 	LocZone("Kun-Lai Summit", 379),
 	{
 		CreateConditionalSpell(126892, function() return not HaveUpgradedZen() end ),	-- Zen Pilgrimage
-	})
-	
+	}).SetExpansion(ExpansionPandaria)
+
 CreateDestination(
 	LocZone("Maldraxxus", 1536),
 	{
-		CreateItem(181163),		-- Scroll of Teleport: Theater of Pain
-	})
-	
+		CreateItem(181163),			-- Scroll of Teleport: Theater of Pain
+		CreateConsumable(184502),	-- Attendant's Pocket Portal: Maldraxxus
+	}).SetExpansion(ExpansionShadowlands)
+
 CreateDestination(
 	LocZone("Mechagon", 1490),
 	{
-		CreateConsumable(167075),	-- Ultrasafe Transporter: Mechagon
-	})
-	
+		CreateConsumable(167075),									-- Ultrasafe Transporter: Mechagon
+		CreateDungeonSpell(373274, 2006, 1490),					-- Path of the Scrappy Prince	Operation: Mechagon
+		CreateConditionalConsumable(169114, AtZone(MapIDMechagon))	-- Personal Time Displacer
+	}).SetExpansion(ExpansionBattleForAzeroth)
+
 CreateDestination(
 	"Mole Machine",					-- No localization.
 	{
@@ -506,122 +929,177 @@ CreateDestination(
 	{
 		CreateSpell(18960),		-- Teleport: Moonglade
 		CreateItem(21711),		-- Lunar Festival Invitation
-	})
+	}).SetExpansion(ExpansionClassic)
+
+CreateDestination(
+	LocZone("Nazmir", 863),
+	{
+		CreateDungeonSpell(410074, 1712, 1041),	-- Path of Festering Rot	The Underrot
+	}).SetExpansion(ExpansionBattleForAzeroth)
 
 CreateDestination(
 	LocZone("Netherstorm", 109),
 	{
 		CreateItem(30542),		-- Dimensional Ripper - Area 52
-	})
+	}).SetExpansion(ExpansionBurningCrusade)
 
 CreateDestination(
 	LocZone("Northrend", 113),
 	{
 		CreateItem(48933),		-- Wormhole Generator: Northrend
-	})
+	}).SetExpansion(ExpansionWrath)
+
+CreateDestination(
+	LocZone("Ohn'ahran Plains", 2023),
+	{
+		CreateConsumable(200613), -- Aylaag Windstone Fragment
+	}).SetExpansion(ExpansionDragonflight)
 
 CreateDestination(
 	LocZone("Orgrimmar", 85),
 	{
-		CreateSpell(3567),		-- Teleport: Orgrimmar
-		CreateSpell(11417),		-- Portal: Orgrimmar
-		CreateItem(63207),		-- Wrap of Unity
-		CreateItem(63353),		-- Shroud of Cooperation
-		CreateItem(65274),		-- Cloak of Coordination
-	})
-	
+		CreateSpell(3567),			-- Teleport: Orgrimmar
+		CreatePortalSpell(11417),	-- Portal: Orgrimmar
+		CreateItem(63207),			-- Wrap of Unity
+		CreateItem(63353),			-- Shroud of Cooperation
+		CreateItem(65274),			-- Cloak of Coordination
+	}).SetExpansion(ExpansionClassic)
+
 CreateDestination(
 	LocZone("Oribos", 1670),
 	{
-		CreateSpell(344587),	-- Teleport: Oribos
-		CreateSpell(344597),	-- Portal: Oribos
-	})
+		CreateSpell(344587),		-- Teleport: Oribos
+		CreatePortalSpell(344597),	-- Portal: Oribos
+		CreateConsumable(184504),	-- Attendant's Pocket Portal: Oribos
+	}).SetExpansion(ExpansionShadowlands)
 
 CreateDestination(
 	LocZone("Outland", 101),
 	{
 		CreateConditionalItem(129929, AtContinent(ContinentIdDraenor) ),	-- Ever-Shifting Mirror
-	})
+	}).SetExpansion(ExpansionBurningCrusade)
 
 CreateDestination(
 	LocZone("Pandaria", 424),
 	{
 		CreateConditionalConsumable(87548, AtContinent(ContinentIdPandaria)), 	-- Lorewalker's Lodestone
 		CreateItem(87215),														-- Wormhole Generator: Pandaria
-	})
+		CreateConsumable(217930)												-- Nostwin's Voucher
+	}).SetExpansion(ExpansionPandaria)
 
 CreateDestination(
-	"Pandaria Dungeons",		-- No localization.
+	GetLocalizedCategoryName("Pandaria Dungeons"),
 	{
-		CreateChallengeSpell(131225),	-- Path of the Setting Sun	
-		CreateChallengeSpell(131222),	-- Path of the Mogu King
-		CreateChallengeSpell(131231),	-- Path of the Scarlet Blade	
-		CreateChallengeSpell(131229),	-- Path of the Scarlet Mitre	
-		CreateChallengeSpell(131232),	-- Path of the Necromancer
-		CreateChallengeSpell(131206),	-- Path of the Shado-Pan
-		CreateChallengeSpell(131228),	-- Path of the Black Ox
-		CreateChallengeSpell(131205),	-- Path of the Stout Brew
-		CreateChallengeSpell(131204),	-- Path of the Jade Serpent
-	})
+		CreateDungeonSpell(131225, 471, 437),	-- Path of the Setting Sun		Gate of the Setting Sun
+		CreateDungeonSpell(131222, 519, 453),	-- Path of the Mogu King		Mogu'shan Palace
+		CreateDungeonSpell(131232, 472, 476),	-- Path of the Necromancer		Scholomance
+		CreateDungeonSpell(131206, 470, 443),	-- Path of the Shado-Pan		Shado-Pan Monastery
+		CreateDungeonSpell(131228, 554, 457),	-- Path of the Black Ox			Siege of Niuzao
+		CreateDungeonSpell(131205, 469, 439),	-- Path of the Stout Brew		Stormstout Brewery
+		CreateDungeonSpell(131204, 464, 429),	-- Path of the Jade Serpent		Temple of the Jade Serpent
+	}).SetExpansion(ExpansionPandaria)
 
 CreateDestination(
-	"Random",		-- No localization.
+	GetLocalizedCategoryName("Random"),
 	{
 		CreateSpell(147420),								-- One With Nature
 		CreateItem(64457), 									-- The Last Relic of Argus
 		CreateConditionalItem(136849, IsClass("DRUID")),	-- Nature's Beacon
+		CreateItem(153004),								-- Unstable Portal Emitter
+		CreateItem(189827),								-- Cartel Xy's Proof of Initiation
+		CreateItem(192443),								-- Element-Infused Rocket Helmet
+		CreateItem(193000),								-- Ring-Bound Hourglass
+		CreateConditionalItem(163073, function() return AtContinent(ContinentIdKulTiras)() or AtContinent(ContinentIdZandalar)() or AtContinent(ContinentIdNazjatar)() end),	-- Conch of Wa'mundi
 	})
 
 CreateDestination(
 	LocArea("Ravenholdt", 0),
 	{
 		CreateItem(139590),		-- Scroll of Teleport: Ravenholdt
-	})
+	}).SetExpansion(ExpansionClassic)
+
+CreateDestination(
+	LocZone("Revendreth", 1525),
+	{
+		CreateItem(184501),		-- 184501
+	}).SetExpansion(ExpansionShadowlands)
+
+CreateDestination(
+	LocZone("Scarlet Monastery", 302),
+	{
+		CreateDungeonSpell(131231, 473, 431),	-- Path of the Scarlet Blade		Scarlet Halls
+		CreateDungeonSpell(131229, 474, 302),	-- Path of the Scarlet Mitre		Scarlet Monastery
+	}).SetExpansion(ExpansionClassic)
+
+CreateDestination(
+	GetLocalizedCategoryName("Shadowlands Dungeons"),
+	{
+		CreateDungeonSpell(354462, 2123, 1666),	-- Path of the Courageous			The Necrotic Wake
+		CreateDungeonSpell(354463, 2121, 1674),	-- Path of the Plagued				Plaguefall
+		CreateDungeonSpell(354464, 2120, 1669),	-- Path of the Misty Forest			Mists of Tirna Scithe
+		CreateDungeonSpell(354465, 2119, 1663),	-- Path of the Sinful Soul			Halls of Atonement
+		CreateDungeonSpell(354466, 2122, 2017),	-- Path of the Ascendant			Spires of Ascension
+		CreateDungeonSpell(354467, 2124, 1687),	-- Path of the Undefeated			Theater of Pain
+		CreateDungeonSpell(354468, 2118, 1677),	-- Path of the Scheming Loa			De Other Side
+		CreateDungeonSpell(354469, 2117, 1675),	-- Path of the Stone Warden			Sanguine Depths
+		CreateDungeonSpell(367416, 2225, 1989),	-- Path of the Streetwise Merchant	Tazavesh, the Veiled Market
+		CreateDungeonSpell(373190, 2093, 1735),	-- Path of the Sire					Castle Nathria
+		CreateDungeonSpell(373191, 2228, 1998),	-- Path of the Tormented Soul		Sanctum of Domination
+		CreateDungeonSpell(373192, 2290, 2047),	-- Path of the First Ones			Sepulcher of the First Ones
+	}).SetExpansion(ExpansionShadowlands)
 
 CreateDestination(
 	LocZone("Shattrath City", 111),
 	{
-		CreateSpell(33690),		-- Teleport: Shattrath (Alliance)
-		CreateSpell(33691),		-- Portal: Shattrath (Alliance)
-		CreateSpell(35715),		-- Teleport: Shattrath (Horde)
-		CreateSpell(35717),		-- Portal: Shattrath (Horde)
-	})
+		CreateSpell(33690),			-- Teleport: Shattrath (Alliance)
+		CreatePortalSpell(33691),	-- Portal: Shattrath (Alliance)
+		CreateSpell(35715),			-- Teleport: Shattrath (Horde)
+		CreatePortalSpell(35717),	-- Portal: Shattrath (Horde)
+	}).SetExpansion(ExpansionBurningCrusade)
 
 CreateDestination(
 	LocArea("Shipyard", 6668),
 	{
 		CreateItem(128353),		-- Admiral's Compass
-	})
+	}).SetExpansion(ExpansionDraenor)
 
 CreateDestination(
 	LocZone("Silvermoon City", 110),
 	{
-		CreateSpell(32272),		-- Teleport: Silvermoon
-		CreateSpell(32267),		-- Portal: Silvermoon
-	})
+		CreateSpell(32272),			-- Teleport: Silvermoon
+		CreatePortalSpell(32267),	-- Portal: Silvermoon
+	}).SetExpansion(ExpansionBurningCrusade)
 
 CreateDestination(
 	LocArea("Stonard", 75),
 	{
-		CreateSpell(49358),		-- Teleport: Stonard
-		CreateSpell(49361),		-- Portal: Stonard
-	})
+		CreateSpell(49358),			-- Teleport: Stonard
+		CreatePortalSpell(49361),	-- Portal: Stonard
+	}).SetExpansion(ExpansionClassic)
 
 CreateDestination(
 	LocZone("Stormheim", 634),
 	{
 		CreateConditionalItem(140493, OnDayAtContinent(DayFriday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
-	})
+		CreateDungeonSpell(393764, 1194, 703),	-- Path of Proven Worth		Halls of Valor
+	}).SetExpansion(ExpansionLegion)
+
+
+CreateDestination(
+	LocZone("Stormsong Valley", 942),
+	{
+		CreateItem(202046)		-- Lucky Tortollan Charm
+	}).SetExpansion(ExpansionDragonflight)
 
 CreateDestination(
 	LocZone("Stormwind City", 84),
 	{
-		CreateSpell(3561),		-- Teleport: Stormwind
-		CreateSpell(10059),		-- Portal: Stormwind
-		CreateItem(63206),		-- Wrap of Unity
-		CreateItem(63352),		-- Shroud of Cooperation
-		CreateItem(65360),		-- Cloak of Coordination
-	})
+		CreateSpell(3561),			-- Teleport: Stormwind
+		CreatePortalSpell(10059),	-- Portal: Stormwind
+		CreateItem(63206),			-- Wrap of Unity
+		CreateItem(63352),			-- Shroud of Cooperation
+		CreateItem(65360),			-- Cloak of Coordination
+	}).SetExpansion(ExpansionClassic)
 
 CreateDestination(
 	LocZone("Suramar", 680),
@@ -629,107 +1107,207 @@ CreateDestination(
 		CreateItem(140324),																		-- Mobile Telemancy Beacon
 		CreateConditionalConsumable(141014, AtContinent(ContinentIdBrokenIsles)),				-- Scroll of Town Portal: Sashj'tar
 		CreateConditionalItem(140493, OnDayAtContinent(DayTuesday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
-	})
-		
+		CreateDungeonSpell(393766, 1319, 761),	-- Path of the Grand Magistrix		Court of Stars
+	}).SetExpansion(ExpansionLegion)
+
 CreateDestination(
 	LocZone("Tanaan Jungle", 534),
 	{
 		CreateConditionalItem(128502, AtZone(MapIDTanaanJungle)),	-- Hunter's Seeking Crystal
 		CreateConditionalItem(128503, AtZone(MapIDTanaanJungle)),	-- Master Hunter's Seeking Crystal
-	})
+	}).SetExpansion(ExpansionDraenor)
 
 CreateDestination(
 	LocZone("Tanaris", 71),
 	{
 		CreateItem(18986),		-- Ultrasafe Transporter - Gadgetzan
-	})
+	}).SetExpansion(ExpansionClassic)
 
 CreateDestination(
 	LocArea("Temple of Five Dawns", 5820),
 	{
 		CreateConditionalSpell(126892, function() return HaveUpgradedZen() end ),	-- Zen Pilgrimage
+	}).SetExpansion(ExpansionPandaria)
+
+CreateDestination(
+	LocZone("Thaldraszus", 2025),
+	{
+		CreateDungeonSpell(424197, 2430, 2198)	-- Path of Twisted Time		Dawn of the Infinite
 	})
-	
+
+CreateDestination(
+	LocZone("The Forbidden Reach", 2151),
+	{
+		CreateConditionalConsumable(204481, AtZone(2151)),		-- Morqut Hearth Totem
+		CreateConsumable(204802),								-- Scroll of Teleport: Zskera Vaults
+	}).SetExpansion(ExpansionDragonflight)
+
 CreateDestination(
 	LocZone("The Maw", 1543),
 	{
-		CreateConsumable(180817),		-- Cypher of Relocation
-	})
+		CreateConditionalConsumable(180817, function() return TeleporterGetOption("showInWrongZone") or (AtZone(MapIDMaw)() and not AtZone(MapIDKorthia)()) end),	-- Cypher of Relocation
+	}).SetExpansion(ExpansionShadowlands)
+
+CreateDestination(
+	LocZone("The Shadowlands", 1550),
+	{
+		CreateItem(172924),		-- Wormhole Generator: Shadowlands
+	}).SetExpansion(ExpansionShadowlands)
 
 CreateDestination(
 	LocArea("Theramore Isle", 513),
 	{
-		CreateSpell(49359),		-- Teleport: Theramore
-		CreateSpell(49360),		-- Portal: Theramore
-	})
+		CreateSpell(49359),			-- Teleport: Theramore
+		CreatePortalSpell(49360),	-- Portal: Theramore
+	}).SetExpansion(ExpansionClassic)
 
 CreateDestination(
 	LocZone("Timeless Isle", 554),
 	{
 		CreateItem(103678),		-- Time-Lost Artifact
-	})
+		CreateItem(219222),		-- Time-Lost Artifact
+	}).SetExpansion(ExpansionPandaria)
 
 CreateDestination(
 	LocZone("Thunder Bluff", 88),
 	{
-		CreateSpell(3566),		-- Teleport: Thunder Bluff
-		CreateSpell(11420),		-- Portal: Thunder Bluff
-	})
+		CreateSpell(3566),			-- Teleport: Thunder Bluff
+		CreatePortalSpell(11420),	-- Portal: Thunder Bluff
+	}).SetExpansion(ExpansionClassic)
+
+CreateDestination(
+	LocZone("Tiragarde Sound", 895),
+	{
+		CreateDungeonSpell(410071, 1704, 936),	-- Path of the Freebooter		Freehold
+		CreateDungeonSpell(445418, 1700, 1162),	-- Path of the Besieged Harbor (Alliance)	Siege of Boralus
+	}).SetExpansion(ExpansionBattleForAzeroth)
+
+CreateDestination(
+	LocZone("Tirisfal Glades", 18),
+	{
+		CreateItem(173523),		-- Tirisfal Camp Scroll
+	}).SetExpansion(ExpansionClassic)
 
 CreateDestination(
 	LocZone("Tol Barad", 773),
 	{
-		CreateItem(63378),		-- Hellscream's Reach Tabard
-		CreateItem(63379),		-- Baradin's Wardens Tabard
-		CreateSpell(88342),		-- Teleport: Tol Barad (Alliance)
-		CreateSpell(88344),		-- Teleport: Tol Barad (Horde)
-		CreateSpell(88345),		-- Portal: Tol Barad (Alliance)
-		CreateSpell(88346),		-- Portal: Tol Barad (Horde)
-	})
+		CreateItem(63378),			-- Hellscream's Reach Tabard
+		CreateItem(63379),			-- Baradin's Wardens Tabard
+		CreateSpell(88342),			-- Teleport: Tol Barad (Alliance)
+		CreateSpell(88344),			-- Teleport: Tol Barad (Horde)
+		CreatePortalSpell(88345),	-- Portal: Tol Barad (Alliance)
+		CreatePortalSpell(88346),	-- Portal: Tol Barad (Horde)
+	}).SetExpansion(ExpansionCataclysm)
+
+CreateDestination(
+	LocZone("Uldum", 249),
+	{
+		CreateDungeonSpell(410080, 319, 325)	-- Path of Wind's Domain		Vortex Pinnacle
+	}).SetExpansion(ExpansionCataclysm)
 
 CreateDestination(
 	LocZone("Undercity", 90),
 	{
-		CreateSpell(3563),		-- Teleport: Undercity
-		CreateSpell(11418),		-- Portal: Undercity
-	})
+		CreateSpell(3563),			-- Teleport: Undercity
+		CreatePortalSpell(11418),	-- Portal: Undercity
+	}).SetExpansion(ExpansionClassic)
+
+CreateDestination(
+	"Undermine",
+	{
+		CreateRaidSpell(1226482, 2779, 2346),				-- Path of the Full House				Liberation of Undermine
+		CreateConditionalItem(234389, InUndermineRaid),		-- Gallagio Loyalty Rewards Card: Silver
+		CreateConditionalItem(234390, InUndermineRaid),		-- Gallagio Loyalty Rewards Card: Gold
+		CreateConditionalItem(234391, InUndermineRaid),		-- Gallagio Loyalty Rewards Card: Platinum
+		CreateConditionalItem(234392, InUndermineRaid),		-- Gallagio Loyalty Rewards Card: Black
+		CreateConditionalItem(234393, InUndermineRaid),		-- Gallagio Loyalty Rewards Card: Diamond
+		CreateConditionalItem(234394, InUndermineRaid),		-- Gallagio Loyalty Rewards Card: Legendary
+	}).SetExpansion(ExpansionWarWithin)
+
+
+CreateDestination(
+	LocZone("Valdrakken", 2112),
+	{
+		CreateSpell(395277),		-- Teleport: Valdrakken
+		CreatePortalSpell(395289),	-- Portal: Valdrakken
+	}).SetExpansion(ExpansionDragonflight)
 
 CreateDestination(
 	LocZone("Val'sharah", 641),
 	{
 		CreateConditionalConsumable(141013, AtContinent(ContinentIdBrokenIsles)),			-- Scroll of Town Portal: Shala'nir
-		CreateConditionalConsumable(141015, AtContinent(ContinentIdBrokenIsles)),			-- Scroll of Town Portal: Kal'delar	
+		CreateConditionalConsumable(141015, AtContinent(ContinentIdBrokenIsles)),			-- Scroll of Town Portal: Kal'delar
 		CreateConditionalItem(140493, OnDayAtContinent(DayMonday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
-	})
+		CreateDungeonSpell(424163, 1202, 733),	-- Path of the Nightmare Lord		Darkheart Thicket
+		CreateDungeonSpell(424153, 1205, 751),	-- Path of Ancient Horrors			Black Rook Hold
+	}).SetExpansion(ExpansionLegion)
 
 -- I don't know why there are so many of these, not sure which is right but it's now safe to
 -- list them all.
 CreateDestination(
 	LocZone("Vale of Eternal Blossoms", 390),
 	{
-		CreateSpell(132621),	-- Teleport: Vale of Eternal Blossoms
-		CreateSpell(132627),	-- Teleport: Vale of Eternal Blossoms
-		CreateSpell(132620),	-- Portal: Vale of Eternal Blossoms
-		CreateSpell(132622),	-- Portal: Vale of Eternal Blossoms
-		CreateSpell(132624),	-- Portal: Vale of Eternal Blossoms
-		CreateSpell(132626),	-- Portal: Vale of Eternal Blossoms
-	})
+		CreateSpell(132621),		-- Teleport: Vale of Eternal Blossoms
+		CreateSpell(132627),		-- Teleport: Vale of Eternal Blossoms
+		CreatePortalSpell(132620),	-- Portal: Vale of Eternal Blossoms
+		CreatePortalSpell(132622),	-- Portal: Vale of Eternal Blossoms
+		CreatePortalSpell(132624),	-- Portal: Vale of Eternal Blossoms
+		CreatePortalSpell(132626),	-- Portal: Vale of Eternal Blossoms
+	}).SetExpansion(ExpansionPandaria)
+
+CreateDestination(
+	LocZone("Vashj'ir", 203),
+	{
+		CreateDungeonSpell(424142, 324, 322)	-- Path of the Tidehunter			Throne of the Tides
+	}).SetExpansion(ExpansionCataclysm)
+
+CreateDestination(
+	GetLocalizedCategoryName("War Within Dungeons"),
+	{
+		CreateDungeonSpell(445416, 2652, 2213),	-- Path of Nerubian Ascension				City of Threads
+		CreateDungeonSpell(445269, 2693, 2341),	-- Path of the Corrupted Foundry			The Stonevault
+		CreateDungeonSpell(445414, 2719, 2359),	-- Path of the Arathi Flagship				The Dawnbreaker
+		CreateDungeonSpell(445417, 2654, 2357),	-- Path of the Ruined City					Ara-Kara, City of Echoes
+		CreateDungeonSpell(445444, 2695, 2308),	-- Path of the Light's Reverence			Priory of the Sacred Flame
+		CreateDungeonSpell(464256, 1700, 1162),	-- Path of the Besieged Harbor (Horde)		Siege of Boralus
+		CreateDungeonSpell(445440, 2689, 2335),	-- Path of the Flaming Brewery				Cinderbrew Meadery
+		CreateDungeonSpell(467546, 2689, 2335),	-- Path of the Waterworks					Cinderbrew Meadery
+		CreateDungeonSpell(445441, 2655, 2303),	-- Path of the Warding Candles				Darkflame Cleft
+		CreateDungeonSpell(445443, 2653, 2315),	-- Path of the Fallen Stormriders			The Rookery
+		CreateDungeonSpell(1216786, 2791, 2387),	-- Path of the Circuit Breaker				Operation: Floodgate
+		CreateDungeonSpell(1237215, 2987, 2449),	-- Path of the Eco-Dome						Eco-Dome Al'dani
+	}).SetExpansion(ExpansionWarWithin)
+
+CreateDestination(
+	LocZone("Twilight Highlands", 241),
+	{
+		CreateDungeonSpell(445424, 304, 293),		-- Path of the Twilight Fortress			Grim Batol
+	}).SetExpansion(ExpansionCataclysm)
 
 CreateDestination(
 	LocZone("Winterspring", 83),
 	{
 		CreateItem(18984),		-- Dimensional Ripper - Everlook
-	})
-	
+	}).SetExpansion(ExpansionClassic)
+
 CreateDestination(
 	LocZone("Zandalar", 875),
 	{
 		CreateItem(168808)		-- Wormhole Generator: Zandalar
-	})
+	}).SetExpansion(ExpansionBattleForAzeroth)
+
+CreateDestination(
+	LocZone("Zaralek Cavern", 2133),
+	{
+		CreateConditionalItem(205255, AtZone(2133))		-- Niffen Diggin' Mitts
+	}).SetExpansion(ExpansionDragonflight)
 
 CreateDestination(
 	LocZone("Zuldazar", 862),
 	{
 		CreateConsumable(157542),	-- Portal Scroll of Specificity
 		CreateConsumable(160218),	-- Portal Scroll of Specificity
-	})
+		CreateDungeonSpell(424187, 2107, 934),	-- Path of the Golden Tomb		Atal'Dazar
+		CreateDungeonSpell(467553, 1707, 934),	-- Path of the Azerite Refinery	The MOTHERLODE!!
+		CreateDungeonSpell(467555, 1707, 934),	-- Path of the Azerite Refinery	The MOTHERLODE!!
+	}).SetExpansion(ExpansionBattleForAzeroth)

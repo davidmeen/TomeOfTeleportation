@@ -1,16 +1,37 @@
-## Interface: 90000
+## Interface: 110205
 ## Title : Tome of Teleportation
 ## Notes: An interface for managing teleportation spells and items.
+## Notes-zhCN: 一个管理传送法术和物品的界面
+## Notes-zhTW: 一個管理傳送法術和物品的介面
+## Notes-deDE: Eine Benutzeroberfläche zur Verwaltung von Teleportationszaubern und Gegenständen
+## Notes-frFR: Une interface pour gérer les sorts et objets de téléportation
+## Notes-esES: Una interfaz para gestionar hechizos y objetos de teletransporte
+## Notes-ruRU: Интерфейс для управления заклинаниями и предметами телепортации
+## Notes-koKR: 순간이동 주문과 아이템을 관리하는 인터페이스입니다
+## Notes-ptBR: Uma interface para gerenciar feitiços e itens de teleporte
+## Notes-itIT: Un'interfaccia per gestire incantesimi e oggetti di teletrasporto
 ## Author: Remeen
-## SavedVariablesPerCharacter: TomeOfTele_Icon, TomeOfTele_Options, TomeOfTele_ShareOptions
-## SavedVariables: TomeOfTele_OptionsGlobal
+## SavedVariablesPerCharacter: TomeOfTele_Options,TomeOfTele_ShareOptions
+## SavedVariables: TomeOfTele_OptionsGlobal,TomeOfTele_IconGlobal
+## IconTexture: Interface\Icons\Spell_Arcane_TeleportDalaran
+## AddonCompartmentFunc: Teleporter_OnAddonCompartmentClick
+## Category: Collections
+## Category-deDE: Kriegsmeutesammlungen
+## Category-esES: Colecciones de banda guerrera
+## Category-esMX: Colecciones de tropa
+## Category-frFR: Collections du bataillon
+## Category-itIT: Collezioni della Brigata
+## Category-koKR: 전투부대 수집품
+## Category-ptBR: Coleções do Bando de Guerra
+## Category-ruRU: Коллекции отряда
+## Category-zhCN: 战团藏品
+## Category-zhTW: 戰隊收藏
 
-
-libs\LibStub\LibStub.lua
-libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
-libs\libdatabroker-1-1\LibDataBroker-1.1.lua
-libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+libs\embeds.xml
+libs\LibDBIcon-1.0\lib.xml
+TeleporterSpell.lua
 TomeQuickMenu.lua
+TomeOfTeleportationSettings.lua
 TomeOfTeleportation.lua
 TomeOfTeleportation.xml
 Spells.lua
