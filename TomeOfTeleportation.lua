@@ -1585,6 +1585,13 @@ local function CreateMainFrame()
 	searchFrame:SetAutoFocus(false)
 	searchFrame:SetMultiLine(false)
 
+	searchFrame:SetScript("OnEscapePressed",
+		function(self)
+			self:SetText("")
+			UpdateSearch("")
+			self:ClearFocus()
+		end)
+
 	searchFrame:SetScript("OnTextChanged", function(self, userInput)
 		if userInput then
 			UpdateSearch(searchFrame:GetText())
