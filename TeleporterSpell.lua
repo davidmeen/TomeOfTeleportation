@@ -324,6 +324,7 @@ function TeleporterSpell:IsSeasonDungeon()
 			1202,	-- Darkheart Thicket
 			1194,	-- Halls of Valor
 			1207,	-- Neltharion's Lair
+			175,	-- Karazhan
 		}, self.dungeonID)
 	else
 		-- Dragonflight Season 4
