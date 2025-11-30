@@ -746,13 +746,13 @@ local function SortSpells(spell1, spell2, sortType)
 	local zone2 = spell2:GetZone()
 
 	if GetOption("groupDungeons") then
-		if spell1:IsDungeonSpell() then zone1 = DungeonsTitle end
-		if spell2:IsDungeonSpell() then zone2 = DungeonsTitle end
+		if spell1:IsDungeonSpell() then zone1 = DungeonsTitle .. spell1:GetExpansionName() end
+		if spell2:IsDungeonSpell() then zone2 = DungeonsTitle .. spell2:GetExpansionName() end
 	end
 
 	if GetOption("groupRaids") then
-		if spell1:IsRaidSpell() then zone1 = RaidsTitle end
-		if spell2:IsRaidSpell() then zone2 = RaidsTitle end
+		if spell1:IsRaidSpell() then zone1 = RaidsTitle .. spellExpansion1 end
+		if spell2:IsRaidSpell() then zone2 = RaidsTitle .. spellExpansion2 end
 	end
 
 	if GetOption("showDungeonNames") then
@@ -1684,11 +1684,19 @@ local function FindValidSpells()
 		end
 
 		if spell:IsDungeonSpell() and GetOption("groupDungeons") then
-			spell.displayDestination = DungeonsTitle
+			if spell.expansion then
+				spell.displayDestination = DungeonsTitle .. ": " .. spell:GetExpansionName()
+			else
+				spell.displayDestination = DungeonsTitle
+			end
 		end
 
 		if spell:IsRaidSpell() and GetOption("groupRaids") then
-			spell.displayDestination = RaidsTitle
+			if spell.expansion then
+				spell.displayDestination = RaidsTitle .. ": " .. spell:GetExpansionName()
+			else
+				spell.displayDestination = RaidsTitle
+			end
 		end
 
 		if isItem then
