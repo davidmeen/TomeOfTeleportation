@@ -313,6 +313,10 @@ function TeleporterSpell:MatchesSearch(searchString)
 	return string.find(string.lower(self.spellName), searchLower) or string.find(string.lower(self.zone), searchLower)
 end
 
+function TeleporterSpell:GetExpansionName()
+	return ExpansionNames[self.expansion] or "Unknown"
+end
+
 -- Use this script in-game to get the dungeon IDs:
 -- /script for i=1,3000 do d=GetLFGDungeonInfo(i);if d=="Dungeon Name" then print(i); end;end
 function TeleporterSpell:IsSeasonDungeon()
@@ -324,6 +328,7 @@ function TeleporterSpell:IsSeasonDungeon()
 			1202,	-- Darkheart Thicket
 			1194,	-- Halls of Valor
 			1207,	-- Neltharion's Lair
+			175,	-- Karazhan
 		}, self.dungeonID)
 	else
 		-- Dragonflight Season 4

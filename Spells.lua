@@ -1133,7 +1133,7 @@ CreateDestination(
 	LocZone("Thaldraszus", 2025),
 	{
 		CreateDungeonSpell(424197, 2430, 2198)	-- Path of Twisted Time		Dawn of the Infinite
-	})
+	}).SetExpansion(ExpansionDragonflight)
 
 CreateDestination(
 	LocZone("The Forbidden Reach", 2151),
