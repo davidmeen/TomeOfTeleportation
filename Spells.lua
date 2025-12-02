@@ -481,6 +481,7 @@ CreateDestination(
 		CreateItem(246565),				-- Cosmic Hearthstone
 		CreateItem(245970),				-- P.O.S.T. Master's Express Hearthstone
 		CreateItem(250411),				-- Timerunner's Hearthstone
+		CreateItem(263489),				-- Naaru's Enfold
 	})
 
 -- Any hearthstones that shouldn't be randomised.
