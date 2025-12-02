@@ -1906,7 +1906,7 @@ function TeleporterOpenFrame(isSearching)
 				end
 
 				-- Title
-				if newColumn or lastDest ~= destination then
+				if (newColumn or lastDest ~= destination) and not GetOption("hideZoneTitles") then
 					local destString = TeleporterCreateReusableFontString("TeleporterDL", TeleporterParentFrame, "GameFontNormalSmall")
 					destString:SetFont(fontFile, fontHeight, fontFlags)
 					destString:SetPoint("TOPLEFT", TeleporterParentFrame, "TOPLEFT", xoffset, yoffset)
