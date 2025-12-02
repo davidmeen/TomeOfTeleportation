@@ -537,6 +537,7 @@ local MenuIDCloseAfterCast		= 16
 local MenuIDShowIcon			= 17
 local MenuIDCurrentRaids		= 18
 local MenuIDGroupRaids			= 19
+local MenuIDExpansionInGroupNames = 20
 
 local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 	if level == 1 or topLevel then
@@ -552,6 +553,7 @@ local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 		AddHideOptionMenu(MenuIDCurrentRaids, "Current Raids Only", "seasonRaidsOnly", frame, level)
 		AddHideOptionMenu(MenuIDGroupDungeons, "Group Dungeons", "groupDungeons", frame, level)
 		AddHideOptionMenu(MenuIDGroupRaids, "Group Raids", "groupRaids", frame, level)
+		AddHideOptionMenu(MenuIDExpansionInGroupNames, "Group Dungeons/Raids by Expansion", "expansionInGroupNames", frame, level)
 		AddHideOptionMenu(MenuIDRandomHearth, "Random Hearthstone", "randomHearth", frame, level)
 		AddHideOptionMenu(MenuIDWrongZone, "Show Spells When In Wrong Zone", "showInWrongZone", frame, level)
 		AddHideOptionMenu(MenuIDCloseAfterCast, "Close When Cast Finishes", "closeAfterCast", frame, level)
@@ -746,13 +748,23 @@ local function SortSpells(spell1, spell2, sortType)
 	local zone2 = spell2:GetZone()
 
 	if GetOption("groupDungeons") then
-		if spell1:IsDungeonSpell() then zone1 = DungeonsTitle .. spell1:GetExpansionName() end
-		if spell2:IsDungeonSpell() then zone2 = DungeonsTitle .. spell2:GetExpansionName() end
+		if GetOption("expansionInGroupNames") then
+			if spell1:IsDungeonSpell() then zone1 = DungeonsTitle .. spell1:GetExpansionName() end
+			if spell2:IsDungeonSpell() then zone2 = DungeonsTitle .. spell2:GetExpansionName() end
+		else
+			if spell1:IsDungeonSpell() then zone1 = DungeonsTitle end
+			if spell2:IsDungeonSpell() then zone2 = DungeonsTitle end
+		end
 	end
 
 	if GetOption("groupRaids") then
-		if spell1:IsRaidSpell() then zone1 = RaidsTitle .. spellExpansion1 end
-		if spell2:IsRaidSpell() then zone2 = RaidsTitle .. spellExpansion2 end
+		if GetOption("expansionInGroupNames") then
+			if spell1:IsRaidSpell() then zone1 = RaidsTitle .. spellExpansion1 end
+			if spell2:IsRaidSpell() then zone2 = RaidsTitle .. spellExpansion2 end
+		else
+			if spell1:IsRaidSpell() then zone1 = RaidsTitle end
+			if spell2:IsRaidSpell() then zone2 = RaidsTitle end
+		end
 	end
 
 	if GetOption("showDungeonNames") then
@@ -1684,7 +1696,7 @@ local function FindValidSpells()
 		end
 
 		if spell:IsDungeonSpell() and GetOption("groupDungeons") then
-			if spell.expansion then
+			if spell.expansion and GetOption("expansionInGroupNames") then
 				spell.displayDestination = DungeonsTitle .. ": " .. spell:GetExpansionName()
 			else
 				spell.displayDestination = DungeonsTitle
@@ -1692,7 +1704,7 @@ local function FindValidSpells()
 		end
 
 		if spell:IsRaidSpell() and GetOption("groupRaids") then
-			if spell.expansion then
+			if spell.expansion and GetOption("expansionInGroupNames") then
 				spell.displayDestination = RaidsTitle .. ": " .. spell:GetExpansionName()
 			else
 				spell.displayDestination = RaidsTitle
