@@ -2,7 +2,7 @@ local ST_Item = 1
 local ST_Spell = 2
 local ST_Dungeon = 3
 local ST_Raid = 4
-
+local ST_House = 5
 
 -- Some of these are odd - inconsistent translations in-game?
 local RedundantStrings =
@@ -60,6 +60,14 @@ end
 
 function TeleporterSpell:IsRaidSpell()
     return self.spellType == ST_Raid
+end
+
+function TeleporterSpell:isTeleportHome()
+	return self.spellType == ST_House and not self.isReturn
+end
+
+function TeleporterSpell:isReturnFromHome()
+	return self.spellType == ST_House and self.isReturn
 end
 
 function TeleporterSpell:CleanupName()
@@ -173,6 +181,10 @@ function TeleporterSpell:CanUse()
 			haveToy = PlayerHasToy(spellId) and toyUsable
 		end
 		haveSpell = GetItemCount( spellId ) > 0 or haveToy
+	elseif spell.spellType == ST_House then
+		if C_Housing then
+			haveSpell = true
+		end
 	else
 		haveSpell = IsSpellKnown( spellId )
 
@@ -437,6 +449,24 @@ function TeleporterCreateConsumable(id, dest)
 	spell.spellType = ST_Item
 	spell.zone = dest
 	spell.consumable = true
+	return spell
+end
+
+function TeleporterCreateTeleportHome(zoneId, cond, dest)
+	local spell = {}
+    TeleporterInitSpell(spell)
+	if zoneId then
+		spell.isReturn = false
+		spell.spellId = 1233637
+		spell.overrideButtonName = C_Map.GetMapInfo(zoneId).name
+	else
+		spell.isReturn = true
+		spell.spellId = 1270311
+	end
+	spell.spellType = ST_House
+	spell.zone = dest
+	spell.zoneId = zoneId
+	spell.condition = cond
 	return spell
 end
 

@@ -79,6 +79,9 @@ local ChosenHearth = nil
 local IsRefreshing = nil
 local StartSearch = false
 
+local TeleporterHouses = {}
+local TeleporterHousesByZone = {}
+
 TomeOfTele_ShareOptions = true
 
 BINDING_NAME_TOMEOFTELEPORTATION = "Tome of Teleportation"
@@ -370,7 +373,24 @@ function Teleporter_OnEvent(self, event, ...)
 		end
 	elseif event == "ZONE_CHANGED" or event == "ZONE_CHANGED_NEW_AREA" or event == "ZONE_CHANGED_INDOORS" then
 		TeleporterCheckItemsWereEquiped()
+	elseif event == "PLAYER_HOUSE_LIST_UPDATED" then
+		local houses = ...
+		if not TeleporterHouses or #houses ~= #TeleporterHouses then
+			TeleporterHouses = houses
+			TeleporterHousesByZone = {}
+			for i,house in ipairs(TeleporterHouses) do
+				local zone = C_Housing.GetUIMapIDForNeighborhood(house.neighborhoodGUID)
+				TeleporterHousesByZone[zone] = house
+			end
+			if IsVisible then
+				TeleporterRefresh()
+			end
+		end
 	end
+end
+
+function TeleporterHasHouseInZone(zoneId)
+	return TeleporterHousesByZone and TeleporterHousesByZone[zoneId]
 end
 
 function TeleporterFindInSpecialFrames()
@@ -474,6 +494,10 @@ local function Refresh()
 		TeleporterOpenFrame()
 		IsRefreshing = false
 	end
+end
+
+function TeleporterRefresh()
+	Refresh()
 end
 
 local TeleporterMenu = nil
@@ -771,6 +795,9 @@ local function SortSpells(spell1, spell2, sortType)
 		if spell1:IsDungeonSpell() or spell1:IsRaidSpell() then spellName1 = spell1.dungeon end
 		if spell2:IsDungeonSpell() or spell2:IsRaidSpell() then spellName2 = spell2.dungeon end
 	end
+
+	if spell1.overrideButtonName then spellName1 = spell1.overrideButtonName end
+	if spell2.overrideButtonName then spellName2 = spell2.overrideButtonName end
 
 	local so = GetOption("sortOrder") or {}
 
@@ -1179,6 +1206,21 @@ function TeleporterUpdateButton(button)
 					"macrotext",
 					"/teleporteruseitem " .. item .. "\n" ..
 					"/use " .. item .. "\n" )
+			elseif spell:isTeleportHome() then
+				if TeleporterHousesByZone and TeleporterHousesByZone[spell.zoneId] then
+					local house = TeleporterHousesByZone[spell.zoneId]
+					button:SetAttribute(
+						"macrotext",
+						"/script C_Housing.TeleportHome(\"" .. house.neighborhoodGUID .. "\", \"" .. house.houseGUID .. "\", ".. house.plotID .. ");" )
+				else
+					button:SetAttribute(
+						"macrotext",
+						"/script print(\"You do not have a house in this zone\")" )
+				end
+			elseif spell:isReturnFromHome() then
+				button:SetAttribute(
+					"macrotext",
+					"/script C_Housing.ReturnAfterVisitingHouse()" )
 			else
 				button:SetAttribute(
 					"macrotext",
@@ -1765,6 +1807,10 @@ function TeleporterOpenFrame(isSearching)
 
 	InitalizeOptions()
 
+	if C_Housing then
+		C_Housing.GetPlayerOwnedHouses()
+	end
+
 	if not IsVisible or isSearching then
 		local buttonHeight = GetScaledOption("buttonHeight")
 		local buttonWidth = GetScaledOption("buttonWidth")
@@ -1904,6 +1950,8 @@ function TeleporterOpenFrame(isSearching)
 				if (spell:IsDungeonSpell() or spell:IsRaidSpell()) and ShowDungeonNames and spell.dungeon then
 					displaySpellName = spell.dungeon
 				end
+
+				if spell.overrideButtonName then displaySpellName = spell.overrideButtonName end
 
 				-- Title
 				if (newColumn or lastDest ~= destination) and not GetOption("hideZoneTitles") then

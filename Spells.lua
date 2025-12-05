@@ -32,6 +32,7 @@ local LocalizedStrings = {
 		["Shadowlands"] = " (Shadowlands)",
 		["Dragonflight"] = " (Dragonflight)",
 		["WarWithin"] = " (War Within)",
+		["Midnight"] = " (Midnight)",
 		-- Category names
 		["Draenor Dungeons"] = "Draenor Dungeons",
 		["Dragon Isles Dungeons"] = "Dragon Isles Dungeons",
@@ -42,6 +43,7 @@ local LocalizedStrings = {
 		["Fishing Pool"] = "Fishing Pool",
 		["Delves"] = "Delves",
 		["Random"] = "Random",
+		["House"] = "House"
 	},
 	-- Simplified Chinese
 	["zhCN"] = {
@@ -314,6 +316,7 @@ local ExpansionBattleForAzeroth = 8
 local ExpansionShadowlands = 9
 local ExpansionDragonflight = 10
 local ExpansionWarWithin = 11
+local ExpansionMidnight = 12
 
 local function OnDay(day)
 	return function()
@@ -840,6 +843,21 @@ CreateDestination(
 		CreateConditionalItem(140493, OnDayAtContinent(DayThursday, ContinentIdBrokenIsles)),	-- Adept's Guide to Dimensional Rifting
 		CreateDungeonSpell(410078, 1207, 731),	-- Path of the Earth-Warder			Neltharion's Lair
 	}).SetExpansion(ExpansionLegion)
+
+local function CanTeleportToHouse(zoneId)
+	return function()
+		return TeleporterHasHouseInZone(zoneId)
+	end
+end
+
+CreateDestination(
+	GetLocalizedCategoryName("House"),
+	{
+		TeleporterCreateTeleportHome(2351, CanTeleportToHouse(2351)),		-- Teleport Home (Horde)
+		TeleporterCreateTeleportHome(2352, CanTeleportToHouse(2352)),		-- Teleport Home (Alliance)
+		-- This is currently broken
+		TeleporterCreateTeleportHome(nil, function() return false end)		-- Return from Home
+	}).SetExpansion(ExpansionMidnight)
 
 CreateDestination(
 	LocZone("Icecrown", 118),
