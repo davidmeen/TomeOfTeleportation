@@ -82,8 +82,13 @@ function TeleporterSpell:CleanupName()
 end
 
 function TeleporterSpell:GetOptionId()
-	-- Must use the original zone name here.
-	return self.spellId .. "." .. self.zone
+	if self.spellType == ST_House and self.zoneId then
+		-- Multiple buttons for the same spell, distinguished by zoneId.
+		return self.spellId .. "." .. self.zoneId
+	else
+		-- Must use the original zone name here.
+		return self.spellId .. "." .. self.zone
+	end
 end
 
 
