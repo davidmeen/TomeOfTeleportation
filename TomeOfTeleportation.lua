@@ -2617,6 +2617,8 @@ function TeleporterTest_Reset()
 	DebugUnsupported = nil
 	ChosenHearth = nil
 	IsRefreshing = nil
+	TeleporterHouses = {}
+	TeleporterHousesByZone = {}
 end
 
 function Teleporter_OnAddonCompartmentClick()
