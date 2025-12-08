@@ -302,7 +302,7 @@ function TeleporterSpell:Equals(other)
 	return ""..self.spellId == ""..other.spellId and self.spellType == other.spellType
 end
 
-local ExpansionNames = { EXPANSION_NAME0, EXPANSION_NAME1, EXPANSION_NAME2, EXPANSION_NAME3, EXPANSION_NAME4, EXPANSION_NAME5, EXPANSION_NAME6, EXPANSION_NAME7, EXPANSION_NAME8, EXPANSION_NAME9, EXPANSION_NAME10 }
+local ExpansionNames = { EXPANSION_NAME0, EXPANSION_NAME1, EXPANSION_NAME2, EXPANSION_NAME3, EXPANSION_NAME4, EXPANSION_NAME5, EXPANSION_NAME6, EXPANSION_NAME7, EXPANSION_NAME8, EXPANSION_NAME9, EXPANSION_NAME10, EXPANSION_NAME11 or "Midnight" }
 
 function TeleporterSpell:MatchesSearch(searchString)
 	local searchLower = string.lower(searchString)
