@@ -3,7 +3,6 @@
 -- TODO:
 -- Improve speed
 -- Optional compact UI
--- Tests for search
 
 -- Known issues:
 -- Overlapping buttons
@@ -2619,6 +2618,22 @@ function TeleporterTest_Reset()
 	IsRefreshing = nil
 	TeleporterHouses = {}
 	TeleporterHousesByZone = {}
+end
+
+function TeleporterTest_UpdateSearch(searchString)
+	TeleporterSearchBox:SetText(searchString)
+	UpdateSearch(searchString)
+end
+
+function TeleportTest_GetVisibleIds()
+	local ids = {}
+	local count = 0
+	for a, settings in pairs(ButtonSettings) do
+		ids[settings.spellId] = true
+		count = count + 1
+	end
+	ids.count = count
+	return ids
 end
 
 function Teleporter_OnAddonCompartmentClick()
