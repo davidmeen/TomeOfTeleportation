@@ -3,7 +3,6 @@
 -- TODO:
 -- Improve speed
 -- Optional compact UI
--- Tests for search
 
 -- Known issues:
 -- Overlapping buttons
@@ -78,6 +77,9 @@ local DebugUnsupported = nil
 local ChosenHearth = nil
 local IsRefreshing = nil
 local StartSearch = false
+
+local TeleporterHouses = {}
+local TeleporterHousesByZone = {}
 
 TomeOfTele_ShareOptions = true
 
@@ -370,7 +372,24 @@ function Teleporter_OnEvent(self, event, ...)
 		end
 	elseif event == "ZONE_CHANGED" or event == "ZONE_CHANGED_NEW_AREA" or event == "ZONE_CHANGED_INDOORS" then
 		TeleporterCheckItemsWereEquiped()
+	elseif event == "PLAYER_HOUSE_LIST_UPDATED" then
+		local houses = ...
+		if not TeleporterHouses or #houses ~= #TeleporterHouses then
+			TeleporterHouses = houses
+			TeleporterHousesByZone = {}
+			for i,house in ipairs(TeleporterHouses) do
+				local zone = C_Housing.GetUIMapIDForNeighborhood(house.neighborhoodGUID)
+				TeleporterHousesByZone[zone] = house
+			end
+			if IsVisible then
+				TeleporterRefresh()
+			end
+		end
 	end
+end
+
+function TeleporterHasHouseInZone(zoneId)
+	return TeleporterHousesByZone and TeleporterHousesByZone[zoneId]
 end
 
 function TeleporterFindInSpecialFrames()
@@ -476,6 +495,10 @@ local function Refresh()
 	end
 end
 
+function TeleporterRefresh()
+	Refresh()
+end
+
 local TeleporterMenu = nil
 local TeleporterOptionsMenu = nil
 
@@ -537,6 +560,7 @@ local MenuIDCloseAfterCast		= 16
 local MenuIDShowIcon			= 17
 local MenuIDCurrentRaids		= 18
 local MenuIDGroupRaids			= 19
+local MenuIDExpansionInGroupNames = 20
 
 local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 	if level == 1 or topLevel then
@@ -552,6 +576,7 @@ local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 		AddHideOptionMenu(MenuIDCurrentRaids, "Current Raids Only", "seasonRaidsOnly", frame, level)
 		AddHideOptionMenu(MenuIDGroupDungeons, "Group Dungeons", "groupDungeons", frame, level)
 		AddHideOptionMenu(MenuIDGroupRaids, "Group Raids", "groupRaids", frame, level)
+		AddHideOptionMenu(MenuIDExpansionInGroupNames, "Group Dungeons/Raids by Expansion", "expansionInGroupNames", frame, level)
 		AddHideOptionMenu(MenuIDRandomHearth, "Random Hearthstone", "randomHearth", frame, level)
 		AddHideOptionMenu(MenuIDWrongZone, "Show Spells When In Wrong Zone", "showInWrongZone", frame, level)
 		AddHideOptionMenu(MenuIDCloseAfterCast, "Close When Cast Finishes", "closeAfterCast", frame, level)
@@ -746,19 +771,32 @@ local function SortSpells(spell1, spell2, sortType)
 	local zone2 = spell2:GetZone()
 
 	if GetOption("groupDungeons") then
-		if spell1:IsDungeonSpell() then zone1 = DungeonsTitle .. spell1:GetExpansionName() end
-		if spell2:IsDungeonSpell() then zone2 = DungeonsTitle .. spell2:GetExpansionName() end
+		if GetOption("expansionInGroupNames") then
+			if spell1:IsDungeonSpell() then zone1 = DungeonsTitle .. spell1:GetExpansionName() end
+			if spell2:IsDungeonSpell() then zone2 = DungeonsTitle .. spell2:GetExpansionName() end
+		else
+			if spell1:IsDungeonSpell() then zone1 = DungeonsTitle end
+			if spell2:IsDungeonSpell() then zone2 = DungeonsTitle end
+		end
 	end
 
 	if GetOption("groupRaids") then
-		if spell1:IsRaidSpell() then zone1 = RaidsTitle .. spellExpansion1 end
-		if spell2:IsRaidSpell() then zone2 = RaidsTitle .. spellExpansion2 end
+		if GetOption("expansionInGroupNames") then
+			if spell1:IsRaidSpell() then zone1 = RaidsTitle .. spellExpansion1 end
+			if spell2:IsRaidSpell() then zone2 = RaidsTitle .. spellExpansion2 end
+		else
+			if spell1:IsRaidSpell() then zone1 = RaidsTitle end
+			if spell2:IsRaidSpell() then zone2 = RaidsTitle end
+		end
 	end
 
 	if GetOption("showDungeonNames") then
 		if spell1:IsDungeonSpell() or spell1:IsRaidSpell() then spellName1 = spell1.dungeon end
 		if spell2:IsDungeonSpell() or spell2:IsRaidSpell() then spellName2 = spell2.dungeon end
 	end
+
+	if spell1.overrideButtonName then spellName1 = spell1.overrideButtonName end
+	if spell2.overrideButtonName then spellName2 = spell2.overrideButtonName end
 
 	local so = GetOption("sortOrder") or {}
 
@@ -1167,6 +1205,21 @@ function TeleporterUpdateButton(button)
 					"macrotext",
 					"/teleporteruseitem " .. item .. "\n" ..
 					"/use " .. item .. "\n" )
+			elseif spell:isTeleportHome() then
+				if TeleporterHousesByZone and TeleporterHousesByZone[spell.zoneId] then
+					local house = TeleporterHousesByZone[spell.zoneId]
+					button:SetAttribute(
+						"macrotext",
+						"/script C_Housing.TeleportHome(\"" .. house.neighborhoodGUID .. "\", \"" .. house.houseGUID .. "\", ".. house.plotID .. ");" )
+				else
+					button:SetAttribute(
+						"macrotext",
+						"/script print(\"You do not have a house in this zone\")" )
+				end
+			elseif spell:isReturnFromHome() then
+				button:SetAttribute(
+					"macrotext",
+					"/script C_Housing.ReturnAfterVisitingHouse()" )
 			else
 				button:SetAttribute(
 					"macrotext",
@@ -1684,7 +1737,7 @@ local function FindValidSpells()
 		end
 
 		if spell:IsDungeonSpell() and GetOption("groupDungeons") then
-			if spell.expansion then
+			if spell.expansion and GetOption("expansionInGroupNames") then
 				spell.displayDestination = DungeonsTitle .. ": " .. spell:GetExpansionName()
 			else
 				spell.displayDestination = DungeonsTitle
@@ -1692,7 +1745,7 @@ local function FindValidSpells()
 		end
 
 		if spell:IsRaidSpell() and GetOption("groupRaids") then
-			if spell.expansion then
+			if spell.expansion and GetOption("expansionInGroupNames") then
 				spell.displayDestination = RaidsTitle .. ": " .. spell:GetExpansionName()
 			else
 				spell.displayDestination = RaidsTitle
@@ -1752,6 +1805,10 @@ function TeleporterOpenFrame(isSearching)
 	end
 
 	InitalizeOptions()
+
+	if C_Housing then
+		C_Housing.GetPlayerOwnedHouses()
+	end
 
 	if not IsVisible or isSearching then
 		local buttonHeight = GetScaledOption("buttonHeight")
@@ -1893,8 +1950,10 @@ function TeleporterOpenFrame(isSearching)
 					displaySpellName = spell.dungeon
 				end
 
+				if spell.overrideButtonName then displaySpellName = spell.overrideButtonName end
+
 				-- Title
-				if newColumn or lastDest ~= destination then
+				if (newColumn or lastDest ~= destination) and not GetOption("hideZoneTitles") then
 					local destString = TeleporterCreateReusableFontString("TeleporterDL", TeleporterParentFrame, "GameFontNormalSmall")
 					destString:SetFont(fontFile, fontHeight, fontFlags)
 					destString:SetPoint("TOPLEFT", TeleporterParentFrame, "TOPLEFT", xoffset, yoffset)
@@ -2557,6 +2616,24 @@ function TeleporterTest_Reset()
 	DebugUnsupported = nil
 	ChosenHearth = nil
 	IsRefreshing = nil
+	TeleporterHouses = {}
+	TeleporterHousesByZone = {}
+end
+
+function TeleporterTest_UpdateSearch(searchString)
+	TeleporterSearchBox:SetText(searchString)
+	UpdateSearch(searchString)
+end
+
+function TeleportTest_GetVisibleIds()
+	local ids = {}
+	local count = 0
+	for a, settings in pairs(ButtonSettings) do
+		ids[settings.spellId] = true
+		count = count + 1
+	end
+	ids.count = count
+	return ids
 end
 
 function Teleporter_OnAddonCompartmentClick()

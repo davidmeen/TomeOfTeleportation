@@ -290,6 +290,7 @@ local function CreateSettings(panel)
     p = AddCheckOption("Current Raids Only",        "seasonRaidsOnly",      scrollChild, p)
     p = AddCheckOption("Group Dungeons Together",   "groupDungeons",        scrollChild, p)
     p = AddCheckOption("Group Raids Together",      "groupRaids",           scrollChild, p)
+    p = AddCheckOption("Group by Expansion",        "expansionInGroupNames",scrollChild, p)
     p = AddCheckOption("Random Heathstone",         "randomHearth",         scrollChild, p)
     p = AddCheckOption("Show Spells Everywhere",    "showInWrongZone",      scrollChild, p)
     p = AddCheckOption("Close After Cast",          "closeAfterCast",       scrollChild, p)
@@ -299,6 +300,7 @@ local function CreateSettings(panel)
     p = AddCheckOption("Show Search Box",           "showSearch",           scrollChild, p)
     p = AddCheckOption("Search Hidden Items",       "searchHidden",         scrollChild, p)
     p = AddCheckOption("Show Tooltips",             "tooltip",              scrollChild, p)
+    p = AddCheckOption("Hide Zone Titles",          "hideZoneTitles",       scrollChild, p)
 
     p = AddSliderOption("Button Width",         "buttonWidth", 20, 400, 1,              scrollChild, p)
     p = AddSliderOption("Button Height",        "buttonHeight", 20, 200, 1,             scrollChild, p)
@@ -789,8 +791,9 @@ function TeleporterSettings_OnLoad()
     CreateSettings(TeleporterSettings.settingsPanel)
 
     local category = Settings.RegisterCanvasLayoutCategory(TeleporterSettings.settingsPanel, TeleporterSettings.settingsPanel.name, TeleporterSettings.settingsPanel.name);
-    category.ID = TeleporterSettings.settingsPanel.name;
+    --category.ID = TeleporterSettings.settingsPanel.name;
     Settings.RegisterAddOnCategory(category);
+    TeleporterSettings.settingsPanel.category = category
 
     TeleporterSettings.spellsPanel = CreateFrame("Frame")
 	TeleporterSettings.spellsPanel.name = "Customize Teleporters"
@@ -806,5 +809,5 @@ function TeleporterSettings_OnLoad()
 end
 
 function TeleporterOpenSettings()
-    Settings.OpenToCategory(TeleporterSettings.settingsPanel.name);
+    Settings.OpenToCategory(TeleporterSettings.settingsPanel.category:GetID());
 end
