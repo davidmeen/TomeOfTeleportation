@@ -791,8 +791,9 @@ function TeleporterSettings_OnLoad()
     CreateSettings(TeleporterSettings.settingsPanel)
 
     local category = Settings.RegisterCanvasLayoutCategory(TeleporterSettings.settingsPanel, TeleporterSettings.settingsPanel.name, TeleporterSettings.settingsPanel.name);
-    category.ID = TeleporterSettings.settingsPanel.name;
+    --category.ID = TeleporterSettings.settingsPanel.name;
     Settings.RegisterAddOnCategory(category);
+    TeleporterSettings.settingsPanel.category = category
 
     TeleporterSettings.spellsPanel = CreateFrame("Frame")
 	TeleporterSettings.spellsPanel.name = "Customize Teleporters"
@@ -808,5 +809,5 @@ function TeleporterSettings_OnLoad()
 end
 
 function TeleporterOpenSettings()
-    Settings.OpenToCategory(TeleporterSettings.settingsPanel.name);
+    Settings.OpenToCategory(TeleporterSettings.settingsPanel.category:GetID());
 end
