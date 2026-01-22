@@ -853,10 +853,10 @@ end
 CreateDestination(
 	GetLocalizedCategoryName("House"),
 	{
-		TeleporterCreateTeleportHome(2351, CanTeleportToHouse(2351)),		-- Teleport Home (Horde)
-		TeleporterCreateTeleportHome(2352, CanTeleportToHouse(2352)),		-- Teleport Home (Alliance)
-		-- This is currently broken
-		TeleporterCreateTeleportHome(nil, function() return false end)		-- Return from Home
+		--Currently only the Blizzard UI can teleportto houses.
+		--TeleporterCreateTeleportHome(2351, CanTeleportToHouse(2351)),		-- Teleport Home (Horde)
+		--TeleporterCreateTeleportHome(2352, CanTeleportToHouse(2352)),		-- Teleport Home (Alliance)
+		--TeleporterCreateTeleportHome(nil, function() return false end)		-- Return from Home
 	}).SetExpansion(ExpansionMidnight)
 
 CreateDestination(
