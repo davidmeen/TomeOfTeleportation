@@ -1066,6 +1066,10 @@ local function SafeGetItemCooldown(itemId)
 	end
 end
 
+local function SafeIsSecret(value)
+	return not issecretvalue or issecretvalue(value)
+end
+
 function TeleporterUpdateButton(button)
 
 	if UnitAffectingCombat("player") then
@@ -1106,7 +1110,8 @@ function TeleporterUpdateButton(button)
 			end
 		end
 
-		if cooldownStart and cooldownStart > 0 then
+		-- TODO: Investigate whether there's a way to give more information when cooldowns are secret. Use secretwrap() to test this.
+		if cooldownStart and not SafeIsSecret(cooldownStart) and cooldownStart > 0 then
 			if GetTime() < cooldownStart then
 				-- Long cooldowns seem to be reported incorrectly after a server reset.  Looks like the
 				-- time is taken from a 32 bit unsigned int.
