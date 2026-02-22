@@ -1917,6 +1917,11 @@ function TeleporterOpenFrame(isSearching)
 
 		local spellIndex = 1
 
+		local search = nil
+		if searchString and searchString ~= "" then
+			search = TeleporterSearch.Create(searchString)
+		end
+
 		for index, spell in ipairs(validSpells) do
 			local spellId = spell.spellId
 			local spellType = spell.spellType
@@ -1935,8 +1940,8 @@ function TeleporterOpenFrame(isSearching)
 				end
 			end
 
-			if searchString and searchString ~= "" then
-				if not spell:MatchesSearch(searchString) then
+			if search then
+				if not search:MatchSpell(spell) then
 					haveSpell = false
 				end
 			end

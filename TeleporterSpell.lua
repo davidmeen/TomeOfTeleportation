@@ -309,30 +309,40 @@ end
 
 local ExpansionNames = { EXPANSION_NAME0, EXPANSION_NAME1, EXPANSION_NAME2, EXPANSION_NAME3, EXPANSION_NAME4, EXPANSION_NAME5, EXPANSION_NAME6, EXPANSION_NAME7, EXPANSION_NAME8, EXPANSION_NAME9, EXPANSION_NAME10, EXPANSION_NAME11 or "Midnight" }
 
-function TeleporterSpell:MatchesSearch(searchString)
+function TeleporterSpell:MatchesSearch(searchString, searchType)
 	local searchLower = string.lower(searchString)
 
-	if self.dungeon then
-		if string.find(string.lower(self.dungeon), searchLower) then
-			return true
-		end
-	end
-
-	if self.expansion then
-		if string.find(string.lower(ExpansionNames[self.expansion]), searchLower) then
-			return true
-		end
-	end
-
-	if self.parentZones then
-		for i, parentZone in ipairs(self.parentZones) do
-			if string.find(parentZone, searchLower) then
+	if searchType == TeleporterSearch.SearchAll or searchType == TeleporterSearch.SearchDungeon then
+		if self.dungeon then
+			if string.find(string.lower(self.dungeon), searchLower) then
 				return true
 			end
 		end
 	end
 
-	return string.find(string.lower(self.spellName), searchLower) or string.find(string.lower(self.zone), searchLower)
+	if searchType == TeleporterSearch.SearchAll or searchType == TeleporterSearch.SearchExpansion then
+		if self.expansion then
+			if string.find(string.lower(ExpansionNames[self.expansion]), searchLower) then
+				return true
+			end
+		end
+	end
+
+	if searchType == TeleporterSearch.SearchAll or searchType == TeleporterSearch.SearchZone then
+		if self.parentZones then
+			for i, parentZone in ipairs(self.parentZones) do
+				if string.find(parentZone, searchLower) then
+					return true
+				end
+			end
+		end
+	end
+
+	if searchType == TeleporterSearch.SearchAll or searchType == TeleporterSearch.SearchName then
+		return string.find(string.lower(self.spellName), searchLower) or string.find(string.lower(self.zone), searchLower)
+	else
+		return false
+	end
 end
 
 function TeleporterSpell:GetExpansionName()

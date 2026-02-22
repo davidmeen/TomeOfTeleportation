@@ -35,3 +35,4 @@ TomeOfTeleportationSettings.lua
 TomeOfTeleportation.lua
 TomeOfTeleportation.xml
 Spells.lua
+TeleporterSearch.lua
