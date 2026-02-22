@@ -11,6 +11,7 @@ local MapIDMaw = 1543
 local MapIDKorthia = 1961
 local MapIDMechagon = 1462
 local MapIDGilneas = 202
+local MapIDEmeraldDreamway = 715
 
 local ContinentIdOutland = 101
 local ContinentIdPandaria = 424
@@ -246,6 +247,12 @@ local function AtZone(requiredZone)
 			mapID = C_Map.GetMapInfo(mapID).parentMapID
 		end
 		return false
+	end
+end
+
+local function NotAtZone(bannedZone)
+	return function()
+		return not AtZone(bannedZone)()
 	end
 end
 
@@ -792,9 +799,10 @@ CreateDestination(
 	})	-- I haven't set an expansion because it's in a Classic zone, added in Wrath, and was moved in Legion.
 
 CreateDestination(
-	LocZone("Emerald Dreamway", 715),
+	LocZone("Emerald Dreamway", MapIDEmeraldDreamway),
 	{
-		CreateSpell(193753), 		-- Dreamwalk
+		CreateConditionalSpell(193753, NotAtZone(MapIDEmeraldDreamway)), 		-- Dreamwalk
+		CreateConditionalSpell(293887, AtZone(MapIDEmeraldDreamway)), 			-- Dreamwalk (return)
 	}).SetExpansion(ExpansionLegion)
 
 CreateDestination(

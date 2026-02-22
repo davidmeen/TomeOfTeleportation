@@ -171,6 +171,11 @@ function TeleporterSpell:CanUse()
 		return true
 	end
 
+	-- Drewamwalk return doesn't show in the spell book, use the base spell to determine if it is available.
+	if spellId == 293887 then
+		spellId = 193753
+	end
+
 	local haveSpell = false
 	local haveToy = false
 	local toyUsable =  false
