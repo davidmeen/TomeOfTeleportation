@@ -1067,7 +1067,7 @@ local function SafeGetItemCooldown(itemId)
 end
 
 local function SafeIsSecret(value)
-	return not issecretvalue or issecretvalue(value)
+	return issecretvalue and issecretvalue(value)
 end
 
 function TeleporterUpdateButton(button)
