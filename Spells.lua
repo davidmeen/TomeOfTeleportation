@@ -27,6 +27,7 @@ local LocalizedStrings = {
 	-- English
 	["enUS"] = {
 		-- Expansion suffixes
+		["TBC"] = " (TBC)",
 		["Legion"] = " (Legion)",
 		["WotLK"] = " (WotLK)",
 		["BFA"] = " (BFA)",
@@ -545,7 +546,8 @@ CreateDestination(
 CreateDestination(
 	LocZone("Argus", 905),
 	{
-		CreateItem(151652)				-- Wormhole Generator: Argus
+		CreateItem(151652),							-- Wormhole Generator: Argus
+		CreateDungeonSpell(1254551, 3116, 903),		-- Path of Dark Dereliction			Seat of the Triumvirate
 	}).SetExpansion(ExpansionLegion)
 
 CreateDestination(
@@ -763,6 +765,7 @@ CreateDestination(
 		CreateDungeonSpell(159896, 1007, 595),	-- Path of the Iron Prow			Iron Docks
 		CreateDungeonSpell(159899, 1009, 574),	-- Path of the Crescent Moon		Shadowmoon Burial Grounds
 		CreateDungeonSpell(159898, 1010, 601),	-- Path of the Skies				Skyreach
+		CreateDungeonSpell(1254557, 3114, 601),	-- Path of the Crowning Pinnacle	Skyreach
 		CreateDungeonSpell(159902, 1004, 616),	-- Path of the Burning Mountain		Upper Blackrock Spire
 	}).SetExpansion(ExpansionDraenor)
 
@@ -861,7 +864,7 @@ end
 CreateDestination(
 	GetLocalizedCategoryName("House"),
 	{
-		--Currently only the Blizzard UI can teleportto houses.
+		--Currently only the Blizzard UI can teleport to houses.
 		--TeleporterCreateTeleportHome(2351, CanTeleportToHouse(2351)),		-- Teleport Home (Horde)
 		--TeleporterCreateTeleportHome(2352, CanTeleportToHouse(2352)),		-- Teleport Home (Alliance)
 		--TeleporterCreateTeleportHome(nil, function() return false end)		-- Return from Home
@@ -870,7 +873,8 @@ CreateDestination(
 CreateDestination(
 	LocZone("Icecrown", 118),
 	{
-		CreateItem(46874),				-- Argent Crusader's Tabard
+		CreateItem(46874),							-- Argent Crusader's Tabard
+		CreateDungeonSpell(1254555, 3111, 184),		-- Path of Unyielding Blight		Pit of Saron
 	}).SetExpansion(ExpansionWrath)
 
 CreateDestination(
@@ -941,9 +945,18 @@ CreateDestination(
 	LocZone("Mechagon", 1490),
 	{
 		CreateConsumable(167075),									-- Ultrasafe Transporter: Mechagon
-		CreateDungeonSpell(373274, 2006, 1490),					-- Path of the Scrappy Prince	Operation: Mechagon
+		CreateDungeonSpell(373274, 2006, 1490),						-- Path of the Scrappy Prince	Operation: Mechagon
 		CreateConditionalConsumable(169114, AtZone(MapIDMechagon))	-- Personal Time Displacer
 	}).SetExpansion(ExpansionBattleForAzeroth)
+
+CreateDestination(
+	GetLocalizedCategoryName("Midnight Dungeons"),
+	{
+		CreateDungeonSpell(1254572, 3123, 248),		-- Path of Devoted Magistry			Magisters' Terrace
+		CreateDungeonSpell(1254400, 3120, 2492),	-- Path of the Windrunners			Windrunner Spire
+		CreateDungeonSpell(1254563, 3122, 2556),	-- Path of the Fractured Core		Nexus-Point Xenas
+		CreateDungeonSpell(1254559, 3121, 2501),	-- Path of Cavernous Depths			Maisara Caverns
+	}).SetExpansion(ExpansionMidnight)
 
 CreateDestination(
 	"Mole Machine",					-- No localization.
@@ -1091,11 +1104,18 @@ CreateDestination(
 	}).SetExpansion(ExpansionDraenor)
 
 CreateDestination(
-	LocZone("Silvermoon City", 110),
+	CreateLocalizedZoneName(LocZone("Silvermoon City", 110).name, "TBC"),
 	{
-		CreateSpell(32272),			-- Teleport: Silvermoon
-		CreatePortalSpell(32267),	-- Portal: Silvermoon
+		CreateSpell(32272),			-- Teleport: Silvermoon (Burning Crusade)
+		CreatePortalSpell(32267),	-- Portal: Silvermoon (Burning Crusade)
 	}).SetExpansion(ExpansionBurningCrusade)
+
+CreateDestination(
+	CreateLocalizedZoneName(LocZone("Silvermoon City", 110).name, "Midnight"),
+	{
+		CreateSpell(1259190),		-- Teleport: Silvermoon City
+		CreatePortalSpell(1259194),	-- Portal: Silvermoon City
+	}).SetExpansion(ExpansionMidnight)
 
 CreateDestination(
 	LocArea("Stonard", 75),

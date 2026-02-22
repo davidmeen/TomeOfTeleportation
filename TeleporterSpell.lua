@@ -342,18 +342,20 @@ end
 -- Use this script in-game to get the dungeon IDs:
 -- /script for i=1,3000 do d=GetLFGDungeonInfo(i);if d=="Dungeon Name" then print(i); end;end
 function TeleporterSpell:IsSeasonDungeon()
-	if PlayerIsTimerunning and PlayerIsTimerunning() then
-		-- Legion Remix
+	if time() > time{year=2026, month=3, day=17} then
+		-- Midnight Season 1
 		return tContains({
-			1205,	-- Black Rook Hold
-			1319, 	-- Court of Stars
-			1202,	-- Darkheart Thicket
-			1194,	-- Halls of Valor
-			1207,	-- Neltharion's Lair
-			175,	-- Karazhan
+			3123,	-- Magister's Terrace
+			3121, 	-- Maisara Caverns
+			3122,	-- Nexus-Point Xenas
+			3120,	-- Windrunner Spire
+			2367,	-- Algeth'ar Academy
+			3116,	-- Seat of the Triumvirate
+			3114,	-- Skyreach
+			3111,	-- Pit of Saron
 		}, self.dungeonID)
 	else
-		-- Dragonflight Season 4
+		-- War Within Season 3
 		return tContains({
 			2987,	-- Eco-Dome Al'dani
 			2805, 	-- Manaforge Omega
@@ -399,7 +401,7 @@ function TeleporterCreateDungeonSpell(id, dungeonID, mapID)
 		spell:AddZoneAndParents(mapID)
 	else
 		print("Missing mapID for " .. spell.dungeon)
-		for i = 1,3000 do
+		for i = 1,4000 do
 			--local name, description, bgImage, buttonImage1, loreImage, buttonImage2, dungeonAreaMapID, link, shouldDisplayDifficulty, mapID = EJ_GetInstanceInfo(i)
 			local mapInfo = C_Map.GetMapInfo(i)
 			if mapInfo and mapInfo.name == spell.dungeon then
