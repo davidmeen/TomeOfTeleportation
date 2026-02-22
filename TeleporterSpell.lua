@@ -329,6 +329,10 @@ function TeleporterSpell:MatchesSearch(searchString, searchType)
 	end
 
 	if searchType == TeleporterSearch.SearchAll or searchType == TeleporterSearch.SearchZone then
+		if string.find(string.lower(self.zone), searchLower) then
+			return true
+		end
+
 		if self.parentZones then
 			for i, parentZone in ipairs(self.parentZones) do
 				if string.find(parentZone, searchLower) then
@@ -339,7 +343,7 @@ function TeleporterSpell:MatchesSearch(searchString, searchType)
 	end
 
 	if searchType == TeleporterSearch.SearchAll or searchType == TeleporterSearch.SearchName then
-		return string.find(string.lower(self.spellName), searchLower) or string.find(string.lower(self.zone), searchLower)
+		return string.find(string.lower(self.spellName), searchLower)
 	else
 		return false
 	end
