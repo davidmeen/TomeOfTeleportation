@@ -1115,6 +1115,7 @@ CreateDestination(
 	{
 		CreateSpell(1259190),		-- Teleport: Silvermoon City
 		CreatePortalSpell(1259194),	-- Portal: Silvermoon City
+		CreateItem(253629),			-- Personal Key to the Arcantina
 	}).SetExpansion(ExpansionMidnight)
 
 CreateDestination(
