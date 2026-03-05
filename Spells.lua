@@ -493,6 +493,9 @@ CreateDestination(
 		CreateItem(245970),				-- P.O.S.T. Master's Express Hearthstone
 		CreateItem(250411),				-- Timerunner's Hearthstone
 		CreateItem(263489),				-- Naaru's Enfold
+		CreateItem(265100),				-- Corewarden's Hearthstone
+		CreateItem(257736),				-- Lightcalled Hearthstone
+		CreateItem(263933),				-- Preyseeker's Hearthstone
 	})
 
 -- Any hearthstones that shouldn't be randomised.
@@ -840,6 +843,16 @@ CreateDestination(
 		CreateSpell(193759), 	-- Teleport: Hall of the Guardian
 	}).SetExpansion(ExpansionLegion)
 
+
+CreateDestination(
+	LocZone("Harandar", 2413),
+	{
+		CreateSpell(1238686), 					-- Rootwalking
+		-- This seems to automatically switch to the correct spell. If a cooldown is added this may need to be changed.
+		--CreateSpell(1238695, AtZone(2576)), 	-- Rootwalking: Return
+	}).SetExpansion(ExpansionMidnight)
+
+
 -- TODO: Include destination in name
 CreateDestination(
 	"Hearth (Necrolord)",
@@ -1038,6 +1051,12 @@ CreateDestination(
 		CreateDungeonSpell(131205, 469, 439),	-- Path of the Stout Brew		Stormstout Brewery
 		CreateDungeonSpell(131204, 464, 429),	-- Path of the Jade Serpent		Temple of the Jade Serpent
 	}).SetExpansion(ExpansionPandaria)
+
+CreateDestination(
+	LocZone("Quel'Thalas", 2537),
+	{
+		CreateItem(248485),		-- Wormhole Generator: Quel'Thalas
+	}).SetExpansion(ExpansionShadowlands)
 
 CreateDestination(
 	GetLocalizedCategoryName("Random"),
