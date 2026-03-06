@@ -1056,6 +1056,7 @@ CreateDestination(
 	LocZone("Quel'Thalas", 2537),
 	{
 		CreateItem(248485),		-- Wormhole Generator: Quel'Thalas
+		CreateItem(266370),		-- Dundun's Abundant Travel Method
 	}).SetExpansion(ExpansionShadowlands)
 
 CreateDestination(
