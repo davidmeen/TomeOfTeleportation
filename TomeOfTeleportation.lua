@@ -437,14 +437,18 @@ local function RebuildSpellList()
 		for index = #extraSpellsAndItems,1,-1 do
 			local spell = extraSpellsAndItems[index]
 			local isDuplicate = false
-			for id2, spell2 in ipairs(TeleporterSpells) do
-				if spell2:Equals(spell) then
-					isDuplicate = true
-					table.remove(extraSpellsAndItems, index)
+			TeleporterInitSpell(spell)
+
+			if spell:IsValid() then
+				for id2, spell2 in ipairs(TeleporterSpells) do
+					if spell2:Equals(spell) then
+						isDuplicate = true
+					end
 				end
 			end
-			if not isDuplicate then
-				TeleporterInitSpell(spell)
+			if isDuplicate or not spell:IsValid() then
+				table.remove(extraSpellsAndItems, index)
+			else
 				tinsert(TeleporterSpells, spell)
 			end
 		end
