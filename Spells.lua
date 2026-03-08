@@ -874,13 +874,20 @@ local function CanTeleportToHouse(zoneId)
 	end
 end
 
+local function CanReturnHome()
+	if C_HousingNeighborhood then
+		return C_HousingNeighborhood.CanReturnAfterVisitingHouse()
+	else
+		return false
+	end
+end
+
 CreateDestination(
 	GetLocalizedCategoryName("House"),
 	{
-		--Currently only the Blizzard UI can teleport to houses.
-		--TeleporterCreateTeleportHome(2351, CanTeleportToHouse(2351)),		-- Teleport Home (Horde)
-		--TeleporterCreateTeleportHome(2352, CanTeleportToHouse(2352)),		-- Teleport Home (Alliance)
-		--TeleporterCreateTeleportHome(nil, function() return false end)		-- Return from Home
+		TeleporterCreateTeleportHome(2351, CanTeleportToHouse(2351)),		-- Teleport Home (Horde)
+		TeleporterCreateTeleportHome(2352, CanTeleportToHouse(2352)),		-- Teleport Home (Alliance)
+		TeleporterCreateTeleportHome(nil, CanReturnHome)		-- Return from Home
 	}).SetExpansion(ExpansionMidnight)
 
 CreateDestination(
