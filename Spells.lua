@@ -198,7 +198,7 @@ end
 local function GetLocalizedString(key)
 	local locale = GetClientLocale()
 	local strings = LocalizedStrings[locale] or LocalizedStrings["enUS"]
-	return strings[key] or key
+	return strings[key] or LocalizedStrings["enUS"][key] or key
 end
 
 -- Get localized expansion suffix
