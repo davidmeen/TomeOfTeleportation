@@ -126,6 +126,7 @@ local LocalizedStrings = {
 		["Fishing Pool"] = "Bancs de poissons",
 		["Delves"] = "Gouffres",
 		["Random"] = "Aléatoire",
+		["House"] = "Maison"
 	},
 	-- Spanish
 	["esES"] = {
