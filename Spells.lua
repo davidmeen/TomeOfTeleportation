@@ -768,7 +768,7 @@ CreateDestination(
 		CreateDungeonSpell(159900, 1006, 606),	-- Path of the Dark Rail			Grimrail Depot
 		CreateDungeonSpell(159896, 1007, 595),	-- Path of the Iron Prow			Iron Docks
 		CreateDungeonSpell(159899, 1009, 574),	-- Path of the Crescent Moon		Shadowmoon Burial Grounds
-		CreateDungeonSpell(159898, 1010, 601),	-- Path of the Skies				Skyreach
+		CreateDungeonSpell(159898, 3114, 601),	-- Path of the Skies				Skyreach
 		CreateDungeonSpell(1254557, 3114, 601),	-- Path of the Crowning Pinnacle	Skyreach
 		CreateDungeonSpell(159902, 1004, 616),	-- Path of the Burning Mountain		Upper Blackrock Spire
 	}).SetExpansion(ExpansionDraenor)
