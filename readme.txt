@@ -38,6 +38,50 @@ While the cursor is over a spell press the "Set Zone" button to change how the s
 The new zone name will be taken from the Zone box at the bottom of the screen. If this is empty
 it will be placed back into its default group.
 
+Searching
+---------
+
+The search box can be used to filter the list to spells containing text in their name, spells from
+an expansion or spells from a zone. For example, searching for "Eastern Kingdoms" will find all spells
+from anywhere on that continent. Advanced search options give you more control of the search. For example:
+
+type:spell
+type:item
+type:dungeon
+type:raid
+These show only spells of the specified type.
+
+expansion:Legion
+Searches for all spells from the Legion expansion.
+
+zone:Kalimdor
+Searches for all spells teleporting to anywhere in Kalimdor.
+
+name:Teleport
+Searches for all spell with Teleport in their name.
+
+not (type:dungeon)
+Searches for all spells that are not to dungeons.
+
+(expansion:Legion) and (zone:Dalaran)
+Searches for all spells to Legion Dalaran.
+
+(zone:Orgrimmar) or (zone:Stormwind)
+Searches for all Spells to Orgrimmar or Stormwind.
+
+(zone:Eastern Kingdoms) and not (zone:Stormwind)
+Searches for all Spells to anywhere in the Eastern Kingdoms apart from Stormwind.
+
+(type:item) and (zone:Stormwind) or (zone:Dalaran)
+Searches for all items teleporting to Stormwind, or anything to Dalaran. Without additional parantheses
+the searches are grouped from the left first.
+
+(type:item) and ((zone:Stormwind) or (zone:Dalaran))
+Searches for all items teleporting to Stormwind or Dalaran.
+
+The parantheses are important. Without them "and", "or" and "not" will be treated as part of the text
+you are searching for.
+
 Advanced Options
 ----------------
 
