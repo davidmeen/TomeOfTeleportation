@@ -77,6 +77,8 @@ local DebugUnsupported = nil
 local ChosenHearth = nil
 local IsRefreshing = nil
 local StartSearch = false
+local Tabs = {}
+local CurrentTab = 1
 
 local TeleporterHouses = {}
 local TeleporterHousesByZone = {}
@@ -113,6 +115,36 @@ local SortCustom = 3
 local SortByExpansion = 4
 
 local TitleFrameBG
+
+
+local HomeGuid = "7413962B-DC60-4BAE-9922-B73FE07E42DE"
+
+local DefaultTabs =
+{
+	[HomeGuid] =
+	{
+		["guid"] = HomeGuid,
+		["name"] = "All",
+		["searchString"] = nil,
+		["order"] = 1
+	},
+	-- Remove this before release
+	["3EBBC83-DA2A-44EC-9195-72E6131E9C44"] =
+	{
+		["guid"] = "3EBBC83-DA2A-44EC-9195-72E6131E9C44",
+		["name"] = "Dungeons",
+		["searchString"] = "type:dungeon",
+		["order"] = 2
+	},
+	["3EBBC83-DA2A-44EC-9195-72E6131E9C45"] =
+	{
+		["guid"] = "3EBBC83-DA2A-44EC-9195-72E6131E9C45",
+		["name"] = "Raids",
+		["searchString"] = "type:raid",
+		["order"] = 3
+	}
+
+}
 
 local DefaultOptions =
 {
@@ -169,6 +201,8 @@ local DefaultOptions =
 	["showSearch"] = 1,
 	["searchHidden"] = 1,
 	["tooltip"] = 1,
+	["showTabs"] = false,
+	["tabs"] = DefaultTabs,
 }
 
 -- Themes. For now there aren't many of these. Message me on curseforge.com
@@ -839,14 +873,18 @@ end
 function TeleporterGetSearchString()
 	if GetOption("showSearch") and TeleporterSearchBox then
 		local searchString = TeleporterSearchBox:GetText()
-		if searchString == "" then
-			return nil
-		else
+		if searchString ~= "" then
 			return searchString
 		end
-	else
-		return nil
 	end
+
+	if GetOption("showTabs") and CurrentTab ~= 1 then
+		if CurrentTab <= #Tabs then
+			return Tabs[CurrentTab].searchString
+		end
+	end
+
+	return nil
 end
 
 local function SetupSpells()
@@ -1806,6 +1844,82 @@ function TeleporterSortSpells()
 	table.sort(TeleporterSpells, function(a,b) return SortSpells(a, b, SortType) end)
 end
 
+local function CreateTabs()
+	if GetOption("showTabs") then
+		local tabIndex = 1
+		local xOffset = 8
+		local spacing = 5
+		local tabHeight = 15
+		local yPadding = 8
+		local tabSpacing = 5
+
+		local sortedTabs = {}
+		for guid, tabDesc in pairs(GetOption("tabs")) do
+			tinsert(sortedTabs, {guid = guid, tabDesc = tabDesc})
+		end
+		table.sort(sortedTabs, function(a, b)
+			return (a.tabDesc.order or 0) < (b.tabDesc.order or 0)
+		end)
+
+		local parentWidth = TeleporterParentFrame:GetWidth()
+		local usableWidth = parentWidth - (xOffset * 2)
+		local tabMaxWidth = (usableWidth / #sortedTabs) - tabSpacing
+
+		for _, tabEntry in ipairs(sortedTabs) do
+			local tabDesc = tabEntry.tabDesc
+			if #Tabs < tabIndex then
+				local newTab = {}
+				newTab.frame = TeleporterCreateReusableFrame("Frame","TabFrame",TeleporterParentFrame, "BackdropTemplate")
+				newTab.fontString = TeleporterCreateReusableFontString("TabText",TeleporterParentFrame, "GameFontNormalSmall")
+				tinsert(Tabs, newTab)
+			end
+
+			local tab = Tabs[tabIndex]
+			tab.fontString:SetPoint("BOTTOMLEFT",TeleporterParentFrame, "BOTTOMLEFT", xOffset, yPadding)
+			tab.fontString:SetText(tabDesc.name)
+			tab.fontString:Show()
+			tab.fontString:SetWidth(tabMaxWidth)
+			local textWidth = tab.fontString:GetStringWidth()
+			local frameWidth = math.min(tabMaxWidth, textWidth)
+			tab.fontString:SetWidth(frameWidth)
+			tab.fontString:SetHeight(tabHeight)
+
+			tab.frame:SetWidth(frameWidth)
+			tab.frame:SetHeight(tabHeight)
+			tab.frame:SetPoint("BOTTOMLEFT", TeleporterParentFrame, "BOTTOMLEFT", xOffset, yPadding)
+			tab.frame:SetBackdrop({bgFile = "Interface/Buttons/WHITE8X8"})
+			if tabIndex == CurrentTab then
+				tab.frame:SetBackdropColor(1, 1, 0, 0.5)
+			else
+				tab.frame:SetBackdropColor(0, 0, 0, 0.1)
+			end
+			tab.frame:EnableMouse(true)
+			local index = tabIndex
+			tab.frame:SetScript("OnMouseDown", function()
+				CurrentTab = index
+				Refresh()
+			end)
+			tab.frame:Show()
+
+			xOffset = xOffset + frameWidth + tabSpacing
+			tabIndex = tabIndex + 1
+
+			tab.searchString = tabDesc.searchString
+		end
+		for i = tabIndex, #Tabs do
+			Tabs[i].frame:Hide()
+			Tabs[i].fontString:Hide()
+		end
+
+		TeleporterParentFrame:SetHeight(TeleporterParentFrame:GetHeight() + tabHeight)
+	elseif Tabs then
+		for i = 1, #Tabs do
+			Tabs[i].frame:Hide()
+			Tabs[i].fontString:Hide()
+		end
+	end
+end
+
 function TeleporterOpenFrame(isSearching)
 	if UnitAffectingCombat("player") then
 		print( "Cannot use " .. AddonTitle .. " while in combat." )
@@ -2177,6 +2291,7 @@ function TeleporterOpenFrame(isSearching)
 	end
 
 	TeleporterUpdateAllButtons()
+	CreateTabs()
 	TeleporterParentFrame:Show()
 end
 
