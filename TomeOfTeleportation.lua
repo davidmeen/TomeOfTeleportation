@@ -2393,9 +2393,16 @@ function TeleporterSlashCmdFunction(args)
 			TeleporterOpenFrame()
 		end
 		if splitArgs[1] == "search" and GetOption("showSearch") and TeleporterSearchBox then
-			TeleporterSearchBox:SetText("")
-			-- Don't set the focus immediately because the hot key will be put in the search box
-			StartSearch = true
+			if #splitArgs >= 2 then
+				TeleporterSearchBox:SetText(string.sub(args, string.len(splitArgs[1]) + 2))
+			else
+				TeleporterSearchBox:SetText("")
+				-- Don't set the focus immediately because the hot key will be put in the search box
+				StartSearch = true
+			end
+			-- Doesn't work until we close and reopen!
+			TeleporterClose()
+			TeleporterOpenFrame()
 		end
 	else
 		print("Tome of Teleportation usage")
