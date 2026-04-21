@@ -232,39 +232,70 @@ local function AddTabFromSearch()
 	StaticPopup_Show("TELEPORTER_ADD_TAB")
 end
 
-local function SetupTabFrame(tabIndex, parentFrame, xOffset, yPadding, tabHeight, tabMaxWidth, name, isSelected, onClick)
+local function SetupTabFrame(tabIndex, parentFrame, xOffset, yPadding, tabHeight, tabMaxWidth, scale, name, isSelected, onClick)
 	if #Tabs < tabIndex then
 		local newTab = {}
-		newTab.frame = TeleporterCreateReusableFrame("Frame","TabFrame",parentFrame, "BackdropTemplate")
-		newTab.fontString = TeleporterCreateReusableFontString("TabText",parentFrame, "GameFontNormalSmall")
+		newTab.frame = TeleporterCreateReusableFrame("Button","TabFrame",parentFrame, "BackdropTemplate")
+		newTab.fontString = TeleporterCreateReusableFontString("TabText",newTab.frame, "GameFontNormalTiny")
 		tinsert(Tabs, newTab)
 	end
 
 	local tab = Tabs[tabIndex]
-	tab.fontString:SetPoint("BOTTOMLEFT",parentFrame, "BOTTOMLEFT", xOffset, yPadding)
-	tab.fontString:SetText(name)
-	tab.fontString:Show()
-	tab.fontString:SetWidth(tabMaxWidth)
-	local textWidth = tab.fontString:GetStringWidth()
-	local frameWidth = math.min(tabMaxWidth, textWidth)
-	tab.fontString:SetWidth(frameWidth)
-	tab.fontString:SetHeight(tabHeight)
+	local button = tab.frame
+	local label = tab.fontString
 
-	tab.frame:SetWidth(frameWidth)
-	tab.frame:SetHeight(tabHeight)
-	tab.frame:SetPoint("BOTTOMLEFT", parentFrame, "BOTTOMLEFT", xOffset, yPadding)
-	tab.frame:SetBackdrop({bgFile = "Interface/Buttons/WHITE8X8"})
+	button:ClearAllPoints()
+	button:SetPoint("BOTTOMLEFT", parentFrame, "BOTTOMLEFT", xOffset, yPadding)
+	button:SetWidth(tabMaxWidth)
+	button:SetHeight(tabHeight)
+	button:SetBackdrop({
+		bgFile = "Interface/Buttons/WHITE8X8",
+		edgeFile = "Interface/Buttons/WHITE8X8",
+		edgeSize = 1,
+		insets = {left = 1, right = 1, top = 1, bottom = 0}
+	})
+
+	local fontFile = label:GetFont()
+	local tabFontSize = 14
+	label:SetFont(fontFile, tabFontSize * scale)
+	label:ClearAllPoints()
+	label:SetPoint("CENTER", button, "CENTER", 0, 0)
+	label:SetText(name)
+	label:SetWidth(tabMaxWidth - 4 * scale)
+	label:SetHeight(tabHeight)
+	label:SetWordWrap(false)
+	label:Show()
 
 	if isSelected then
-		tab.frame:SetBackdropColor(1, 1, 0, 0.5)
+		button:SetBackdropColor(0.2, 0.2, 0.2, 0.8)
+		button:SetBackdropBorderColor(0.6, 0.6, 0.0, 1)
+		label:SetTextColor(1, 1, 1)
 	else
-		tab.frame:SetBackdropColor(0, 0, 0, 0.1)
+		button:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
+		button:SetBackdropBorderColor(0.3, 0.3, 0.3, 0.8)
+		label:SetTextColor(0.7, 0.7, 0.7)
 	end
-	tab.frame:EnableMouse(true)
-	tab.frame:SetScript("OnMouseDown", onClick)
-	tab.frame:Show()
 
-	return frameWidth
+	button:EnableMouse(true)
+	button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+	button:SetScript("OnClick", function(self, mouseButton)
+		onClick(self, mouseButton)
+	end)
+	button:SetScript("OnEnter", function(self)
+		if not isSelected then
+			self:SetBackdropColor(0.15, 0.15, 0.15, 0.7)
+			label:SetTextColor(0.9, 0.9, 0.9)
+		end
+	end)
+	button:SetScript("OnLeave", function(self)
+		if not isSelected then
+			self:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
+			label:SetTextColor(0.7, 0.7, 0.7)
+		end
+	end)
+	button:Show()
+
+	return tabMaxWidth
 end
 
 local function HideTabsFrom(startIndex)
@@ -282,17 +313,18 @@ function TeleporterCreateTabs(parentFrame)
 	Tabs = {}
 
 	if TeleporterGetOption("showTabs") then
+		local scale = TeleporterGetOption("scale") * UIParent:GetEffectiveScale()
 		local tabIndex = 1
-		local xOffset = 8
-		local tabHeight = 15
-		local yPadding = 8
-		local tabSpacing = 5
+		local xOffset = 12 * scale
+		local tabHeight = 24 * scale
+		local yPadding = 12 * scale
+		local tabSpacing = 3 * scale
 
 		if HasSearchText() then
 			local parentWidth = parentFrame:GetWidth()
 			local usableWidth = parentWidth - (xOffset * 2)
 
-			SetupTabFrame(tabIndex, parentFrame, xOffset, yPadding, tabHeight, usableWidth, "Add Tab", false,
+			SetupTabFrame(tabIndex, parentFrame, xOffset, yPadding, tabHeight, usableWidth, scale, "Add Tab", false,
 				function(self, button)
 					if button == "LeftButton" then
 						AddTabFromSearch()
@@ -310,14 +342,15 @@ function TeleporterCreateTabs(parentFrame)
 
 			local parentWidth = parentFrame:GetWidth()
 			local usableWidth = parentWidth - (xOffset * 2)
-			local tabMaxWidth = (usableWidth / #sortedTabs) - tabSpacing
+			local totalSpacing = tabSpacing * math.max(#sortedTabs - 1, 0)
+			local tabMaxWidth = (usableWidth - totalSpacing) / #sortedTabs
 
 			for _, tabEntry in ipairs(sortedTabs) do
 				local tabDesc = tabEntry.tabDesc
 				local guid = tabDesc.guid
 				local name = tabDesc.name
 
-				local frameWidth = SetupTabFrame(tabIndex, parentFrame, xOffset, yPadding, tabHeight, tabMaxWidth, name, tabDesc.guid == CurrentTab,
+				SetupTabFrame(tabIndex, parentFrame, xOffset, yPadding, tabHeight, tabMaxWidth, scale, name, tabDesc.guid == CurrentTab,
 					function(self, button)
 						if button == "LeftButton" then
 							CurrentTab = guid
@@ -331,13 +364,13 @@ function TeleporterCreateTabs(parentFrame)
 				tab.guid = tabDesc.guid
 				tab.searchString = tabDesc.searchString
 
-				xOffset = xOffset + frameWidth + tabSpacing
+				xOffset = xOffset + tabMaxWidth + tabSpacing
 				tabIndex = tabIndex + 1
 			end
 		end
 
 		HideTabsFrom(tabIndex)
-		parentFrame:SetHeight(parentFrame:GetHeight() + tabHeight)
+		parentFrame:SetHeight(parentFrame:GetHeight() + tabHeight + yPadding / 2)
 	elseif Tabs then
 		HideTabsFrom(1)
 	end
