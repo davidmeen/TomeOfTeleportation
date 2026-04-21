@@ -123,23 +123,7 @@ local DefaultTabs =
 		["name"] = "All",
 		["searchString"] = nil,
 		["order"] = 1
-	},
-	-- Remove this before release
-	["3EBBC83-DA2A-44EC-9195-72E6131E9C44"] =
-	{
-		["guid"] = "3EBBC83-DA2A-44EC-9195-72E6131E9C44",
-		["name"] = "Dungeons",
-		["searchString"] = "type:dungeon",
-		["order"] = 2
-	},
-	["3EBBC83-DA2A-44EC-9195-72E6131E9C45"] =
-	{
-		["guid"] = "3EBBC83-DA2A-44EC-9195-72E6131E9C45",
-		["name"] = "Raids",
-		["searchString"] = "type:raid",
-		["order"] = 3
 	}
-
 }
 
 local DefaultOptions =

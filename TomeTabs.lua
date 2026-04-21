@@ -15,10 +15,9 @@ function TeleporterSetCurrentTab(guid)
 end
 
 function TeleporterGetCurrentTabSearchString()
-	for _, tab in pairs(Tabs) do
-		if tab.guid == CurrentTab then
-			return tab.searchString
-		end
+	local tabList = TeleporterGetOption("tabs")
+	if tabList and tabList[CurrentTab] then
+		return tabList[CurrentTab].searchString
 	end
 	return nil
 end
@@ -180,86 +179,166 @@ local function TabContextMenu_Show(guid, name)
 	ToggleDropDownMenu(1, nil, TeleporterTabMenu, "cursor", 0, 0)
 end
 
+local function GenerateGuid()
+	local template = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+	return string.gsub(template, "x", function()
+		return string.format("%x", math.random(0, 15))
+	end)
+end
+
+local function GetMaxTabOrder()
+	local tabList = TeleporterGetOption("tabs")
+	local maxOrder = 0
+	if tabList then
+		for _, tabDesc in pairs(tabList) do
+			if (tabDesc.order or 0) > maxOrder then
+				maxOrder = tabDesc.order or 0
+			end
+		end
+	end
+	return maxOrder
+end
+
+local function AddTabFromSearch()
+	local searchString = TeleporterSearchBox:GetText()
+	StaticPopupDialogs["TELEPORTER_ADD_TAB"] = {
+		text = "Enter tab name",
+		button1 = "OK",
+		button2 = "Cancel",
+		OnAccept = function(dialog)
+			local name = dialog.EditBox:GetText()
+			if name and name ~= "" then
+				local guid = GenerateGuid()
+				local tabList = TeleporterGetOption("tabs")
+				if not tabList then
+					tabList = {}
+				end
+				tabList[guid] = {
+					["guid"] = guid,
+					["name"] = name,
+					["searchString"] = searchString,
+					["order"] = GetMaxTabOrder() + 1
+				}
+				TeleporterSetOption("tabs", tabList)
+				TeleporterSearchBox:SetText("")
+				CurrentTab = guid
+				TeleporterRefresh()
+			end
+		end,
+		hideOnEscape = true,
+		hasEditBox = true,
+		editBoxWidth = 300
+	}
+	StaticPopup_Show("TELEPORTER_ADD_TAB")
+end
+
+local function SetupTabFrame(tabIndex, parentFrame, xOffset, yPadding, tabHeight, tabMaxWidth, name, isSelected, onClick)
+	if #Tabs < tabIndex then
+		local newTab = {}
+		newTab.frame = TeleporterCreateReusableFrame("Frame","TabFrame",parentFrame, "BackdropTemplate")
+		newTab.fontString = TeleporterCreateReusableFontString("TabText",parentFrame, "GameFontNormalSmall")
+		tinsert(Tabs, newTab)
+	end
+
+	local tab = Tabs[tabIndex]
+	tab.fontString:SetPoint("BOTTOMLEFT",parentFrame, "BOTTOMLEFT", xOffset, yPadding)
+	tab.fontString:SetText(name)
+	tab.fontString:Show()
+	tab.fontString:SetWidth(tabMaxWidth)
+	local textWidth = tab.fontString:GetStringWidth()
+	local frameWidth = math.min(tabMaxWidth, textWidth)
+	tab.fontString:SetWidth(frameWidth)
+	tab.fontString:SetHeight(tabHeight)
+
+	tab.frame:SetWidth(frameWidth)
+	tab.frame:SetHeight(tabHeight)
+	tab.frame:SetPoint("BOTTOMLEFT", parentFrame, "BOTTOMLEFT", xOffset, yPadding)
+	tab.frame:SetBackdrop({bgFile = "Interface/Buttons/WHITE8X8"})
+
+	if isSelected then
+		tab.frame:SetBackdropColor(1, 1, 0, 0.5)
+	else
+		tab.frame:SetBackdropColor(0, 0, 0, 0.1)
+	end
+	tab.frame:EnableMouse(true)
+	tab.frame:SetScript("OnMouseDown", onClick)
+	tab.frame:Show()
+
+	return frameWidth
+end
+
+local function HideTabsFrom(startIndex)
+	for i = startIndex, #Tabs do
+		Tabs[i].frame:Hide()
+		Tabs[i].fontString:Hide()
+	end
+end
+
+local function HasSearchText()
+	return TeleporterSearchBox and TeleporterSearchBox:GetText() ~= ""
+end
+
 function TeleporterCreateTabs(parentFrame)
+	Tabs = {}
+
 	if TeleporterGetOption("showTabs") then
 		local tabIndex = 1
 		local xOffset = 8
-		local spacing = 5
 		local tabHeight = 15
 		local yPadding = 8
 		local tabSpacing = 5
 
-		local sortedTabs = {}
-		for guid, tabDesc in pairs(TeleporterGetOption("tabs")) do
-			tinsert(sortedTabs, {guid = guid, tabDesc = tabDesc})
-		end
-		table.sort(sortedTabs, function(a, b)
-			return (a.tabDesc.order or 0) < (b.tabDesc.order or 0)
-		end)
+		if HasSearchText() then
+			local parentWidth = parentFrame:GetWidth()
+			local usableWidth = parentWidth - (xOffset * 2)
 
-		local parentWidth = parentFrame:GetWidth()
-		local usableWidth = parentWidth - (xOffset * 2)
-		local tabMaxWidth = (usableWidth / #sortedTabs) - tabSpacing
-
-		for _, tabEntry in ipairs(sortedTabs) do
-			local tabDesc = tabEntry.tabDesc
-			if #Tabs < tabIndex then
-				local newTab = {}
-				newTab.frame = TeleporterCreateReusableFrame("Frame","TabFrame",parentFrame, "BackdropTemplate")
-				newTab.fontString = TeleporterCreateReusableFontString("TabText",parentFrame, "GameFontNormalSmall")
-				tinsert(Tabs, newTab)
+			SetupTabFrame(tabIndex, parentFrame, xOffset, yPadding, tabHeight, usableWidth, "Add Tab", false,
+				function(self, button)
+					if button == "LeftButton" then
+						AddTabFromSearch()
+					end
+				end)
+			tabIndex = 2
+		else
+			local sortedTabs = {}
+			for guid, tabDesc in pairs(TeleporterGetOption("tabs")) do
+				tinsert(sortedTabs, {guid = guid, tabDesc = tabDesc})
 			end
-
-			local tab = Tabs[tabIndex]
-			tab.fontString:SetPoint("BOTTOMLEFT",parentFrame, "BOTTOMLEFT", xOffset, yPadding)
-			tab.fontString:SetText(tabDesc.name)
-			tab.fontString:Show()
-			tab.fontString:SetWidth(tabMaxWidth)
-			local textWidth = tab.fontString:GetStringWidth()
-			local frameWidth = math.min(tabMaxWidth, textWidth)
-			tab.fontString:SetWidth(frameWidth)
-			tab.fontString:SetHeight(tabHeight)
-
-			tab.frame:SetWidth(frameWidth)
-			tab.frame:SetHeight(tabHeight)
-			tab.frame:SetPoint("BOTTOMLEFT", parentFrame, "BOTTOMLEFT", xOffset, yPadding)
-			tab.frame:SetBackdrop({bgFile = "Interface/Buttons/WHITE8X8"})
-
-			tab.guid = tabDesc.guid
-
-			if tabDesc.guid == CurrentTab then
-				tab.frame:SetBackdropColor(1, 1, 0, 0.5)
-			else
-				tab.frame:SetBackdropColor(0, 0, 0, 0.1)
-			end
-			tab.frame:EnableMouse(true)
-			local guid = tabDesc.guid
-			local name = tabDesc.name
-			tab.frame:SetScript("OnMouseDown", function(self, button)
-				if button == "LeftButton" then
-					CurrentTab = guid
-					TeleporterRefresh()
-				elseif button == "RightButton" then
-					TabContextMenu_Show(guid, name)
-				end
+			table.sort(sortedTabs, function(a, b)
+				return (a.tabDesc.order or 0) < (b.tabDesc.order or 0)
 			end)
-			tab.frame:Show()
 
-			xOffset = xOffset + frameWidth + tabSpacing
-			tabIndex = tabIndex + 1
+			local parentWidth = parentFrame:GetWidth()
+			local usableWidth = parentWidth - (xOffset * 2)
+			local tabMaxWidth = (usableWidth / #sortedTabs) - tabSpacing
 
-			tab.searchString = tabDesc.searchString
+			for _, tabEntry in ipairs(sortedTabs) do
+				local tabDesc = tabEntry.tabDesc
+				local guid = tabDesc.guid
+				local name = tabDesc.name
+
+				local frameWidth = SetupTabFrame(tabIndex, parentFrame, xOffset, yPadding, tabHeight, tabMaxWidth, name, tabDesc.guid == CurrentTab,
+					function(self, button)
+						if button == "LeftButton" then
+							CurrentTab = guid
+							TeleporterRefresh()
+						elseif button == "RightButton" then
+							TabContextMenu_Show(guid, name)
+						end
+					end)
+
+				tab = Tabs[tabIndex]
+				tab.guid = tabDesc.guid
+				tab.searchString = tabDesc.searchString
+
+				xOffset = xOffset + frameWidth + tabSpacing
+				tabIndex = tabIndex + 1
+			end
 		end
-		for i = tabIndex, #Tabs do
-			Tabs[i].frame:Hide()
-			Tabs[i].fontString:Hide()
-		end
 
+		HideTabsFrom(tabIndex)
 		parentFrame:SetHeight(parentFrame:GetHeight() + tabHeight)
 	elseif Tabs then
-		for i = 1, #Tabs do
-			Tabs[i].frame:Hide()
-			Tabs[i].fontString:Hide()
-		end
+		HideTabsFrom(1)
 	end
 end
