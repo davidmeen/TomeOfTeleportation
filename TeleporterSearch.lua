@@ -163,6 +163,7 @@ function TeleporterSearch.Create(searchString)
                 else
                     currentExpression = subExpr
                 end
+                phrase = ""
             end
         elseif paranCount > 0 then
             subString = subString .. char
