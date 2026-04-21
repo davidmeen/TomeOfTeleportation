@@ -314,7 +314,7 @@ function TeleporterSpell:MatchesSearch(searchString, searchType)
 
 	if searchType == TeleporterSearch.SearchAll or searchType == TeleporterSearch.SearchDungeon then
 		if self.dungeon then
-			if string.find(string.lower(self.dungeon), searchLower) then
+			if string.find(string.lower(self.dungeon), searchLower, 1, true) then
 				return true
 			end
 		end
@@ -322,20 +322,20 @@ function TeleporterSpell:MatchesSearch(searchString, searchType)
 
 	if searchType == TeleporterSearch.SearchAll or searchType == TeleporterSearch.SearchExpansion then
 		if self.expansion then
-			if string.find(string.lower(ExpansionNames[self.expansion]), searchLower) then
+			if string.find(string.lower(ExpansionNames[self.expansion]), searchLower, 1, true) then
 				return true
 			end
 		end
 	end
 
 	if searchType == TeleporterSearch.SearchAll or searchType == TeleporterSearch.SearchZone then
-		if string.find(string.lower(self.zone), searchLower) then
+		if string.find(string.lower(self.zone), searchLower, 1, true) then
 			return true
 		end
 
 		if self.parentZones then
 			for i, parentZone in ipairs(self.parentZones) do
-				if string.find(parentZone, searchLower) then
+				if string.find(parentZone, searchLower, 1, true) then
 					return true
 				end
 			end
@@ -343,7 +343,7 @@ function TeleporterSpell:MatchesSearch(searchString, searchType)
 	end
 
 	if searchType == TeleporterSearch.SearchAll or searchType == TeleporterSearch.SearchName then
-		return string.find(string.lower(self.spellName), searchLower)
+		return string.find(string.lower(self.spellName), searchLower, 1, true)
 	else
 		return false
 	end

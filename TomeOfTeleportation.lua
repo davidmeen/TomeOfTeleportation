@@ -339,6 +339,8 @@ function TeleporterSetOption(option, value)
 	local isSame = value == oldValue
 	if type(value) == "number" and type(oldValue) == "number" then
 		isSame = math.abs(value - oldValue) < 0.0001
+	elseif type(value) == "table" then
+		isSame = false
 	end
 
 	if not isSame then
