@@ -340,6 +340,11 @@ function TeleporterCreateTabs(parentFrame)
 				return (a.tabDesc.order or 0) < (b.tabDesc.order or 0)
 			end)
 
+			if #sortedTabs == 1 and sortedTabs[1].guid == HomeTabGuid then
+				HideTabsFrom(tabIndex)
+				return
+			end
+
 			local parentWidth = parentFrame:GetWidth()
 			local usableWidth = parentWidth - (xOffset * 2)
 			local totalSpacing = tabSpacing * math.max(#sortedTabs - 1, 0)
