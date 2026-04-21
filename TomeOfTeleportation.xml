@@ -25,4 +25,6 @@
 	  <OnHide function="TeleQuickMenu_OnHide"/>
 	</Scripts>
   </Frame>
+  <Frame name="TeleporterTabMenu" inherits="UIDropDownMenuTemplate">
+  </Frame>
 </Ui>

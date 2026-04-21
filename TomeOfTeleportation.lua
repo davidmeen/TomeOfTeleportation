@@ -53,6 +53,8 @@ local dataobj = ldb:NewDataObject("TomeTeleGlobal", {
 	text = "Teleport"
 })
 
+local HomeGuid = "7413962B-DC60-4BAE-9922-B73FE07E42DE"
+
 local TeleporterParentFrame = nil
 local CastSpell = nil
 local ItemSlot = nil
@@ -78,7 +80,7 @@ local ChosenHearth = nil
 local IsRefreshing = nil
 local StartSearch = false
 local Tabs = {}
-local CurrentTab = 1
+local CurrentTab = HomeGuid
 
 local TeleporterHouses = {}
 local TeleporterHousesByZone = {}
@@ -116,8 +118,6 @@ local SortByExpansion = 4
 
 local TitleFrameBG
 
-
-local HomeGuid = "7413962B-DC60-4BAE-9922-B73FE07E42DE"
 
 local DefaultTabs =
 {
@@ -203,6 +203,7 @@ local DefaultOptions =
 	["tooltip"] = 1,
 	["showTabs"] = false,
 	["tabs"] = DefaultTabs,
+	["defaultTab"] = HomeGuid
 }
 
 -- Themes. For now there aren't many of these. Message me on curseforge.com
@@ -878,9 +879,11 @@ function TeleporterGetSearchString()
 		end
 	end
 
-	if GetOption("showTabs") and CurrentTab ~= 1 then
-		if CurrentTab <= #Tabs then
-			return Tabs[CurrentTab].searchString
+	if GetOption("showTabs") and CurrentTab ~= HomeGuid then
+		for _, tab in pairs(GetOption("tabs")) do
+			if tab.guid == CurrentTab then
+				return tab.searchString
+			end
 		end
 	end
 
@@ -1844,6 +1847,163 @@ function TeleporterSortSpells()
 	table.sort(TeleporterSpells, function(a,b) return SortSpells(a, b, SortType) end)
 end
 
+local function TabContextMenu_Rename(guid)
+	local tabList = GetOption("tabs")
+	local currentName = (tabList and tabList[guid]) and tabList[guid].name or ""
+
+	StaticPopupDialogs["TELEPORTER_RENAME_TAB"] = {
+		text = "Rename tab",
+		button1 = "OK",
+		button2 = "Cancel",
+		OnAccept = function(dialog)
+			local updatedTabList = GetOption("tabs")
+			if updatedTabList and updatedTabList[guid] then
+				updatedTabList[guid].name = dialog.EditBox:GetText()
+				SetOption("tabs", updatedTabList)
+				Refresh()
+			end
+		end,
+		OnShow = function(dialog)
+			dialog.EditBox:SetText(currentName)
+			dialog.EditBox:SetFocus()
+		end,
+		hideOnEscape = true,
+		hasEditBox = true,
+		editBoxWidth = 300
+	}
+	StaticPopup_Show("TELEPORTER_RENAME_TAB")
+end
+
+local function TabContextMenu_Edit(guid)
+	local tabList = GetOption("tabs")
+	local currentSearch = (tabList and tabList[guid]) and (tabList[guid].searchString or "") or ""
+
+	StaticPopupDialogs["TELEPORTER_EDIT_TAB_SEARCH"] = {
+		text = "Edit tab search string",
+		button1 = "OK",
+		button2 = "Cancel",
+		OnAccept = function(dialog)
+			local updatedTabList = GetOption("tabs")
+			if updatedTabList and updatedTabList[guid] then
+				updatedTabList[guid].searchString = dialog.EditBox:GetText()
+				SetOption("tabs", updatedTabList)
+				Refresh()
+			end
+		end,
+		OnShow = function(dialog)
+			dialog.EditBox:SetText(currentSearch)
+			dialog.EditBox:SetFocus()
+		end,
+		hideOnEscape = true,
+		hasEditBox = true,
+		editBoxWidth = 300
+	}
+	StaticPopup_Show("TELEPORTER_EDIT_TAB_SEARCH")
+end
+
+local function TabContextMenu_Move(guid, direction)
+	local tabList = GetOption("tabs")
+	if not tabList then return end
+
+	local sortedTabs = {}
+	for g, tabDesc in pairs(tabList) do
+		tinsert(sortedTabs, {guid = g, tabDesc = tabDesc})
+	end
+	table.sort(sortedTabs, function(a, b)
+		return (a.tabDesc.order or 0) < (b.tabDesc.order or 0)
+	end)
+
+	for i = math.max(1 - direction, 1), math.min(#sortedTabs - direction, #sortedTabs) do
+		if sortedTabs[i].guid == guid then
+			local temp = sortedTabs[i].tabDesc.order
+			sortedTabs[i].tabDesc.order = sortedTabs[i + direction].tabDesc.order
+			sortedTabs[i + direction].tabDesc.order = temp
+			break
+		end
+	end
+
+	SetOption("tabs", tabList)
+	Refresh()
+end
+
+local function TabContextMenu_MoveLeft(guid)
+	TabContextMenu_Move(guid, -1)
+end
+
+local function TabContextMenu_MoveRight(guid)
+	TabContextMenu_Move(guid, 1)
+end
+
+local function TabContextMenu_Delete(guid, name)
+	if guid == HomeGuid then
+		return
+	end
+
+	StaticPopupDialogs["TELEPORTER_DELETE_TAB_CONFIRM"] = {
+		text = "Delete the tab " .. (name or "") .. "?",
+		button1 = "Yes",
+		button2 = "No",
+		OnAccept = function()
+			local tabList = GetOption("tabs")
+			if tabList then
+				tabList[guid] = nil
+				SetOption("tabs", tabList)
+				if CurrentTab == guid then
+					CurrentTab = HomeGuid
+				end
+				Refresh()
+			end
+		end,
+		hideOnEscape = true
+	}
+	StaticPopup_Show("TELEPORTER_DELETE_TAB_CONFIRM")
+end
+
+local function TabContextMenu_SetDefault(guid)
+	SetOption("defaultTab", guid)
+end
+
+local function TabContextMenu_Show(guid, name)
+	local InitTabContextMenu = function(frame, level)
+		local info = UIDropDownMenu_CreateInfo()
+		info.owner = frame
+		local isHomeGuid = (guid == HomeGuid)
+
+		info.text = "Rename"
+		info.func = function() TabContextMenu_Rename(guid) end
+		info.disabled = isHomeGuid
+		UIDropDownMenu_AddButton(info, level)
+
+		info.text = "Edit"
+		info.func = function() TabContextMenu_Edit(guid) end
+		info.disabled = isHomeGuid
+		UIDropDownMenu_AddButton(info, level)
+
+		info.text = "Move Left"
+		info.func = function() TabContextMenu_MoveLeft(guid) end
+		info.disabled = false
+		UIDropDownMenu_AddButton(info, level)
+
+		info.text = "Move Right"
+		info.func = function() TabContextMenu_MoveRight(guid) end
+		info.disabled = false
+		UIDropDownMenu_AddButton(info, level)
+
+		info.text = "Set Default"
+		info.func = function() TabContextMenu_SetDefault(guid) end
+		info.disabled = false
+		UIDropDownMenu_AddButton(info, level)
+
+		info.text = "Delete Tab"
+		info.func = function() TabContextMenu_Delete(guid, name) end
+		info.disabled = isHomeGuid
+		UIDropDownMenu_AddButton(info, level)
+	end
+
+	UIDropDownMenu_Initialize(TeleporterTabMenu, InitTabContextMenu, "MENU")
+	ToggleDropDownMenu(1, nil, TeleporterTabMenu, "cursor", 0, 0)
+end
+
 local function CreateTabs()
 	if GetOption("showTabs") then
 		local tabIndex = 1
@@ -1888,16 +2048,24 @@ local function CreateTabs()
 			tab.frame:SetHeight(tabHeight)
 			tab.frame:SetPoint("BOTTOMLEFT", TeleporterParentFrame, "BOTTOMLEFT", xOffset, yPadding)
 			tab.frame:SetBackdrop({bgFile = "Interface/Buttons/WHITE8X8"})
-			if tabIndex == CurrentTab then
+
+			tab.guid = tabDesc.guid
+
+			if tabDesc.guid == CurrentTab then
 				tab.frame:SetBackdropColor(1, 1, 0, 0.5)
 			else
 				tab.frame:SetBackdropColor(0, 0, 0, 0.1)
 			end
 			tab.frame:EnableMouse(true)
-			local index = tabIndex
-			tab.frame:SetScript("OnMouseDown", function()
-				CurrentTab = index
-				Refresh()
+			local guid = tabDesc.guid
+			local name = tabDesc.name
+			tab.frame:SetScript("OnMouseDown", function(self, button)
+				if button == "LeftButton" then
+					CurrentTab = guid
+					Refresh()
+				elseif button == "RightButton" then
+					TabContextMenu_Show(guid, name)
+				end
 			end)
 			tab.frame:Show()
 
@@ -2390,6 +2558,7 @@ function TeleporterSlashCmdFunction(args)
 		if IsVisible then
 			TeleporterClose()
 		else
+			CurrentTab = GetOption("defaultTab")
 			TeleporterOpenFrame()
 		end
 		if splitArgs[1] == "search" and GetOption("showSearch") and TeleporterSearchBox then
