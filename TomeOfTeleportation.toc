@@ -32,6 +32,7 @@ libs\LibDBIcon-1.0\lib.xml
 TeleporterSpell.lua
 TomeQuickMenu.lua
 TomeOfTeleportationSettings.lua
+TomeTabs.lua
 TomeOfTeleportation.lua
 TomeOfTeleportation.xml
 Spells.lua
