@@ -79,6 +79,9 @@ the searches are grouped from the left first.
 (type:item) and ((zone:Stormwind) or (zone:Dalaran))
 Searches for all items teleporting to Stormwind or Dalaran.
 
+not (type:dungeon) and not (type:raid)
+All spells and items that are not to dungeons or raids.
+
 The parantheses are important. Without them "and", "or" and "not" will be treated as part of the text
 you are searching for.
 
