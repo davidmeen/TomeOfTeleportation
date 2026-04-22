@@ -372,7 +372,7 @@ function TeleporterCreateTabs(parentFrame)
 						end
 					end)
 
-				tab = Tabs[tabIndex]
+				local tab = Tabs[tabIndex]
 				tab.guid = tabDesc.guid
 				tab.searchString = tabDesc.searchString
 
