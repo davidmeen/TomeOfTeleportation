@@ -334,7 +334,15 @@ local function CreateSettings(panel)
 
     p = AddSliderOption("Quick Menu Size",      "QuickMenuSize", 20, 100, 1,             scrollChild, p)
 
-    p = AddCheckOption("Show Tabs",              "showTabs",             scrollChild, p)
+    p = AddCheckOption("Show Tabs",              "showTabs",                             scrollChild, p)
+    p = AddSliderOption("Tab Height",            "tabHeight", 10, 50, 1,                 scrollChild, p)
+    p = AddSliderOption("Tab Font Size",         "tabFontSize", 5, 30, 1,                scrollChild, p)
+    p = AddColourOption("Tab Selected",          "tabSelectedColour",                    scrollChild, true, p)
+    p = AddColourOption("Tab Selected Border",   "tabSelectedBorder",                    scrollChild, true, p)
+    p = AddColourOption("Tab Selected Text",     "tabSelectedText",                      scrollChild, false, p)
+    p = AddColourOption("Tab Unselected",        "tabUnselectedColour",                  scrollChild, true, p)
+    p = AddColourOption("Tab Unselected Border", "tabUnselectedBorder",                  scrollChild, true, p)
+    p = AddColourOption("Tab Unselected Text",   "tabUnselectedText",                    scrollChild, false, p)
 end
 
 local ZoneLabels = {}

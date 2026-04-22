@@ -54,7 +54,7 @@ local function TabContextMenu_Edit(guid)
 	local currentSearch = (tabList and tabList[guid]) and (tabList[guid].searchString or "") or ""
 
 	StaticPopupDialogs["TELEPORTER_EDIT_TAB_SEARCH"] = {
-		text = "Edit tab search string",
+		text = "Edit tab search string. See Readme.txt for examples.",
 		button1 = "OK",
 		button2 = "Cancel",
 		OnAccept = function(dialog)
@@ -256,7 +256,7 @@ local function SetupTabFrame(tabIndex, parentFrame, xOffset, yPadding, tabHeight
 	})
 
 	local fontFile = label:GetFont()
-	local tabFontSize = 14
+	local tabFontSize = TeleporterGetOption("tabFontSize")
 	label:SetFont(fontFile, tabFontSize * scale)
 	label:ClearAllPoints()
 	label:SetPoint("CENTER", button, "CENTER", 0, 0)
@@ -267,13 +267,13 @@ local function SetupTabFrame(tabIndex, parentFrame, xOffset, yPadding, tabHeight
 	label:Show()
 
 	if isSelected then
-		button:SetBackdropColor(0.2, 0.2, 0.2, 0.8)
-		button:SetBackdropBorderColor(0.6, 0.6, 0.0, 1)
-		label:SetTextColor(1, 1, 1)
+		button:SetBackdropColor(TeleporterGetOption("tabSelectedColourR"), TeleporterGetOption("tabSelectedColourG"), TeleporterGetOption("tabSelectedColourB"), TeleporterGetOption("tabSelectedColourA"))
+		button:SetBackdropBorderColor(TeleporterGetOption("tabSelectedBorderR"), TeleporterGetOption("tabSelectedBorderG"), TeleporterGetOption("tabSelectedBorderB"), TeleporterGetOption("tabSelectedBorderA"))
+		label:SetTextColor(TeleporterGetOption("tabSelectedTextR"), TeleporterGetOption("tabSelectedTextG"), TeleporterGetOption("tabSelectedTextB"))
 	else
-		button:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
-		button:SetBackdropBorderColor(0.3, 0.3, 0.3, 0.8)
-		label:SetTextColor(0.7, 0.7, 0.7)
+		button:SetBackdropColor(TeleporterGetOption("tabUnselectedColourR"), TeleporterGetOption("tabUnselectedColourG"), TeleporterGetOption("tabUnselectedColourB"), TeleporterGetOption("tabUnselectedColourA"))
+		button:SetBackdropBorderColor(TeleporterGetOption("tabUnselectedBorderR"), TeleporterGetOption("tabUnselectedBorderG"), TeleporterGetOption("tabUnselectedBorderB"), TeleporterGetOption("tabUnselectedBorderA"))
+		label:SetTextColor(TeleporterGetOption("tabUnselectedTextR"), TeleporterGetOption("tabUnselectedTextG"), TeleporterGetOption("tabUnselectedTextB"))
 	end
 
 	button:EnableMouse(true)
@@ -283,14 +283,21 @@ local function SetupTabFrame(tabIndex, parentFrame, xOffset, yPadding, tabHeight
 	end)
 	button:SetScript("OnEnter", function(self)
 		if not isSelected then
-			self:SetBackdropColor(0.15, 0.15, 0.15, 0.7)
-			label:SetTextColor(0.9, 0.9, 0.9)
+			local hoverR = (TeleporterGetOption("tabSelectedColourR") + TeleporterGetOption("tabUnselectedColourR")) / 2
+			local hoverG = (TeleporterGetOption("tabSelectedColourG") + TeleporterGetOption("tabUnselectedColourG")) / 2
+			local hoverB = (TeleporterGetOption("tabSelectedColourB") + TeleporterGetOption("tabUnselectedColourB")) / 2
+			local hoverA = (TeleporterGetOption("tabSelectedColourA") + TeleporterGetOption("tabUnselectedColourA")) / 2
+			self:SetBackdropColor(hoverR, hoverG, hoverB, hoverA)
+			local hoverTextR = (TeleporterGetOption("tabSelectedTextR") + TeleporterGetOption("tabUnselectedTextR")) / 2
+			local hoverTextG = (TeleporterGetOption("tabSelectedTextG") + TeleporterGetOption("tabUnselectedTextG")) / 2
+			local hoverTextB = (TeleporterGetOption("tabSelectedTextB") + TeleporterGetOption("tabUnselectedTextB")) / 2
+			label:SetTextColor(hoverTextR, hoverTextG, hoverTextB)
 		end
 	end)
 	button:SetScript("OnLeave", function(self)
 		if not isSelected then
-			self:SetBackdropColor(0.1, 0.1, 0.1, 0.5)
-			label:SetTextColor(0.7, 0.7, 0.7)
+			self:SetBackdropColor(TeleporterGetOption("tabUnselectedColourR"), TeleporterGetOption("tabUnselectedColourG"), TeleporterGetOption("tabUnselectedColourB"), TeleporterGetOption("tabUnselectedColourA"))
+			label:SetTextColor(TeleporterGetOption("tabUnselectedTextR"), TeleporterGetOption("tabUnselectedTextG"), TeleporterGetOption("tabUnselectedTextB"))
 		end
 	end)
 	button:Show()
@@ -316,7 +323,7 @@ function TeleporterCreateTabs(parentFrame)
 		local scale = TeleporterGetOption("scale") * UIParent:GetEffectiveScale()
 		local tabIndex = 1
 		local xOffset = 12 * scale
-		local tabHeight = 24 * scale
+		local tabHeight = TeleporterGetOption("tabHeight") * scale
 		local yPadding = 12 * scale
 		local tabSpacing = 3 * scale
 
