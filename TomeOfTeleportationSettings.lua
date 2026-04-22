@@ -333,6 +333,8 @@ local function CreateSettings(panel)
 
 
     p = AddSliderOption("Quick Menu Size",      "QuickMenuSize", 20, 100, 1,             scrollChild, p)
+
+    p = AddCheckOption("Show Tabs",              "showTabs",             scrollChild, p)
 end
 
 local ZoneLabels = {}

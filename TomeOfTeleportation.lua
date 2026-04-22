@@ -181,7 +181,7 @@ local DefaultOptions =
 	["showSearch"] = 1,
 	["searchHidden"] = 1,
 	["tooltip"] = 1,
-	["showTabs"] = false,
+	["showTabs"] = 1,
 	["tabs"] = DefaultTabs,
 	["defaultTab"] = TeleporterGetHomeTabGuid()
 }
@@ -582,6 +582,7 @@ local MenuIDShowIcon			= 17
 local MenuIDCurrentRaids		= 18
 local MenuIDGroupRaids			= 19
 local MenuIDExpansionInGroupNames = 20
+local MenuIDShowTabs			= 21
 
 local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 	if level == 1 or topLevel then
@@ -601,6 +602,7 @@ local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 		AddHideOptionMenu(MenuIDRandomHearth, "Random Hearthstone", "randomHearth", frame, level)
 		AddHideOptionMenu(MenuIDWrongZone, "Show Spells When In Wrong Zone", "showInWrongZone", frame, level)
 		AddHideOptionMenu(MenuIDCloseAfterCast, "Close When Cast Finishes", "closeAfterCast", frame, level)
+		AddHideOptionMenu(MenuIDShowTabs, "Show Tabs", "showTabs", frame, level)
 
 		info.text = "Sort"
 		info.hasArrow = true
