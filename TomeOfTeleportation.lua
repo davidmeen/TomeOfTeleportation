@@ -742,7 +742,7 @@ local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 		info.value = 1
 		info.func = function(info) TomeOfTele_SetSort(1) end
 		info.owner = frame
-		info.checked = function(info) sortMode = GetOption("sort"); return sortMode == nil or sortMode == 1; end
+		info.checked = function(info) local sortMode = GetOption("sort"); return sortMode == nil or sortMode == 1; end
 		UIDropDownMenu_AddButton(info, level)
 
 		info.text = "Type"
