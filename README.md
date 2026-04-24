@@ -65,10 +65,10 @@ Searches for all spells that are not to dungeons.
 Searches for all spells to Legion Dalaran.
 
 `(zone:Orgrimmar) or (zone:Stormwind)`
-Searches for all Spells to Orgrimmar or Stormwind.
+Searches for all spells to Orgrimmar or Stormwind.
 
 `(zone:Eastern Kingdoms) and not (zone:Stormwind)`
-Searches for all Spells to anywhere in the Eastern Kingdoms apart from Stormwind.
+Searches for all spells to anywhere in the Eastern Kingdoms apart from Stormwind.
 
 `(type:item) and (zone:Stormwind) or (zone:Dalaran)`
 Searches for all items teleporting to Stormwind, or anything to Dalaran. Without additional parentheses
@@ -103,8 +103,6 @@ Show the minimap icon.
 `/tele hideicon`
 Hide the minimap icon.
 
----
-
 `/tele set parameter value`
 Sets an option without using the UI. Omit the value to reset to the default. Some examples:
 
@@ -123,6 +121,8 @@ Change the width of the buttons.
 
 `/tele set buttonHeight 64`
 Change the height of the buttons.
+
+All options can also be set from the addon settings screen.
 
 ## Troubleshooting
 
