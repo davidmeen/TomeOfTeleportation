@@ -66,7 +66,6 @@ local OpenTime = 0
 local ShouldNotBeEquiped = {}
 local ShouldBeEquiped = {}
 local EquipTime = 0
-local CustomizeSpells = false
 local RemoveIconOffset = 0
 local ShowIconOffset = 0
 local SortUpIconOffset = 0
@@ -691,14 +690,14 @@ local function InitTeleporterOptionsMenu(frame, level, menuList, topLevel)
 		info.menuList = nil
 		info.func = function(info)
 			if GetOption("oldCustomizer") then
-				CustomizeSpells = not CustomizeSpells; Refresh();
+				TeleporterCustomizeSpells = not TeleporterCustomizeSpells; Refresh();
 			else
 				TeleporterClose()
 				TeleporterOpenSettings()
 			end
 		end
 		info.owner = frame
-		info.checked = CustomizeSpells
+		info.checked = TeleporterCustomizeSpells
 		UIDropDownMenu_AddButton(info, level)
 
 	elseif menuList == "Scale" then
@@ -1203,7 +1202,7 @@ function TeleporterUpdateButton(button)
 			countString:SetText(GetItemCount(itemId, false, true))
 		end
 
-		if CustomizeSpells then
+		if TeleporterCustomizeSpells then
 			local alpha = 1
 			if not spell:IsVisible() then
 				alpha = 0.5
@@ -1476,7 +1475,7 @@ local function AddCustomizationIcon(existingIcon, buttonFrame, showAboveFrame, x
 		iconObject.frame:SetWidth(width)
 		iconObject.frame:SetHeight(height)
 
-		if CustomizeSpells and not forceHidden then
+		if TeleporterCustomizeSpells and not forceHidden then
 			iconObject.icon:Show()
 			iconObject.frame:Show()
 		else
@@ -1845,7 +1844,7 @@ end
 
 function TeleporterSortSpells()
 	local SortType = GetOption("sort")
-	if CustomizeSpells then
+	if TeleporterCustomizeSpells then
 		SortType = SortCustom
 	end
 	table.sort(TeleporterSpells, function(a,b) return SortSpells(a, b, SortType) end)
@@ -1983,7 +1982,7 @@ function TeleporterOpenFrame(isSearching)
 
 			local haveSpell = true
 			if spell:GetZone() == TeleporterHearthString and GetOption("randomHearth") then
-				if spellId ~= onlyHearth and not CustomizeSpells then
+				if spellId ~= onlyHearth and not TeleporterCustomizeSpells then
 					haveSpell = false
 				end
 			end
@@ -2129,7 +2128,7 @@ function TeleporterOpenFrame(isSearching)
 				nameString:SetJustifyH("LEFT")
 				nameString:SetJustifyV("MIDDLE")
 				nameString:SetPoint("TOPLEFT", teleicon, "TOPRIGHT", 2, 0)
-				if CustomizeSpells then
+				if TeleporterCustomizeSpells then
 					nameString:SetPoint("BOTTOMRIGHT",cooldownString,"BOTTOMLEFT",-iconW * 4,0)
 				else
 					nameString:SetPoint("RIGHT",cooldownString,"LEFT",0,0)
@@ -2200,7 +2199,7 @@ function TeleporterOpenFrame(isSearching)
 
 		local addRemoveButtonsHeight = 0
 
-		if CustomizeSpells then
+		if TeleporterCustomizeSpells then
 			if numColumns < 2 then
 				numColumns = 2
 			end
@@ -2672,7 +2671,7 @@ function TeleporterTest_Reset()
 	ShouldNotBeEquiped = {}
 	ShouldBeEquiped = {}
 	EquipTime = 0
-	CustomizeSpells = false
+	TeleporterCustomizeSpells = false
 	RemoveIconOffset = 0
 	ShowIconOffset = 0
 	SortUpIconOffset = 0
