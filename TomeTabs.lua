@@ -54,7 +54,7 @@ local function TabContextMenu_Edit(guid)
 	local currentSearch = (tabList and tabList[guid]) and (tabList[guid].searchString or "") or ""
 
 	StaticPopupDialogs["TELEPORTER_EDIT_TAB_SEARCH"] = {
-		text = "Edit tab search string. See Readme.txt for examples.",
+		text = "Edit tab search string. See Readme.md for examples.",
 		button1 = "OK",
 		button2 = "Cancel",
 		OnAccept = function(dialog)

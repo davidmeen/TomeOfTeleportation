@@ -1,31 +1,30 @@
-Tome of Teleportation
----------------------
+# Tome of Teleportation
 
 Tome of Teleportation organises all of your teleporting spells and items into
-a single window.  If the item needs to be equipped then it will automatically
+a single window. If the item needs to be equipped then it will automatically
 be unequipped after you have teleported. The Tome also lets you create macros
-to use the spells.  Just type /tele to open the Tome, or click on the icon next
+to use the spells. Just type `/tele` to open the Tome, or click on the icon next
 to the minimap.
 
 The buttons in the Tome of Teleportation will each be one of three colours:
-* Green: You can cast this spell now.
-* Yellow: This spell is on cooldown. The cooldown remaining is displayed on
+
+- **Green:** You can cast this spell now.
+- **Yellow:** This spell is on cooldown. The cooldown remaining is displayed on
   the button.
-* Red: This item is cast using an item that must be equipped. Click on the
-  button once to equip it.  If this doesn't start a cooldown, then click again
-  to teleport.  Once the summon is successful or you close the Tome the item
+- **Red:** This item is cast using an item that must be equipped. Click on the
+  button once to equip it. If this doesn't start a cooldown, then click again
+  to teleport. Once the summon is successful or you close the Tome the item
   will be unequipped.
 
 Right clicking the minimap icon will bring up a quick list of your favourite
 spells. To add a spell to this list right click on it in the main window.
 Equippable items can not be added to this menu.
 
-Adding New Items or Spells
---------------------------
+## Adding New Items or Spells
 
 Right click on the main window then select "Customize Spells and More Settings" then press the
 "-" button and select Customize Teleporters. On this screen press "Refresh Spell List." This
-will let you add spells and items. using the controls at the bottom of the screen. To do this,
+will let you add spells and items using the controls at the bottom of the screen. To do this,
 you need to go to wowhead.com and get the spell or item id. For example, "Teleport: Moonglade"
 is at http://www.wowhead.com/spell=18960/teleport-moonglade which tells you the spell id is 18960.
 
@@ -38,111 +37,110 @@ While the cursor is over a spell press the "Set Zone" button to change how the s
 The new zone name will be taken from the Zone box at the bottom of the screen. If this is empty
 it will be placed back into its default group.
 
-Searching
----------
+## Searching
 
 The search box can be used to filter the list to spells containing text in their name, spells from
 an expansion or spells from a zone. For example, searching for "Eastern Kingdoms" will find all spells
 from anywhere on that continent. Advanced search options give you more control of the search. For example:
 
-type:spell
-type:item
-type:dungeon
-type:raid
+`type:spell`
+`type:item`
+`type:dungeon`
+`type:raid`
 These show only spells of the specified type.
 
-expansion:Legion
+`expansion:Legion`
 Searches for all spells from the Legion expansion.
 
-zone:Kalimdor
+`zone:Kalimdor`
 Searches for all spells teleporting to anywhere in Kalimdor.
 
-name:Teleport
+`name:Teleport`
 Searches for all spell with Teleport in their name.
 
-not (type:dungeon)
+`not (type:dungeon)`
 Searches for all spells that are not to dungeons.
 
-(expansion:Legion) and (zone:Dalaran)
+`(expansion:Legion) and (zone:Dalaran)`
 Searches for all spells to Legion Dalaran.
 
-(zone:Orgrimmar) or (zone:Stormwind)
+`(zone:Orgrimmar) or (zone:Stormwind)`
 Searches for all Spells to Orgrimmar or Stormwind.
 
-(zone:Eastern Kingdoms) and not (zone:Stormwind)
+`(zone:Eastern Kingdoms) and not (zone:Stormwind)`
 Searches for all Spells to anywhere in the Eastern Kingdoms apart from Stormwind.
 
-(type:item) and (zone:Stormwind) or (zone:Dalaran)
-Searches for all items teleporting to Stormwind, or anything to Dalaran. Without additional parantheses
+`(type:item) and (zone:Stormwind) or (zone:Dalaran)`
+Searches for all items teleporting to Stormwind, or anything to Dalaran. Without additional parentheses
 the searches are grouped from the left first.
 
-(type:item) and ((zone:Stormwind) or (zone:Dalaran))
+`(type:item) and ((zone:Stormwind) or (zone:Dalaran))`
 Searches for all items teleporting to Stormwind or Dalaran.
 
-not (type:dungeon) and not (type:raid)
+`not (type:dungeon) and not (type:raid)`
 All spells and items that are not to dungeons or raids.
 
-The parantheses are important. Without them "and", "or" and "not" will be treated as part of the text
+The parentheses are important. Without them "and", "or" and "not" will be treated as part of the text
 you are searching for.
 
-Advanced Options
-----------------
+While searching for something the Add Tab button will be shown. This adds a permanent tab that saves the results of your search.
 
-The /tele command can be used for advanced options. The following commands are
+## Advanced Options
+
+The `/tele` command can be used for advanced options. The following commands are
 available:
 
-/tele move x y
-Move the window to the specified location. For example "/tele move 100 200".
+`/tele move x y`
+Move the window to the specified location. For example `/tele move 100 200`.
 
-/tele reset
+`/tele reset`
 Move the window back to the centre of the screen. Useful if the window is moved
 off the edge of the screen.
 
-/tele showicon
+`/tele showicon`
 Show the minimap icon.
 
-/tele hideicon
-Show the minimap icon.
+`/tele hideicon`
+Hide the minimap icon.
 
-------------------
+---
 
-/tele set parameter value
+`/tele set parameter value`
 Sets an option without using the UI. Omit the value to reset to the default. Some examples:
 
-/tele set allCovenants true
+`/tele set allCovenants true`
 When random hearthstone is enabled include all covenants, not just the one you belong to. This is off
 by default because it has been known to cause problems on some characters.
 
-/tele set background Interface/DialogFrame/UI-DialogBox-Background-Dark
+`/tele set background Interface/DialogFrame/UI-DialogBox-Background-Dark`
 Change the background to black.
 
-/tele setnum backgroundA 0.8
+`/tele setnum backgroundA 0.8`
 Change the background to 80% opacity.
 
-/tele set buttonWidth 128
+`/tele set buttonWidth 128`
 Change the width of the buttons.
 
-/tele set buttonHeight 64
+`/tele set buttonHeight 64`
 Change the height of the buttons.
 
-Troubleshooting
----------------
+## Troubleshooting
 
 If the window does not open or looks incorrect, first try disabling all other addons. If it starts working,
 then enable the addons one by one, and let me know which addon causes the problem in the comments on Curseforge.
 
-Tun on script errors by typing this into the chat window: /console scriptErrors 1.
+Turn on script errors by typing this into the chat window: `/console scriptErrors 1`.
 If you get any errors then post them in the comments on Curseforge.
 
 Check if the addon works on a brand new character to see if per-character settings have been corrupted.
 
-In File Explorer go to the folder when the game is installed, then go to \_retail_\WTF\Account\YourAccountName\SavedVariables.
-Move the file TomeOfTeleportation.lua to another folder. This will reset your settings. If this fixes the problem, then
+In File Explorer go to the folder where the game is installed, then go to `_retail_\WTF\Account\YourAccountName\SavedVariables`.
+Move the file `TomeOfTeleportation.lua` to another folder. This will reset your settings. If this fixes the problem, then
 copy the contents of the file to pastebin.com and post a comment on Curseforge. If it doesn't help, move the file back
 to its original location.
 
-Credits
--------
+## Credits
 
 By Remeen
+
 Thanks to everybody who has contributed at https://github.com/davidmeen/TomeOfTeleportation
