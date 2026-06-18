@@ -1368,6 +1368,12 @@ CreateDestination(
 	}).SetExpansion(ExpansionClassic)
 
 CreateDestination(
+	"Umbral Base Camp",
+	{
+		CreateItem(276371)		-- Lightveil Recall Beacon
+	}).SetExpansion(ExpansionMidnight)
+
+CreateDestination(
 	LocZone("Winterspring", 83),
 	{
 		CreateItem(18984),		-- Dimensional Ripper - Everlook
