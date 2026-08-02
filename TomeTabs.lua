@@ -1,4 +1,5 @@
 local HomeTabGuid = "7413962B-DC60-4BAE-9922-B73FE07E42DE"
+local FavouritesTabGuid = "A3E7B1C4-5F92-4D8A-B6E1-9C0F2D7A4E58"
 local CurrentTab = HomeTabGuid
 local Tabs = {}
 
@@ -197,6 +198,23 @@ local function GetMaxTabOrder()
 		end
 	end
 	return maxOrder
+end
+
+function TeleporterEnsureFavouritesTab()
+	local tabList = TeleporterGetOption("tabs")
+	if tabList and tabList[FavouritesTabGuid] then
+		return
+	end
+	if not tabList then
+		tabList = {}
+	end
+	tabList[FavouritesTabGuid] = {
+		["guid"] = FavouritesTabGuid,
+		["name"] = "Favorites",
+		["searchString"] = "type:favourite",
+		["order"] = GetMaxTabOrder() + 1
+	}
+	TeleporterSetOption("tabs", tabList)
 end
 
 local function AddTabFromSearch()

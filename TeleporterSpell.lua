@@ -87,7 +87,7 @@ function TeleporterSpell:GetOptionId()
 		return self.spellId .. "." .. self.zoneId
 	else
 		-- Must use the original zone name here.
-		return self.spellId .. "." .. self.zone
+		return self.spellId .. "." .. (self.zone or "")
 	end
 end
 

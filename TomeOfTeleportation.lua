@@ -773,7 +773,7 @@ local function InitTeleporterMenu(frame, level, menuList)
 		local info = UIDropDownMenu_CreateInfo()
 
 		info.owner = frame
-		info.text = "Right click a spell to add favourites"
+		info.text = "Right click a spell to add mini map menu"
 		info.hasArrow = false
 		info.menuList = nil
 		info.value = 0
@@ -982,94 +982,73 @@ local function InitTeleporterMenu(frame, level, menuList)
 end
 
 local RightClickMenuSpell = nil
+local RightClickMenuSpellObject = nil
 local RightClickMenuSpellIsItem
-local RightClickMenuSpellName = nil
-local AddFavouriteMenu = nil
-local RemoveFavouriteMenu = nil
-local CantAddFavouriteMenu = nil
+local RightClickMenu = nil
 
-local function CreateAddFavouriteMenu()
-	if not AddFavouriteMenu then
-		AddFavouriteMenu = CreateFrame("Frame", "TomeOfTeleAddFavouriteMenu", UIParent, "UIDropDownMenuTemplate")
+local function CreateRightClickMenu()
+	if not RightClickMenu then
+		RightClickMenu = CreateFrame("Frame", "TomeOfTeleRightClickMenu", UIParent, "UIDropDownMenuTemplate")
 
 		UIDropDownMenu_Initialize(
-			AddFavouriteMenu,
+			RightClickMenu,
 			function(frame, level, menuList)
-				local info = UIDropDownMenu_CreateInfo()
+				local isEquippable = RightClickMenuSpellIsItem and IsEquippableItem(RightClickMenuSpell)
+				local minimapFavourites = GetOption("favourites")
+				local isOnMinimap = minimapFavourites and minimapFavourites[RightClickMenuSpell] ~= nil
 
+				if not isEquippable then
+					local info = UIDropDownMenu_CreateInfo()
+					info.owner = frame
+					info.hasArrow = false
+					info.checked = nil
+
+					if isOnMinimap then
+						info.text = "Remove from minimap button menu"
+						info.func = function()
+							local favourites = GetOption("favourites")
+							favourites[RightClickMenuSpell] = nil
+						end
+					else
+						info.text = "Add to minimap button menu"
+						info.func = function()
+							local favourites = GetOption("favourites")
+							favourites[RightClickMenuSpell] = RightClickMenuSpellIsItem
+						end
+					end
+
+					UIDropDownMenu_AddButton(info, level)
+				end
+
+				local info = UIDropDownMenu_CreateInfo()
 				info.owner = frame
 				info.hasArrow = false
-				info.value = 1000
 				info.checked = nil
 
-				info.text = "Add to minimap button menu"
-				info.func = function()
-					local favourites = GetOption("favourites")
-					favourites[RightClickMenuSpell] = RightClickMenuSpellIsItem
+				local favouritesTab = GetOption("favouritesTab")
+				if favouritesTab and favouritesTab[RightClickMenuSpellObject:GetOptionId()] then
+					info.text = "Remove from favorites tab"
+					info.func = function()
+						local favourites = GetOption("favouritesTab")
+						favourites[RightClickMenuSpellObject:GetOptionId()] = nil
+						SetOption("favouritesTab", favourites)
+						Refresh()
+					end
+				else
+					info.text = "Add to favorites tab"
+					info.func = function()
+						local favourites = GetOption("favouritesTab")
+						if favourites == nil then
+							favourites = {}
+						end
+						favourites[RightClickMenuSpellObject:GetOptionId()] = true
+						SetOption("favouritesTab", favourites)
+						TeleporterEnsureFavouritesTab()
+						Refresh()
+					end
 				end
 
 				UIDropDownMenu_AddButton(info, level)
-			end,
-			"MENU")
-	end
-end
-
-local function CreateRemoveFavouriteMenu()
-	if not RemoveFavouriteMenu then
-		RemoveFavouriteMenu = CreateFrame("Frame", "TomeOfTeleRemoveFavouriteMenu", UIParent, "UIDropDownMenuTemplate")
-
-		UIDropDownMenu_Initialize(
-			RemoveFavouriteMenu,
-			function(frame, level, menuList)
-				local info = UIDropDownMenu_CreateInfo()
-
-				info.owner = frame
-				info.hasArrow = false
-				info.value = 1001
-				info.checked = nil
-
-				info.text = "Remove from minimap button menu"
-				info.func = function()
-					local favourites = GetOption("favourites")
-					favourites[RightClickMenuSpell] = nil
-				end
-				UIDropDownMenu_AddButton(info, level)
-			end,
-			"MENU")
-	end
-end
-
-local function CreateEquipableItemRightClickMenu()
-	if not CantAddFavouriteMenu then
-		CantAddFavouriteMenu = CreateFrame("Frame", "TomeOfTeleCantAddFavouriteMenu", UIParent, "UIDropDownMenuTemplate")
-
-		UIDropDownMenu_Initialize(
-			CantAddFavouriteMenu,
-			function(frame, level, menuList)
-				local info = UIDropDownMenu_CreateInfo()
-
-				info.owner = frame
-				info.hasArrow = false
-				info.value = 1002
-				info.checked = nil
-
-				info.text = "This item can not be added to the minimap button menu"
-				info.func = nil
-				UIDropDownMenu_AddButton(info, level)
-
-				-- The macros this creates crash the game!
-				-- info = UIDropDownMenu_CreateInfo()
-
-				-- info.owner = frame
-				-- info.hasArrow = false
-				-- info.value = 1003
-				-- info.checked = nil
-
-				-- info.text = "Create macro"
-				-- info.func = function()
-				-- 	TeleporterCreateMacroSlashCmdFunction(RightClickMenuSpellName)
-				-- end
-				-- UIDropDownMenu_AddButton(info, level)
 			end,
 			"MENU")
 	end
@@ -1088,21 +1067,11 @@ local function OnClickTeleButton(frame,button)
 		end
 
 		RightClickMenuSpell = spellId
-		RightClickMenuSpellName = ButtonSettings[frame].spellName
+		RightClickMenuSpellObject = ButtonSettings[frame].spell
 		RightClickMenuSpellIsItem = isItem
 
-		local isFavourite = favourites[spellId] ~= nil
-
-		if isItem and IsEquippableItem(spellId) then
-			CreateEquipableItemRightClickMenu()
-			ToggleDropDownMenu(1, nil, CantAddFavouriteMenu, "cursor", 3, -3)
-		elseif not isFavourite then
-			CreateAddFavouriteMenu()
-			ToggleDropDownMenu(1, nil, AddFavouriteMenu, "cursor", 3, -3)
-		else
-			CreateRemoveFavouriteMenu()
-			ToggleDropDownMenu(1, nil, RemoveFavouriteMenu, "cursor", 3, -3)
-		end
+		CreateRightClickMenu()
+		ToggleDropDownMenu(1, nil, RightClickMenu, "cursor", 3, -3)
 	end
 end
 

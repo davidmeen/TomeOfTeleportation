@@ -32,6 +32,9 @@ function TeleporterSearchTypeNode.MatchSpell(self, spell)
         return spell:IsDungeonSpell()
     elseif self.searchType == "raid" then
         return spell:IsRaidSpell()
+    elseif self.searchType == "favourite" or self.searchType == "favorite" then
+        local favourites = TeleporterGetOption("favouritesTab")
+        return favourites and favourites[spell:GetOptionId()]
     else
         return false
     end
