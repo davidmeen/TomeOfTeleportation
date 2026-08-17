@@ -1375,6 +1375,12 @@ CreateDestination(
 	}).SetExpansion(ExpansionMidnight)
 
 CreateDestination(
+	LocZone("Vault of Atal'Utek", 2509),
+	{
+		CreateConditionalConsumable(279550, AtZone(2509)),	-- Potion of Venomous Return
+	}).SetExpansion(ExpansionMidnight)
+
+CreateDestination(
 	LocZone("Winterspring", 83),
 	{
 		CreateItem(18984),		-- Dimensional Ripper - Everlook
