@@ -979,6 +979,11 @@ CreateDestination(
 		CreateDungeonSpell(1254400, 3120, 2492),	-- Path of the Windrunners			Windrunner Spire
 		CreateDungeonSpell(1254563, 3122, 2556),	-- Path of the Fractured Core		Nexus-Point Xenas
 		CreateDungeonSpell(1254559, 3121, 2501),	-- Path of Cavernous Depths			Maisara Caverns
+		CreateDungeonSpell(1286812, 3190, 2588),	-- Path of Venomous Evolution		Altar of Fangs
+		CreateDungeonSpell(1286801, 3075, 2500),	-- Path of the Blooming Verdure		The Blinding Vale
+		CreateDungeonSpell(1286804, 3106, 2572),	-- Path of the Brutal Combatant		Voidscar Arena
+		CreateDungeonSpell(1286809, 3089, 2433),	-- Path of the Devious Smuggler		Murder Row
+		CreateDungeonSpell(1286807, 3051, 2513),	-- Path of the Worthy Aspirant		Den of Nalorakk
 	}).SetExpansion(ExpansionMidnight)
 
 CreateDestination(
@@ -1403,7 +1408,9 @@ CreateDestination(
 	{
 		CreateConsumable(157542),	-- Portal Scroll of Specificity
 		CreateConsumable(160218),	-- Portal Scroll of Specificity
-		CreateDungeonSpell(424187, 2107, 934),	-- Path of the Golden Tomb		Atal'Dazar
-		CreateDungeonSpell(467553, 1707, 934),	-- Path of the Azerite Refinery	The MOTHERLODE!!
-		CreateDungeonSpell(467555, 1707, 934),	-- Path of the Azerite Refinery	The MOTHERLODE!!
+		CreateDungeonSpell(424187, 2107, 934),	-- Path of the Golden Tombs			Atal'Dazar
+		CreateDungeonSpell(467553, 1707, 934),	-- Path of the Azerite Refinery		The MOTHERLODE!!
+		CreateDungeonSpell(467555, 1707, 934),	-- Path of the Azerite Refinery		The MOTHERLODE!!
+		CreateDungeonSpell(1286828, 1694, 1038),-- Path of the Sacred Temple		Temple of Sethraliss
+		CreateDungeonSpell(1286831, 1785, 1004),-- Path of the Slumbering Conqueror	Kings' Rest
 	}).SetExpansion(ExpansionBattleForAzeroth)

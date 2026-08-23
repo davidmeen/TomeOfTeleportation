@@ -358,33 +358,19 @@ function TeleporterSpell:IsValid()
 end
 
 -- Use this script in-game to get the dungeon IDs:
--- /script for i=1,3000 do d=GetLFGDungeonInfo(i);if d=="Dungeon Name" then print(i); end;end
+-- /script for i=1,5000 do d=GetLFGDungeonInfo(i);if d=="Dungeon Name" then print(i); end;end
 function TeleporterSpell:IsSeasonDungeon()
-	if time() > time{year=2026, month=3, day=17} then
-		-- Midnight Season 1
-		return tContains({
-			3123,	-- Magister's Terrace
-			3121, 	-- Maisara Caverns
-			3122,	-- Nexus-Point Xenas
-			3120,	-- Windrunner Spire
-			2367,	-- Algeth'ar Academy
-			3116,	-- Seat of the Triumvirate
-			3114,	-- Skyreach
-			3111,	-- Pit of Saron
-		}, self.dungeonID)
-	else
-		-- War Within Season 3
-		return tContains({
-			2987,	-- Eco-Dome Al'dani
-			2805, 	-- Manaforge Omega
-			2654,	-- Ara-Kara, City of Echoes
-			2719,	-- The Dawnbreaker
-			2791,	-- Operation: Floodgate
-			2695,	-- Priory of the Sacred Flame
-			2119,	-- Halls of Atonement
-			2225,	-- Tazavesh, the Veiled Market
-		}, self.dungeonID)
-	end
+	-- Midnight Season 2
+	return tContains({
+	 	3190,	-- Altar of Fangs
+	 	3089, 	-- Murder Row
+	 	3051,	-- Den of Nalorakk
+	 	3075,	-- The Blinding Vale
+	 	3106,	-- Voidscar Arena
+	 	1785,	-- Kings' Rest
+	 	1694,	-- Temple of Sethraliss
+	 	2376,	-- Ruby Life Pools
+	}, self.dungeonID)
 end
 
 -- Spell factories
