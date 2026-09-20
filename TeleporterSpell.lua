@@ -190,7 +190,7 @@ function TeleporterSpell:CanUse()
 		if toyUsable then
 			haveToy = PlayerHasToy(spellId) and toyUsable
 		end
-		haveSpell = GetItemCount( spellId ) > 0 or haveToy
+		haveSpell = (TeleporterGetItemCount( spellId ) > 0) or haveToy
 	elseif spell.spellType == ST_House then
 		if C_Housing then
 			haveSpell = true
@@ -474,7 +474,10 @@ function TeleporterCreateTeleportHome(zoneId, cond, dest)
 	if zoneId then
 		spell.isReturn = false
 		spell.spellId = 1233637
-		spell.overrideButtonName = C_Map.GetMapInfo(zoneId).name
+		local zoneInfo = C_Map.GetMapInfo(zoneId)
+		if zoneInfo then
+			spell.overrideButtonName = zoneInfo.name
+		end
 	else
 		spell.isReturn = true
 		spell.spellId = 1270311

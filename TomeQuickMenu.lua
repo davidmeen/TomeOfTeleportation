@@ -70,7 +70,7 @@ function TeleToggleQuickMenu(favourites, size)
 			local name
 
 			if isItem then
-				name, _, _, _, _, _, _, _, _, texture = GetItemInfo( spellId )
+				name, _, _, _, _, _, _, _, _, texture = TeleporterGetItemInfo( spellId )
 
 				if name then
 					button:SetScript(

@@ -255,10 +255,10 @@ local function GetCachedItemInfo(itemId)
 			ItemsFound[itemId] = true
 			return nil
 		else
-			return GetItemInfo(itemId)
+			return TeleporterGetItemInfo(itemId)
 		end
 	else
-		return GetItemInfo(itemId)
+		return TeleporterGetItemInfo(itemId)
 	end
 end
 
@@ -1168,7 +1168,7 @@ function TeleporterUpdateButton(button)
 		cooldownString:SetPoint("BOTTOMRIGHT",button,"BOTTOMRIGHT",-buttonInset - 2,6)
 
 		if countString and isItem then
-			countString:SetText(GetItemCount(itemId, false, true))
+			countString:SetText(TeleporterGetItemCount(itemId, false, true))
 		end
 
 		if TeleporterCustomizeSpells then
@@ -2240,7 +2240,7 @@ local function CacheItems()
 		if spell:IsItem() then
 			local item = Item:CreateFromItemID(spell.spellId)
 			item:ContinueOnItemLoad(function()
-				TomeOfTele_DevCache[spell.spellId] = {GetItemInfo(spell.spellId)}
+				TomeOfTele_DevCache[spell.spellId] = {TeleporterGetItemInfo(spell.spellId)}
 			end)
 		end
 	end
@@ -2600,6 +2600,22 @@ function TeleporterGetSpells()
 	return TeleporterSpells
 end
 
+function TeleporterGetItemCount(...)
+	if C_Item then
+		return C_Item.GetItemCount(...)
+	else
+		return GetItemCount(...)
+	end
+end
+
+function TeleporterGetItemInfo(...)
+	if C_Item then
+		return C_Item.GetItemInfo(...)
+	else
+		return GetItemInfo(...)
+	end
+end
+
 --------
 -- Functions used by tests
 function TeleporterTest_GetButtonSettings()
@@ -2674,3 +2690,4 @@ end
 function Teleporter_OnAddonCompartmentClick()
 	TeleporterSlashCmdFunction()
 end
+
