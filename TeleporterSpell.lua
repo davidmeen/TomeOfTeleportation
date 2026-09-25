@@ -196,7 +196,11 @@ function TeleporterSpell:CanUse()
 			haveSpell = true
 		end
 	else
-		haveSpell = IsSpellKnown( spellId )
+		if C_SpellBook then
+			haveSpell = C_SpellBook.IsSpellKnown( spellId )
+		else
+			haveSpell = IsSpellKnown( spellId )
+		end
 
 		if not haveSpell then
 			if C_MountJournal then

@@ -963,7 +963,7 @@ local function ShowMenu()
 end
 
 function TeleporterItemMustBeEquipped(item)
-	if IsEquippableItem( item ) then
+	if TeleporterIsEquippableItem( item ) then
 		return not IsEquippedItem ( item )
 	else
 		return false
@@ -993,7 +993,7 @@ local function CreateRightClickMenu()
 		UIDropDownMenu_Initialize(
 			RightClickMenu,
 			function(frame, level, menuList)
-				local isEquippable = RightClickMenuSpellIsItem and IsEquippableItem(RightClickMenuSpell)
+				local isEquippable = RightClickMenuSpellIsItem and TeleporterIsEquippableItem(RightClickMenuSpell)
 				local minimapFavourites = GetOption("favourites")
 				local isOnMinimap = minimapFavourites and minimapFavourites[RightClickMenuSpell] ~= nil
 
@@ -1799,7 +1799,7 @@ local function FindValidSpells()
 		spell.toySpell = nil
 		if isItem then
 			if C_ToyBox and PlayerHasToy(spellId) then
-				spell.toySpell = GetItemSpell(spellId)
+				spell.toySpell = TeleporterGetItemSpell(spellId)
 			end
 		end
 
@@ -1995,7 +1995,7 @@ function TeleporterOpenFrame(isSearching)
 				buttonFrame:SetWidth(buttonWidth)
 				buttonFrame:SetHeight(buttonHeight)
 				buttonFrame:SetPoint("TOPLEFT",TeleporterParentFrame,"TOPLEFT",xoffset,yoffset)
-				if version >= 100000 then
+				if buttonFrame.RegisterForClicks then
 					buttonFrame:RegisterForClicks("LeftButtonUp", "LeftButtonDown")
 				end
 				yoffset = yoffset - buttonHeight
@@ -2365,7 +2365,7 @@ function TeleporterEquipSlashCmdFunction( item )
 	CastSpell = nil
 
 	if not IsEquippedItem ( item ) then
-		if IsEquippableItem( item ) then
+		if TeleporterIsEquippableItem( item ) then
 			local _, _, _, _, _, _, _, _,itemEquipLoc = GetCachedItemInfo(item)
 			local itemSlot = InvTypeToSlot[ itemEquipLoc ]
 			if itemSlot == nil then
@@ -2390,10 +2390,26 @@ local function DoCast(spell, closeFrame)
 	end
 end
 
+function TeleporterIsEquippableItem(...)
+	if C_Item then
+		return C_Item.IsEquippableItem(...)
+	else
+		return IsEquippableItem(...)
+	end
+end
+
+function TeleporterGetItemSpell(...)
+	if C_Item then
+		return C_Item.GetItemSpell(...)
+	else
+		return GetItemSpell(...)
+	end
+end
+
 function TeleporterUseItemSlashCmdFunction( item )
-	local spell = GetItemSpell( item )
+	local spell = TeleporterGetItemSpell( item )
 	-- Can't close the window immediately for equippable items, as closing unequips.
-	local equippable = IsEquippableItem(item)
+	local equippable = TeleporterIsEquippableItem(item)
 	DoCast( spell, not equippable )
 end
 
@@ -2407,7 +2423,7 @@ function TeleporterCreateMacroSlashCmdFunction( spell )
 		local printEquipInfo = false
 
 		if GetCachedItemInfo( spell ) then
-			if IsEquippableItem( spell ) then
+			if TeleporterIsEquippableItem( spell ) then
 				macro =
 					"#showtooltip " .. spell .. "\n" ..
 					"/teleporterequip " .. spell .. "\n" ..

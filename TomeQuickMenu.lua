@@ -82,7 +82,7 @@ function TeleToggleQuickMenu(favourites, size)
 					if PlayerHasToy(spellId) then
 						button:SetAttribute(
 							"macrotext",
-							"/teleportercastspell " .. GetItemSpell(spellId) .. "\n" ..
+							"/teleportercastspell " .. TeleporterGetItemSpell(spellId) .. "\n" ..
 							"/cast " .. name .. "\n" )
 					else
 						button:SetAttribute(
