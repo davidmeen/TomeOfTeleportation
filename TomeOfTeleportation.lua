@@ -10,6 +10,9 @@
 local AddonName = "TomeOfTeleportation"
 local AddonTitle = "Tome of Teleportation"
 
+TomeOfTeleportation = {}
+local TT = TomeOfTeleportation
+
 -- Simple localization function for Hearth category
 local function GetLocalizedHearthText()
 	local locale = GetLocale() or "enUS"
@@ -2634,15 +2637,15 @@ end
 
 --------
 -- Functions used by tests
-function TeleporterTest_GetButtonSettings()
+function TomeOfTeleportation.GetButtonSettings()
 	return OrderedButtonSettings
 end
 
-function TeleporterTest_GetButtonSettingsFromFrame(button)
+function TomeOfTeleportation.GetButtonSettingsFromFrame(button)
 	return ButtonSettings[button]
 end
 
-function TeleporterTest_GetButtonSettingsFromId(id, isItem)
+function TomeOfTeleportation.GetButtonSettingsFromId(id, isItem)
 	for frame, button in pairs(ButtonSettings) do
 		if button.spell:IsItem() == isItem and button.spellId == id then
 			return button
@@ -2650,15 +2653,15 @@ function TeleporterTest_GetButtonSettingsFromId(id, isItem)
 	end
 end
 
-function TeleporterTest_GetButtonSettingsFromItemId(id)
-	return TeleporterTest_GetButtonSettingsFromId(id, true)
+function TomeOfTeleportation.GetButtonSettingsFromItemId(id)
+	return TT.GetButtonSettingsFromId(id, true)
 end
 
-function TeleporterTest_GetButtonSettingsFromSpellId(id)
-	return TeleporterTest_GetButtonSettingsFromId(id, false)
+function TomeOfTeleportation.GetButtonSettingsFromSpellId(id)
+	return TT.GetButtonSettingsFromId(id, false)
 end
 
-function TeleporterTest_Reset()
+function TomeOfTeleportation.Reset()
 	TeleporterParentFrame = nil
 	CastSpell = nil
 	ItemSlot = nil
@@ -2687,12 +2690,12 @@ function TeleporterTest_Reset()
 	TeleporterHousesByZone = {}
 end
 
-function TeleporterTest_UpdateSearch(searchString)
+function TomeOfTeleportation.UpdateSearch(searchString)
 	TeleporterSearchBox:SetText(searchString)
 	UpdateSearch(searchString)
 end
 
-function TeleportTest_GetVisibleIds()
+function TomeOfTeleportation.GetVisibleIds()
 	local ids = {}
 	local count = 0
 	for a, settings in pairs(ButtonSettings) do
