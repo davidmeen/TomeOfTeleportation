@@ -1,3 +1,5 @@
+local TT = TomeOfTeleportation
+
 local MapIDAlteracValley = 91
 local MapIDAlteracValleyKorrak = 1537
 local MapIDIsleOfThunder = 504
@@ -238,7 +240,7 @@ end
 
 local function AtZone(requiredZone)
 	return function()
-		if TeleporterGetOption("showInWrongZone") then
+		if TT.GetOption("showInWrongZone") then
 			return true
 		end
 		local mapID = C_Map.GetBestMapForUnit("player")
@@ -362,7 +364,7 @@ local function CreateDestination(zone, spells)
 	end
 	if zoneName then
 		for i, spell in ipairs(spells) do
-			if TeleporterIsUnsupportedItem(spell) ~= 1 then
+			if TT.IsUnsupportedItem(spell) ~= 1 then
 				spell:SetZone(zoneName, mapID)
 				tinsert(TeleporterDefaultSpells, spell)
 				tinsert(results.spells, spell)
@@ -429,20 +431,20 @@ local function LocArea(name, areaID)
 end
 
 local function CreatePortalSpell(spell)
-	return TeleporterCreateConditionalSpell(spell,
+	return TomeOfTeleportation.CreateConditionalSpell(spell,
 		function()
-			return TeleporterGetOption("showInWrongZone") or IsInGroup()
+			return TT.GetOption("showInWrongZone") or IsInGroup()
 		end)
 end
 
-local CreateSpell = TeleporterCreateSpell
-local CreateItem = TeleporterCreateItem
-local CreateDungeonSpell = TeleporterCreateDungeonSpell
-local CreateRaidSpell = TeleporterCreateRaidSpell
-local CreateConditionalItem = TeleporterCreateConditionalItem
-local CreateConditionalSpell = TeleporterCreateConditionalSpell
-local CreateConditionalConsumable = TeleporterCreateConditionalConsumable
-local CreateConsumable = TeleporterCreateConsumable
+local CreateSpell = TomeOfTeleportation.CreateSpell
+local CreateItem = TomeOfTeleportation.CreateItem
+local CreateDungeonSpell = TomeOfTeleportation.CreateDungeonSpell
+local CreateRaidSpell = TomeOfTeleportation.CreateRaidSpell
+local CreateConditionalItem = TomeOfTeleportation.CreateConditionalItem
+local CreateConditionalSpell = TomeOfTeleportation.CreateConditionalSpell
+local CreateConditionalConsumable = TomeOfTeleportation.CreateConditionalConsumable
+local CreateConsumable = TomeOfTeleportation.CreateConsumable
 
 TeleporterDefaultSpells =
 {
@@ -472,10 +474,10 @@ CreateDestination(
 		-- I don't know how to check if a covenant hearthstone can be used. To work
 		-- around this, only make them available for other covenants when not using
 		-- the random hearthstone option.
-		CreateConditionalItem(180290, TeleporterCanUseCovenantHearthstone(3)),	-- Night Fae Hearthstone
-		CreateConditionalItem(182773, TeleporterCanUseCovenantHearthstone(4)),	-- Necrolord Hearthstone
-		CreateConditionalItem(183716, TeleporterCanUseCovenantHearthstone(2)),	-- Venthyr Sinstone
-		CreateConditionalItem(184353, TeleporterCanUseCovenantHearthstone(1)),	-- Kyrian Hearthstone
+		CreateConditionalItem(180290, TT.CanUseCovenantHearthstone(3)),	-- Night Fae Hearthstone
+		CreateConditionalItem(182773, TT.CanUseCovenantHearthstone(4)),	-- Necrolord Hearthstone
+		CreateConditionalItem(183716, TT.CanUseCovenantHearthstone(2)),	-- Venthyr Sinstone
+		CreateConditionalItem(184353, TT.CanUseCovenantHearthstone(1)),	-- Kyrian Hearthstone
 		CreateItem(188952),				-- Dominated Hearthstone
 		CreateItem(190196),				-- Enlightened Hearthstone
 		CreateItem(190237),				-- Broker Translocation Matrix
@@ -873,7 +875,7 @@ CreateDestination(
 
 local function CanTeleportToHouse(zoneId)
 	return function()
-		return TeleporterHasHouseInZone(zoneId)
+		return TT.HasHouseInZone(zoneId)
 	end
 end
 
@@ -888,9 +890,9 @@ end
 CreateDestination(
 	GetLocalizedCategoryName("House"),
 	{
-		TeleporterCreateTeleportHome(2351, CanTeleportToHouse(2351)),		-- Teleport Home (Horde)
-		TeleporterCreateTeleportHome(2352, CanTeleportToHouse(2352)),		-- Teleport Home (Alliance)
-		TeleporterCreateTeleportHome(nil, CanReturnHome)		-- Return from Home
+		TomeOfTeleportation.CreateTeleportHome(2351, CanTeleportToHouse(2351)),		-- Teleport Home (Horde)
+		TomeOfTeleportation.CreateTeleportHome(2352, CanTeleportToHouse(2352)),		-- Teleport Home (Alliance)
+		TomeOfTeleportation.CreateTeleportHome(nil, CanReturnHome)		-- Return from Home
 	}).SetExpansion(ExpansionMidnight)
 
 CreateDestination(
@@ -1228,7 +1230,7 @@ CreateDestination(
 CreateDestination(
 	LocZone("The Maw", 1543),
 	{
-		CreateConditionalConsumable(180817, function() return TeleporterGetOption("showInWrongZone") or (AtZone(MapIDMaw)() and not AtZone(MapIDKorthia)()) end),	-- Cypher of Relocation
+		CreateConditionalConsumable(180817, function() return TT.GetOption("showInWrongZone") or (AtZone(MapIDMaw)() and not AtZone(MapIDKorthia)()) end),	-- Cypher of Relocation
 	}).SetExpansion(ExpansionShadowlands)
 
 CreateDestination(

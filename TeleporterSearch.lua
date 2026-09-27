@@ -1,3 +1,4 @@
+local TT = TomeOfTeleportation
 local TeleporterSearchLeafNode = {}
 
 function TeleporterSearchLeafNode.new(searchString, searchType)
@@ -33,7 +34,7 @@ function TeleporterSearchTypeNode.MatchSpell(self, spell)
     elseif self.searchType == "raid" then
         return spell:IsRaidSpell()
     elseif self.searchType == "favourite" or self.searchType == "favorite" then
-        local favourites = TeleporterGetOption("favouritesTab")
+        local favourites = TT.GetOption("favouritesTab")
         return favourites and favourites[spell:GetOptionId()]
     else
         return false

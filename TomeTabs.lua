@@ -1,22 +1,24 @@
+local TT = TomeOfTeleportation
+
 local HomeTabGuid = "7413962B-DC60-4BAE-9922-B73FE07E42DE"
 local FavouritesTabGuid = "A3E7B1C4-5F92-4D8A-B6E1-9C0F2D7A4E58"
 local CurrentTab = HomeTabGuid
 local Tabs = {}
 
-function TeleporterGetHomeTabGuid()
+function TomeOfTeleportation.GetHomeTabGuid()
 	return HomeTabGuid
 end
 
-function TeleporterGetCurrentTab()
+function TomeOfTeleportation.GetCurrentTab()
 	return CurrentTab
 end
 
-function TeleporterSetCurrentTab(guid)
+function TomeOfTeleportation.SetCurrentTab(guid)
 	CurrentTab = guid
 end
 
-function TeleporterGetCurrentTabSearchString()
-	local tabList = TeleporterGetOption("tabs")
+function TomeOfTeleportation.GetCurrentTabSearchString()
+	local tabList = TT.GetOption("tabs")
 	if tabList and tabList[CurrentTab] then
 		return tabList[CurrentTab].searchString
 	end
@@ -24,7 +26,7 @@ function TeleporterGetCurrentTabSearchString()
 end
 
 local function TabContextMenu_Rename(guid)
-	local tabList = TeleporterGetOption("tabs")
+	local tabList = TT.GetOption("tabs")
 	local currentName = (tabList and tabList[guid]) and tabList[guid].name or ""
 
 	StaticPopupDialogs["TELEPORTER_RENAME_TAB"] = {
@@ -32,11 +34,11 @@ local function TabContextMenu_Rename(guid)
 		button1 = "OK",
 		button2 = "Cancel",
 		OnAccept = function(dialog)
-			local updatedTabList = TeleporterGetOption("tabs")
+			local updatedTabList = TT.GetOption("tabs")
 			if updatedTabList and updatedTabList[guid] then
 				updatedTabList[guid].name = dialog.EditBox:GetText()
-				TeleporterSetOption("tabs", updatedTabList)
-				TeleporterRefresh()
+				TT.SetOption("tabs", updatedTabList)
+				TT.Refresh()
 			end
 		end,
 		OnShow = function(dialog)
@@ -51,7 +53,7 @@ local function TabContextMenu_Rename(guid)
 end
 
 local function TabContextMenu_Edit(guid)
-	local tabList = TeleporterGetOption("tabs")
+	local tabList = TT.GetOption("tabs")
 	local currentSearch = (tabList and tabList[guid]) and (tabList[guid].searchString or "") or ""
 
 	StaticPopupDialogs["TELEPORTER_EDIT_TAB_SEARCH"] = {
@@ -59,11 +61,11 @@ local function TabContextMenu_Edit(guid)
 		button1 = "OK",
 		button2 = "Cancel",
 		OnAccept = function(dialog)
-			local updatedTabList = TeleporterGetOption("tabs")
+			local updatedTabList = TT.GetOption("tabs")
 			if updatedTabList and updatedTabList[guid] then
 				updatedTabList[guid].searchString = dialog.EditBox:GetText()
-				TeleporterSetOption("tabs", updatedTabList)
-				TeleporterRefresh()
+				TT.SetOption("tabs", updatedTabList)
+				TT.Refresh()
 			end
 		end,
 		OnShow = function(dialog)
@@ -78,7 +80,7 @@ local function TabContextMenu_Edit(guid)
 end
 
 local function TabContextMenu_Move(guid, direction)
-	local tabList = TeleporterGetOption("tabs")
+	local tabList = TT.GetOption("tabs")
 	if not tabList then return end
 
 	local sortedTabs = {}
@@ -98,8 +100,8 @@ local function TabContextMenu_Move(guid, direction)
 		end
 	end
 
-	TeleporterSetOption("tabs", tabList)
-	TeleporterRefresh()
+	TT.SetOption("tabs", tabList)
+	TT.Refresh()
 end
 
 local function TabContextMenu_MoveLeft(guid)
@@ -120,14 +122,14 @@ local function TabContextMenu_Delete(guid, name)
 		button1 = "Yes",
 		button2 = "No",
 		OnAccept = function()
-			local tabList = TeleporterGetOption("tabs")
+			local tabList = TT.GetOption("tabs")
 			if tabList then
 				tabList[guid] = nil
-				TeleporterSetOption("tabs", tabList)
+				TT.SetOption("tabs", tabList)
 				if CurrentTab == guid then
 					CurrentTab = HomeTabGuid
 				end
-				TeleporterRefresh()
+				TT.Refresh()
 			end
 		end,
 		hideOnEscape = true
@@ -136,7 +138,7 @@ local function TabContextMenu_Delete(guid, name)
 end
 
 local function TabContextMenu_SetDefault(guid)
-	TeleporterSetOption("defaultTab", guid)
+	TT.SetOption("defaultTab", guid)
 end
 
 local function TabContextMenu_Show(guid, name)
@@ -188,7 +190,7 @@ local function GenerateGuid()
 end
 
 local function GetMaxTabOrder()
-	local tabList = TeleporterGetOption("tabs")
+	local tabList = TT.GetOption("tabs")
 	local maxOrder = 0
 	if tabList then
 		for _, tabDesc in pairs(tabList) do
@@ -200,8 +202,8 @@ local function GetMaxTabOrder()
 	return maxOrder
 end
 
-function TeleporterEnsureFavouritesTab()
-	local tabList = TeleporterGetOption("tabs")
+function TomeOfTeleportation.EnsureFavouritesTab()
+	local tabList = TT.GetOption("tabs")
 	if tabList and tabList[FavouritesTabGuid] then
 		return
 	end
@@ -214,7 +216,7 @@ function TeleporterEnsureFavouritesTab()
 		["searchString"] = "type:favourite",
 		["order"] = GetMaxTabOrder() + 1
 	}
-	TeleporterSetOption("tabs", tabList)
+	TT.SetOption("tabs", tabList)
 end
 
 local function AddTabFromSearch()
@@ -227,7 +229,7 @@ local function AddTabFromSearch()
 			local name = dialog.EditBox:GetText()
 			if name and name ~= "" then
 				local guid = GenerateGuid()
-				local tabList = TeleporterGetOption("tabs")
+				local tabList = TT.GetOption("tabs")
 				if not tabList then
 					tabList = {}
 				end
@@ -237,10 +239,10 @@ local function AddTabFromSearch()
 					["searchString"] = searchString,
 					["order"] = GetMaxTabOrder() + 1
 				}
-				TeleporterSetOption("tabs", tabList)
+				TT.SetOption("tabs", tabList)
 				TeleporterSearchBox:SetText("")
 				CurrentTab = guid
-				TeleporterRefresh()
+				TT.Refresh()
 			end
 		end,
 		hideOnEscape = true,
@@ -253,8 +255,8 @@ end
 local function SetupTabFrame(tabIndex, parentFrame, xOffset, yPadding, tabHeight, tabMaxWidth, scale, name, isSelected, onClick)
 	if #Tabs < tabIndex then
 		local newTab = {}
-		newTab.frame = TeleporterCreateReusableFrame("Button","TabFrame",parentFrame, "BackdropTemplate")
-		newTab.fontString = TeleporterCreateReusableFontString("TabText",newTab.frame, "GameFontNormalTiny")
+		newTab.frame = TT.CreateReusableFrame("Button","TabFrame",parentFrame, "BackdropTemplate")
+		newTab.fontString = TT.CreateReusableFontString("TabText",newTab.frame, "GameFontNormalTiny")
 		tinsert(Tabs, newTab)
 	end
 
@@ -274,7 +276,7 @@ local function SetupTabFrame(tabIndex, parentFrame, xOffset, yPadding, tabHeight
 	})
 
 	local fontFile = label:GetFont()
-	local tabFontSize = TeleporterGetOption("tabFontSize")
+	local tabFontSize = TT.GetOption("tabFontSize")
 	label:SetFont(fontFile, tabFontSize * scale)
 	label:ClearAllPoints()
 	label:SetPoint("CENTER", button, "CENTER", 0, 0)
@@ -285,13 +287,13 @@ local function SetupTabFrame(tabIndex, parentFrame, xOffset, yPadding, tabHeight
 	label:Show()
 
 	if isSelected then
-		button:SetBackdropColor(TeleporterGetOption("tabSelectedColourR"), TeleporterGetOption("tabSelectedColourG"), TeleporterGetOption("tabSelectedColourB"), TeleporterGetOption("tabSelectedColourA"))
-		button:SetBackdropBorderColor(TeleporterGetOption("tabSelectedBorderR"), TeleporterGetOption("tabSelectedBorderG"), TeleporterGetOption("tabSelectedBorderB"), TeleporterGetOption("tabSelectedBorderA"))
-		label:SetTextColor(TeleporterGetOption("tabSelectedTextR"), TeleporterGetOption("tabSelectedTextG"), TeleporterGetOption("tabSelectedTextB"))
+		button:SetBackdropColor(TT.GetOption("tabSelectedColourR"), TT.GetOption("tabSelectedColourG"), TT.GetOption("tabSelectedColourB"), TT.GetOption("tabSelectedColourA"))
+		button:SetBackdropBorderColor(TT.GetOption("tabSelectedBorderR"), TT.GetOption("tabSelectedBorderG"), TT.GetOption("tabSelectedBorderB"), TT.GetOption("tabSelectedBorderA"))
+		label:SetTextColor(TT.GetOption("tabSelectedTextR"), TT.GetOption("tabSelectedTextG"), TT.GetOption("tabSelectedTextB"))
 	else
-		button:SetBackdropColor(TeleporterGetOption("tabUnselectedColourR"), TeleporterGetOption("tabUnselectedColourG"), TeleporterGetOption("tabUnselectedColourB"), TeleporterGetOption("tabUnselectedColourA"))
-		button:SetBackdropBorderColor(TeleporterGetOption("tabUnselectedBorderR"), TeleporterGetOption("tabUnselectedBorderG"), TeleporterGetOption("tabUnselectedBorderB"), TeleporterGetOption("tabUnselectedBorderA"))
-		label:SetTextColor(TeleporterGetOption("tabUnselectedTextR"), TeleporterGetOption("tabUnselectedTextG"), TeleporterGetOption("tabUnselectedTextB"))
+		button:SetBackdropColor(TT.GetOption("tabUnselectedColourR"), TT.GetOption("tabUnselectedColourG"), TT.GetOption("tabUnselectedColourB"), TT.GetOption("tabUnselectedColourA"))
+		button:SetBackdropBorderColor(TT.GetOption("tabUnselectedBorderR"), TT.GetOption("tabUnselectedBorderG"), TT.GetOption("tabUnselectedBorderB"), TT.GetOption("tabUnselectedBorderA"))
+		label:SetTextColor(TT.GetOption("tabUnselectedTextR"), TT.GetOption("tabUnselectedTextG"), TT.GetOption("tabUnselectedTextB"))
 	end
 
 	button:EnableMouse(true)
@@ -301,21 +303,21 @@ local function SetupTabFrame(tabIndex, parentFrame, xOffset, yPadding, tabHeight
 	end)
 	button:SetScript("OnEnter", function(self)
 		if not isSelected then
-			local hoverR = (TeleporterGetOption("tabSelectedColourR") + TeleporterGetOption("tabUnselectedColourR")) / 2
-			local hoverG = (TeleporterGetOption("tabSelectedColourG") + TeleporterGetOption("tabUnselectedColourG")) / 2
-			local hoverB = (TeleporterGetOption("tabSelectedColourB") + TeleporterGetOption("tabUnselectedColourB")) / 2
-			local hoverA = (TeleporterGetOption("tabSelectedColourA") + TeleporterGetOption("tabUnselectedColourA")) / 2
+			local hoverR = (TT.GetOption("tabSelectedColourR") + TT.GetOption("tabUnselectedColourR")) / 2
+			local hoverG = (TT.GetOption("tabSelectedColourG") + TT.GetOption("tabUnselectedColourG")) / 2
+			local hoverB = (TT.GetOption("tabSelectedColourB") + TT.GetOption("tabUnselectedColourB")) / 2
+			local hoverA = (TT.GetOption("tabSelectedColourA") + TT.GetOption("tabUnselectedColourA")) / 2
 			self:SetBackdropColor(hoverR, hoverG, hoverB, hoverA)
-			local hoverTextR = (TeleporterGetOption("tabSelectedTextR") + TeleporterGetOption("tabUnselectedTextR")) / 2
-			local hoverTextG = (TeleporterGetOption("tabSelectedTextG") + TeleporterGetOption("tabUnselectedTextG")) / 2
-			local hoverTextB = (TeleporterGetOption("tabSelectedTextB") + TeleporterGetOption("tabUnselectedTextB")) / 2
+			local hoverTextR = (TT.GetOption("tabSelectedTextR") + TT.GetOption("tabUnselectedTextR")) / 2
+			local hoverTextG = (TT.GetOption("tabSelectedTextG") + TT.GetOption("tabUnselectedTextG")) / 2
+			local hoverTextB = (TT.GetOption("tabSelectedTextB") + TT.GetOption("tabUnselectedTextB")) / 2
 			label:SetTextColor(hoverTextR, hoverTextG, hoverTextB)
 		end
 	end)
 	button:SetScript("OnLeave", function(self)
 		if not isSelected then
-			self:SetBackdropColor(TeleporterGetOption("tabUnselectedColourR"), TeleporterGetOption("tabUnselectedColourG"), TeleporterGetOption("tabUnselectedColourB"), TeleporterGetOption("tabUnselectedColourA"))
-			label:SetTextColor(TeleporterGetOption("tabUnselectedTextR"), TeleporterGetOption("tabUnselectedTextG"), TeleporterGetOption("tabUnselectedTextB"))
+			self:SetBackdropColor(TT.GetOption("tabUnselectedColourR"), TT.GetOption("tabUnselectedColourG"), TT.GetOption("tabUnselectedColourB"), TT.GetOption("tabUnselectedColourA"))
+			label:SetTextColor(TT.GetOption("tabUnselectedTextR"), TT.GetOption("tabUnselectedTextG"), TT.GetOption("tabUnselectedTextB"))
 		end
 	end)
 	button:Show()
@@ -334,14 +336,14 @@ local function HasSearchText()
 	return TeleporterSearchBox and TeleporterSearchBox:GetText() ~= ""
 end
 
-function TeleporterCreateTabs(parentFrame)
+function TomeOfTeleportation.CreateTabs(parentFrame)
 	Tabs = {}
 
-	if TeleporterGetOption("showTabs") then
-		local scale = TeleporterGetOption("scale") * UIParent:GetEffectiveScale()
+	if TT.GetOption("showTabs") then
+		local scale = TT.GetOption("scale") * UIParent:GetEffectiveScale()
 		local tabIndex = 1
 		local xOffset = 12 * scale
-		local tabHeight = TeleporterGetOption("tabHeight") * scale
+		local tabHeight = TT.GetOption("tabHeight") * scale
 		local yPadding = 12 * scale
 		local tabSpacing = 3 * scale
 
@@ -358,7 +360,7 @@ function TeleporterCreateTabs(parentFrame)
 			tabIndex = 2
 		else
 			local sortedTabs = {}
-			for guid, tabDesc in pairs(TeleporterGetOption("tabs")) do
+			for guid, tabDesc in pairs(TT.GetOption("tabs")) do
 				tinsert(sortedTabs, {guid = guid, tabDesc = tabDesc})
 			end
 			table.sort(sortedTabs, function(a, b)
@@ -384,7 +386,7 @@ function TeleporterCreateTabs(parentFrame)
 					function(self, button)
 						if button == "LeftButton" then
 							CurrentTab = guid
-							TeleporterRefresh()
+							TT.Refresh()
 						elseif button == "RightButton" then
 							TabContextMenu_Show(guid, name)
 						end

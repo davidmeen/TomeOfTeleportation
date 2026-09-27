@@ -1,3 +1,5 @@
+local TT = TomeOfTeleportation
+
 local ST_Item = 1
 local ST_Spell = 2
 local ST_Dungeon = 3
@@ -71,7 +73,7 @@ function TeleporterSpell:isReturnFromHome()
 end
 
 function TeleporterSpell:CleanupName()
-	local hide = TeleporterGetOption("conciseDungeonSpells")
+	local hide = TT.GetOption("conciseDungeonSpells")
     local name = self.spellName
 	if hide and hide ~= "0" and self:IsDungeonSpell() then
 		for index, str in pairs(RedundantStrings) do
@@ -93,7 +95,7 @@ end
 
 
 function TeleporterSpell:IsVisible()
-	local showSpells = TeleporterGetOption("showSpells")
+	local showSpells = TT.GetOption("showSpells")
 	local visible = showSpells[self:GetOptionId()]
 	if visible ~= nil then
 		return visible
@@ -103,7 +105,7 @@ function TeleporterSpell:IsVisible()
 end
 
 function TeleporterSpell:IsAlwaysVisible()
-	local showSpells = TeleporterGetOption("alwaysShowSpells")
+	local showSpells = TT.GetOption("alwaysShowSpells")
 	if not showSpells then
 		return false
 	end
@@ -117,8 +119,8 @@ end
 
 
  function TeleporterSpell:SetVisible()
-	local showSpells = TeleporterGetOption("showSpells")
-	local alwaysShowSpells = TeleporterGetOption("alwaysShowSpells")
+	local showSpells = TT.GetOption("showSpells")
+	local alwaysShowSpells = TT.GetOption("alwaysShowSpells")
 
 	if not showSpells then showSpells = {} end
 	if not alwaysShowSpells then alwaysShowSpells = {} end
@@ -126,13 +128,13 @@ end
 	showSpells[self:GetOptionId()] = true
 	alwaysShowSpells[self:GetOptionId()] = false
 
-	TeleporterSetOption("showSpells", showSpells)
-	TeleporterSetOption("alwaysShowSpells", alwaysShowSpells)
+	TT.SetOption("showSpells", showSpells)
+	TT.SetOption("alwaysShowSpells", alwaysShowSpells)
 end
 
  function TeleporterSpell:SetAlwaysVisible()
-	local showSpells = TeleporterGetOption("showSpells")
-	local alwaysShowSpells = TeleporterGetOption("alwaysShowSpells")
+	local showSpells = TT.GetOption("showSpells")
+	local alwaysShowSpells = TT.GetOption("alwaysShowSpells")
 
 	if not showSpells then showSpells = {} end
 	if not alwaysShowSpells then alwaysShowSpells = {} end
@@ -140,13 +142,13 @@ end
 	showSpells[self:GetOptionId()] = true
 	alwaysShowSpells[self:GetOptionId()] = true
 
-	TeleporterSetOption("showSpells", showSpells)
-	TeleporterSetOption("alwaysShowSpells", alwaysShowSpells)
+	TT.SetOption("showSpells", showSpells)
+	TT.SetOption("alwaysShowSpells", alwaysShowSpells)
 end
 
  function TeleporterSpell:SetHidden()
-	local showSpells = TeleporterGetOption("showSpells")
-	local alwaysShowSpells = TeleporterGetOption("alwaysShowSpells")
+	local showSpells = TT.GetOption("showSpells")
+	local alwaysShowSpells = TT.GetOption("alwaysShowSpells")
 
 	if not showSpells then showSpells = {} end
 	if not alwaysShowSpells then alwaysShowSpells = {} end
@@ -154,8 +156,8 @@ end
 	showSpells[self:GetOptionId()] = false
 	alwaysShowSpells[self:GetOptionId()] = false
 
-	TeleporterSetOption("showSpells", showSpells)
-	TeleporterSetOption("alwaysShowSpells", alwaysShowSpells)
+	TT.SetOption("showSpells", showSpells)
+	TT.SetOption("alwaysShowSpells", alwaysShowSpells)
 end
 
 function TeleporterSpell:CanUse()
@@ -171,7 +173,7 @@ function TeleporterSpell:CanUse()
 		return true
 	end
 
-	-- Drewamwalk return doesn't show in the spell book, use the base spell to determine if it is available.
+	-- Dreamwalk return doesn't show in the spell book, use the base spell to determine if it is available.
 	if spellId == 293887 then
 		spellId = 193753
 	end
@@ -190,7 +192,7 @@ function TeleporterSpell:CanUse()
 		if toyUsable then
 			haveToy = PlayerHasToy(spellId) and toyUsable
 		end
-		haveSpell = (TeleporterGetItemCount( spellId ) > 0) or haveToy
+		haveSpell = (TT.GetItemCount( spellId ) > 0) or haveToy
 	elseif spell.spellType == ST_House then
 		if C_Housing then
 			haveSpell = true
@@ -230,35 +232,35 @@ function TeleporterSpell:CanUse()
 		haveSpell = true
 	end
 
-	if not TeleporterGetSearchString() or not TeleporterGetOption("searchHidden") then
+	if not TT.GetSearchString() or not TT.GetOption("searchHidden") then
 
-		if TeleporterGetOption("hideItems") and isItem then
+		if TT.GetOption("hideItems") and isItem then
 			haveSpell = false
 		end
 
-		if TeleporterGetOption("hideConsumable") and consumable then
+		if TT.GetOption("hideConsumable") and consumable then
 			haveSpell = false
 		end
 
-		if TeleporterGetOption("hideSpells") and spell:IsSpell() then
+		if TT.GetOption("hideSpells") and spell:IsSpell() then
 			haveSpell = false
 		end
 
-		if TeleporterGetOption("hideChallenge") and spell:IsDungeonSpell() then
+		if TT.GetOption("hideChallenge") and spell:IsDungeonSpell() then
 			haveSpell = false
 		end
 
-		if TeleporterGetOption("seasonOnly") and spell:IsDungeonSpell() and not self:IsSeasonDungeon() then
+		if TT.GetOption("seasonOnly") and spell:IsDungeonSpell() and not self:IsSeasonDungeon() then
 			haveSpell = false
 		end
 
-		if TeleporterGetOption("seasonRaidsOnly") and spell:IsRaidSpell() and not self:IsSeasonDungeon() then
+		if TT.GetOption("seasonRaidsOnly") and spell:IsRaidSpell() and not self:IsSeasonDungeon() then
 			haveSpell = false
 		end
 	end
 
 	if not TeleporterCustomizeSpells and not spell:IsVisible() then
-		if not TeleporterGetSearchString() or not TeleporterGetOption("searchHidden") then
+		if not TT.GetSearchString() or not TT.GetOption("searchHidden") then
 			haveSpell = false
 		end
 	end
@@ -267,7 +269,7 @@ function TeleporterSpell:CanUse()
 end
 
 function TeleporterSpell:GetZone()
-	local zo = TeleporterGetOption("zoneOverrides") or {}
+	local zo = TT.GetOption("zoneOverrides") or {}
 	return zo[self:GetOptionId()] or self.zone
 end
 
@@ -299,12 +301,12 @@ function TeleporterSpell:SetZone(zone, mapID)
 end
 
 function TeleporterSpell:OverrideZoneName(zone)
-	local zo = TeleporterGetOption("zoneOverrides") or {}
+	local zo = TT.GetOption("zoneOverrides") or {}
 	if zone == "" then
 		zone = nil
 	end
 	zo[self:GetOptionId()] = zone
-	TeleporterSetOption("zoneOverrides", zo)
+	TT.SetOption("zoneOverrides", zo)
 end
 
 function TeleporterSpell:Equals(other)
@@ -378,18 +380,18 @@ function TeleporterSpell:IsSeasonDungeon()
 end
 
 -- Spell factories
-function TeleporterCreateSpell(id, dest)
+function TomeOfTeleportation.CreateSpell(id, dest)
 	local spell = {}
-    TeleporterInitSpell(spell)
+    TomeOfTeleportation.InitSpell(spell)
 	spell.spellId = id
 	spell.spellType = ST_Spell
 	spell.zone = dest
 	return spell
 end
 
-function TeleporterCreateItem(id, dest)
+function TomeOfTeleportation.CreateItem(id, dest)
 	local spell = {}
-    TeleporterInitSpell(spell)
+    TomeOfTeleportation.InitSpell(spell)
 	spell.spellId = id
 	spell.spellType = ST_Item
 	spell.zone = dest
@@ -397,9 +399,9 @@ function TeleporterCreateItem(id, dest)
 end
 
 -- dungeonID from: https://warcraft.wiki.gg/wiki/LfgDungeonID
-function TeleporterCreateDungeonSpell(id, dungeonID, mapID)
+function TomeOfTeleportation.CreateDungeonSpell(id, dungeonID, mapID)
 	local spell = {}
-	TeleporterInitSpell(spell)
+	TomeOfTeleportation.InitSpell(spell)
 	spell.spellId = id
 	spell.dungeonID = dungeonID
 	spell.spellType = ST_Dungeon
@@ -425,15 +427,15 @@ function TeleporterCreateDungeonSpell(id, dungeonID, mapID)
 	return spell
 end
 
-function TeleporterCreateRaidSpell(id, dungeonID, mapID)
-	local spell = TeleporterCreateDungeonSpell(id, dungeonID, mapID)
+function TomeOfTeleportation.CreateRaidSpell(id, dungeonID, mapID)
+	local spell = TomeOfTeleportation.CreateDungeonSpell(id, dungeonID, mapID)
 	spell.spellType = ST_Raid
 	return spell
 end
 
-function TeleporterCreateConditionalItem(id, condition, dest)
+function TomeOfTeleportation.CreateConditionalItem(id, condition, dest)
 	local spell = {}
-    TeleporterInitSpell(spell)
+    TomeOfTeleportation.InitSpell(spell)
 	spell.spellId = id
 	spell.spellType = ST_Item
 	spell.condition = condition
@@ -441,9 +443,9 @@ function TeleporterCreateConditionalItem(id, condition, dest)
 	return spell
 end
 
-function TeleporterCreateConditionalSpell(id, condition, dest)
+function TomeOfTeleportation.CreateConditionalSpell(id, condition, dest)
 	local spell = {}
-    TeleporterInitSpell(spell)
+    TomeOfTeleportation.InitSpell(spell)
 	spell.spellId = id
 	spell.spellType = ST_Spell
 	spell.condition = condition
@@ -451,9 +453,9 @@ function TeleporterCreateConditionalSpell(id, condition, dest)
 	return spell
 end
 
-function TeleporterCreateConditionalConsumable(id, condition, dest)
+function TomeOfTeleportation.CreateConditionalConsumable(id, condition, dest)
 	local spell = {}
-    TeleporterInitSpell(spell)
+    TomeOfTeleportation.InitSpell(spell)
 	spell.spellId = id
 	spell.spellType = ST_Item
 	spell.condition = condition
@@ -462,9 +464,9 @@ function TeleporterCreateConditionalConsumable(id, condition, dest)
 	return spell
 end
 
-function TeleporterCreateConsumable(id, dest)
+function TomeOfTeleportation.CreateConsumable(id, dest)
 	local spell = {}
-    TeleporterInitSpell(spell)
+    TomeOfTeleportation.InitSpell(spell)
 	spell.spellId = id
 	spell.spellType = ST_Item
 	spell.zone = dest
@@ -472,9 +474,9 @@ function TeleporterCreateConsumable(id, dest)
 	return spell
 end
 
-function TeleporterCreateTeleportHome(zoneId, cond, dest)
+function TomeOfTeleportation.CreateTeleportHome(zoneId, cond, dest)
 	local spell = {}
-    TeleporterInitSpell(spell)
+    TomeOfTeleportation.InitSpell(spell)
 	if zoneId then
 		spell.isReturn = false
 		spell.spellId = 1233637
@@ -493,6 +495,6 @@ function TeleporterCreateTeleportHome(zoneId, cond, dest)
 	return spell
 end
 
-function TeleporterInitSpell(spell)
+function TomeOfTeleportation.InitSpell(spell)
 	setmetatable(spell, {__index=TeleporterSpell})
 end

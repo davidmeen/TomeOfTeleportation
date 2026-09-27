@@ -29,6 +29,7 @@
 
 libs\embeds.xml
 libs\LibDBIcon-1.0\lib.xml
+TeleporterUtils.lua
 TeleporterSpell.lua
 TomeQuickMenu.lua
 TomeOfTeleportationSettings.lua
