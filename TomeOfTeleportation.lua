@@ -959,7 +959,7 @@ end
 
 function TomeOfTeleportation.ItemMustBeEquipped(item)
 	if TT.TeleporterIsEquippableItem( item ) then
-		return not IsEquippedItem ( item )
+		return not TT.IsEquippedItem ( item )
 	else
 		return false
 	end
@@ -2206,7 +2206,7 @@ function TomeOfTeleportation.CheckItemsWereEquiped()
 	-- then try equipping after the next teleport.
 	if GetTime() < EquipTime + 60 then
 		for slot, item in pairs(ShouldNotBeEquiped) do
-			if IsEquippedItem ( item ) then
+			if TT.IsEquippedItem ( item ) then
 				RemoveItem[slot](ShouldBeEquiped[slot])
 			end
 		end
@@ -2341,7 +2341,7 @@ end
 
 -- This function exists because of a bug in patch 10.2.6 that has now been fixed.
 local function SafeEquipItemByName(item, slot)
-	EquipItemByName(item, slot)
+	TT.EquipItemByName(item, slot)
 end
 
 local function SaveItem(itemSlot, item)
@@ -2359,7 +2359,7 @@ end
 function TeleporterEquipSlashCmdFunction( item )
 	CastSpell = nil
 
-	if not IsEquippedItem ( item ) then
+	if not TT.IsEquippedItem ( item ) then
 		if TT.TeleporterIsEquippableItem( item ) then
 			local _, _, _, _, _, _, _, _,itemEquipLoc = GetCachedItemInfo(item)
 			local itemSlot = InvTypeToSlot[ itemEquipLoc ]

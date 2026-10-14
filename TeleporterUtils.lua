@@ -32,3 +32,19 @@ function TomeOfTeleportation.GetItemInfo(...)
 		return GetItemInfo(...)
 	end
 end
+
+function TomeOfTeleportation.IsEquippedItem(...)
+	if C_Item then
+		return C_Item.IsEquippedItem(...)
+	else
+		return IsEquippedItem(...)
+	end
+end
+
+function TomeOfTeleportation.EquipItemByName(...)
+	if C_Item then
+		return C_Item.EquipItemByName(...)
+	else
+		return EquipItemByName(...)
+	end
+end
