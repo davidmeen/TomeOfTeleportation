@@ -500,6 +500,8 @@ CreateDestination(
 		CreateItem(257736),				-- Lightcalled Hearthstone
 		CreateItem(263933),				-- Preyseeker's Hearthstone
 		CreateItem(264367),				-- Mycomancer's Hearthspore
+		CreateItem(281136),				-- Hiveborne Hearthstone
+		CreateItem(281615),				-- Shadeweaver's Hearthstone
 	})
 
 -- Any hearthstones that shouldn't be randomised.
