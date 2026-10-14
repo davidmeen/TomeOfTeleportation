@@ -1230,6 +1230,12 @@ CreateDestination(
 	}).SetExpansion(ExpansionDragonflight)
 
 CreateDestination(
+	LocZone("The Labyrinth of Kindo'jan", 2647),
+	{
+		CreateItem(286643)			-- Kinduru's Spiriting Quill
+	}).SetExpansion(ExpansionMidnight)
+
+CreateDestination(
 	LocZone("The Maw", 1543),
 	{
 		CreateConditionalConsumable(180817, function() return TT.GetOption("showInWrongZone") or (AtZone(MapIDMaw)() and not AtZone(MapIDKorthia)()) end),	-- Cypher of Relocation
