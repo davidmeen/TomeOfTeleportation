@@ -1,3 +1,5 @@
+local TT = TomeOfTeleportation
+
 local QuickMenuFrame = nil
 local QuickMenuButtons = {}
 local QuickMenuTextures = {}
@@ -70,19 +72,19 @@ function TeleToggleQuickMenu(favourites, size)
 			local name
 
 			if isItem then
-				name, _, _, _, _, _, _, _, _, texture = TeleporterGetItemInfo( spellId )
+				name, _, _, _, _, _, _, _, _, texture = TT.GetItemInfo( spellId )
 
 				if name then
 					button:SetScript(
 						"OnEnter",
 						function()
-							TeleporterShowItemTooltip( name, button )
+							TomeOfTeleportation.ShowItemTooltip( name, button )
 						end )
 
 					if PlayerHasToy(spellId) then
 						button:SetAttribute(
 							"macrotext",
-							"/teleportercastspell " .. TeleporterGetItemSpell(spellId) .. "\n" ..
+							"/teleportercastspell " .. TT.GetItemSpell(spellId) .. "\n" ..
 							"/cast " .. name .. "\n" )
 					else
 						button:SetAttribute(
@@ -102,7 +104,7 @@ function TeleToggleQuickMenu(favourites, size)
 				button:SetScript(
 					"OnEnter",
 					function()
-						TeleporterShowSpellTooltip( name, button )
+						TomeOfTeleportation.ShowSpellTooltip( name, button )
 					end )
 
 				button:SetAttribute(

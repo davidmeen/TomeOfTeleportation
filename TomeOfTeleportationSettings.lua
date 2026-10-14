@@ -1,3 +1,5 @@
+local TT = TomeOfTeleportation
+
 local SettingControls = {}
 
 local ControlWidth = 300
@@ -45,14 +47,14 @@ local function CreateResetButton(title, optionName, parent, control)
 	resetButton:SetWidth( 80 )
     resetButton:SetScript( "OnClick",
         function()
-            TeleporterSetOption(optionName, nil)
+            TT.SetOption(optionName, nil)
             control.loadValue()
             control.updateResetButton()
         end )
 
     control.resetButton = resetButton
     control.updateResetButton = function()
-        if TeleporterIsOptionModified(optionName) then
+        if TT.IsOptionModified(optionName) then
             resetButton:Enable()
         else
             resetButton:Disable()
@@ -74,7 +76,7 @@ local function AddStringOption(text, optionName, parent, previous)
 
     local newControl = {}
     newControl.loadValue = function()
-        local optionValue = TeleporterGetOption(optionName)
+        local optionValue = TT.GetOption(optionName)
         if optionValue then
             editFrame:SetText(optionValue)
         else
@@ -87,7 +89,7 @@ local function AddStringOption(text, optionName, parent, previous)
 
     editFrame:SetScript("OnTextChanged", function(self, userInput)
         if userInput then
-            TeleporterSetOption(optionName, editFrame:GetText())
+            TT.SetOption(optionName, editFrame:GetText())
             newControl.updateResetButton()
         end
     end)
@@ -128,9 +130,9 @@ local function AddSliderOption(text, optionName, min, max, delta, parent, previo
 
     local updateDisplay = function()
         if isFloat then
-            valueFrame:SetText(string.format("%.2f", TeleporterGetOption(optionName)))
+            valueFrame:SetText(string.format("%.2f", TT.GetOption(optionName)))
         else
-            valueFrame:SetText(TeleporterGetOption(optionName))
+            valueFrame:SetText(TT.GetOption(optionName))
         end
 
         if changeCallback then
@@ -141,14 +143,14 @@ local function AddSliderOption(text, optionName, min, max, delta, parent, previo
     local newControl = {}
     newControl.loadValue = function()
         updateDisplay()
-        sliderFrame:SetValue(TeleporterGetOption(optionName))
+        sliderFrame:SetValue(TT.GetOption(optionName))
     end
     tinsert(SettingControls, newControl)
 
     CreateResetButton(title, optionName, parent, newControl)
 
     sliderFrame:SetScript("OnValueChanged", function()
-        TeleporterSetOption(optionName, sliderFrame:GetValue())
+        TT.SetOption(optionName, sliderFrame:GetValue())
         updateDisplay()
         newControl.updateResetButton()
     end)
@@ -166,14 +168,14 @@ local function AddCheckOption(text, optionName, parent, previous)
 
     local newControl = {}
     newControl.loadValue = function()
-        checkFrame:SetChecked(TeleporterGetOption(optionName))
+        checkFrame:SetChecked(TT.GetOption(optionName))
     end
     tinsert(SettingControls, newControl)
 
     CreateResetButton(title, optionName, parent, newControl)
 
     checkFrame:SetScript("OnClick", function()
-        TeleporterSetOption(optionName, checkFrame:GetChecked())
+        TT.SetOption(optionName, checkFrame:GetChecked())
         newControl.updateResetButton()
     end)
 
@@ -204,7 +206,7 @@ local function AddColourOption(text, optionName, parent, hasAlpha, previous)
     colourPanel:SetBackdropColor(1, 1, 1, 1)
 
     changeCallback.run = function()
-        colourPanel:SetBackdropColor(TeleporterGetOption(optionName .. "R"), TeleporterGetOption(optionName .. "G"), TeleporterGetOption(optionName .. "B"), 1)
+        colourPanel:SetBackdropColor(TT.GetOption(optionName .. "R"), TT.GetOption(optionName .. "G"), TT.GetOption(optionName .. "B"), 1)
     end
     return p
 end
@@ -217,7 +219,7 @@ local function RefreshSettings()
         c.updateResetButton()
     end
 
-    UIDropDownMenu_SetText(TeleporterThemeFrame, TeleporterGetOption("theme"))
+    UIDropDownMenu_SetText(TeleporterThemeFrame, TT.GetOption("theme"))
 end
 
 local function ResetAll()
@@ -259,12 +261,12 @@ local function CreateSettings(panel)
     TeleporterThemeFrame = CreateFrame("Frame", nil, scrollChild, "UIDropDownMenuTemplate")
     TeleporterThemeFrame:SetPoint("TOPLEFT", p, "TOPRIGHT", offset, 4)
     UIDropDownMenu_Initialize(TeleporterThemeFrame, function()
-        for name, theme in pairs(TeleporterGetThemes()) do
+        for name, theme in pairs(TT.GetThemes()) do
             local info = UIDropDownMenu_CreateInfo()
             info.text = name
             info.func = function()
                 UIDropDownMenu_SetText(TeleporterThemeFrame, name)
-                TeleporterSetOption("theme", name)
+                TT.SetOption("theme", name)
                 RefreshSettings()
             end
             UIDropDownMenu_AddButton(info)
@@ -416,14 +418,14 @@ local function RefreshSpellFrame(spellFrame, spell, parent, previous, refreshFun
             spellFrame.deleteButton:SetWidth(100)
         end
         spellFrame.deleteButton:SetScript( "OnClick", function()
-            local extraSpellsAndItems = TeleporterGetOption("extraSpellsAndItems")
+            local extraSpellsAndItems = TT.GetOption("extraSpellsAndItems")
             for i, spell in ipairs(extraSpellsAndItems) do
                 if spell == spellFrame.spell then
                     tremove(extraSpellsAndItems, i)
                 end
             end
-            TeleporterSetOption("extraSpellsAndItems", extraSpellsAndItems)
-            TeleporterRebuildSpellList()
+            TT.SetOption("extraSpellsAndItems", extraSpellsAndItems)
+            TT.RebuildSpellList()
             refreshFunction()
         end)
         spellFrame.deleteButton:Show()
@@ -439,7 +441,7 @@ end
 local function ShowAboveAndBelowButtons()
     MoveButton:Hide()
 
-    if TeleporterGetOption("sort") == 3 then
+    if TT.GetOption("sort") == 3 then
         AboveButton:SetEnabled(true)
         BelowButton:SetEnabled(true)
         if SelectedSpell == MovingSpell then
@@ -488,7 +490,7 @@ local function RefreshSpells(panel)
     local zoneIndex = 1
     local spellIndex = 1
 
-    for index, spell in ipairs(TeleporterGetSpells()) do
+    for index, spell in ipairs(TT.GetSpells()) do
         if spell:CanUse() or not HideUnknown then
             local zone = spell:GetZone()
             if zone ~= lastZone then
@@ -549,33 +551,33 @@ local function CreateSpell(spellType, id, zone)
 
     local spell
     if spellType == TextItem then
-        spell = TeleporterCreateItem(id, zone)
+        spell = TomeOfTeleportation.CreateItem(id, zone)
     elseif spellType == TextSpell then
-        spell = TeleporterCreateSpell(id, zone)
+        spell = TomeOfTeleportation.CreateSpell(id, zone)
     elseif spellType == TextDungeon then
-        spell = TeleporterCreateDungeonSpell(id, zone)
+        spell = TomeOfTeleportation.CreateDungeonSpell(id, zone)
         spell:SetZone(zone)
     elseif spellType == TextRaid then
-        spell = TeleporterCreateRaidSpell(id, zone)
+        spell = TomeOfTeleportation.CreateRaidSpell(id, zone)
         spell:SetZone(zone)
     elseif spellType == TextConsumable then
-        spell = TeleporterCreateConsumable(id, zone)
+        spell = TomeOfTeleportation.CreateConsumable(id, zone)
     else
         return
     end
 
     spell.isCustom = true
 
-    local extraSpellsAndItems = TeleporterGetOption("extraSpellsAndItems")
+    local extraSpellsAndItems = TT.GetOption("extraSpellsAndItems")
     if not extraSpellsAndItems then
         extraSpellsAndItems = {}
     end
 
     tinsert(extraSpellsAndItems, spell)
 
-    TeleporterSetOption("extraSpellsAndItems", extraSpellsAndItems)
+    TT.SetOption("extraSpellsAndItems", extraSpellsAndItems)
 
-    TeleporterRebuildSpellList()
+    TT.RebuildSpellList()
 end
 
 local function CreateSpellCustomiser(panel)
@@ -632,7 +634,7 @@ local function CreateSpellCustomiser(panel)
             info.text = sortText[i]
             info.func = function()
                 UIDropDownMenu_SetText(sortFrame, sortText[i])
-                TeleporterSetOption("sort", i)
+                TT.SetOption("sort", i)
                 RefreshSpells(scrollChild)
                 MoveButton:SetEnabled(i == 3)
                 ResetSortButton:SetEnabled(i == 3)
@@ -641,7 +643,7 @@ local function CreateSpellCustomiser(panel)
         end
     end)
 
-    local sortMode = TeleporterGetOption("sort") or 1
+    local sortMode = TT.GetOption("sort") or 1
     UIDropDownMenu_SetText(sortFrame, sortText[sortMode])
 
     MoveButton = CreateFrame( "Button", nil, scrollChild, "UIPanelButtonTemplate" )
@@ -659,7 +661,7 @@ local function CreateSpellCustomiser(panel)
     AboveButton:SetWidth(70)
     AboveButton:Hide()
     AboveButton:SetScript( "OnClick", function()
-        TeleporterMoveSpellBefore(MovingSpell, SelectedSpell)
+        TomeOfTeleportation.MoveSpellBefore(MovingSpell, SelectedSpell)
         MovingSpell = nil
         ShowMoveButton()
         RefreshSpells(scrollChild)  -- Without this the button is unclickable for some reason
@@ -671,7 +673,7 @@ local function CreateSpellCustomiser(panel)
     BelowButton:Hide()
     BelowButton:SetPoint("TOPLEFT", AboveButton, "TOPRIGHT")
     BelowButton:SetScript( "OnClick", function()
-        TeleporterMoveSpellAfter(MovingSpell, SelectedSpell)
+        TomeOfTeleportation.MoveSpellAfter(MovingSpell, SelectedSpell)
         MovingSpell = nil
         ShowMoveButton()
         RefreshSpells(scrollChild)  -- Without this the button is unclickable for some reason
@@ -693,7 +695,7 @@ local function CreateSpellCustomiser(panel)
     ResetSortButton:SetWidth(100)
     ResetSortButton:SetPoint("TOPLEFT", sortFrame, "TOPRIGHT", 0, 0)
     ResetSortButton:SetScript( "OnClick", function()
-        TeleporterSetOption("sortOrder", {})
+        TT.SetOption("sortOrder", {})
         RefreshSpells(scrollChild)
     end)
     ResetSortButton:SetEnabled(sortMode == 3)
